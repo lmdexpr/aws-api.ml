@@ -1,0 +1,95 @@
+(lang dune 3.24)
+
+(implicit_transitive_deps false)
+
+(generate_opam_files true)
+
+(source
+ (github lmdexpr/aws-api.ml))
+
+(license MIT)
+
+(authors "Yuki Tajiri")
+
+(maintainers "Yuki Tajiri <lmdexpr@gmail.com>")
+
+(package
+ (name aws-api)
+ (synopsis "AWS APIs: the HTTP effect every call goes through")
+ (description
+  "Transport-independent core shared by the AWS packages: request and response\ntypes and a single HTTP effect. See aws-api-cohttp-eio for a handler.")
+ (depends
+  (ocaml
+   (>= 5.5.0))
+  dune
+  uri))
+
+(package
+ (name aws-api-cohttp-eio)
+ (synopsis "Cohttp-eio handler for aws-api")
+ (description
+  "Handles the aws-api HTTP effect with a cohttp-eio client. Kept separate from\nthe core packages so that callers that bring their own HTTP client do not pull\nin eio and cohttp.")
+ (depends
+  (ocaml
+   (>= 5.5.0))
+  dune
+  (aws-api
+   (= :version))
+  eio
+  cohttp-eio
+  http
+  (alcotest :with-test)
+  (eio_main :with-test)
+  (uri :with-test)))
+
+(package
+ (name sigv4)
+ (synopsis "AWS Signature Version 4 (header-based signing), I/O-agnostic")
+ (description
+  "A pure OCaml implementation of AWS SigV4 header signing. It performs no HTTP\nrequests, no credential fetching, and no clock reads: the caller injects time,\ncredentials, and the request to be signed. Credential providers (static, env,\nprofile files, ECS container endpoint, EC2 IMDSv2, and the SDK default chain)\nare included; their I/O is injected. Conforms to the AWS SigV4 v4 test suite\n(header signing).")
+ (depends
+  (ocaml
+   (>= 5.5.0))
+  dune
+  uri
+  digestif
+  yojson
+  (alcotest :with-test)))
+
+(package
+ (name aws-api-dynamodb)
+ (synopsis "DynamoDB JSON 1.0 protocol: requests, responses, errors")
+ (description
+  "Request encoding, response decoding and error parsing for PutItem, GetItem,\nDeleteItem, UpdateItem, Query, Scan and TransactWriteItems. Items carry every\nDynamoDB attribute type; numbers are exact decimals. Aws_api_dynamodb.Http signs each\nrequest with sigv4 and performs it through the aws-api HTTP effect.")
+ (depends
+  (ocaml
+   (>= 5.5.0))
+  dune
+  yojson
+  base64
+  ppx_yojson_conv
+  uri
+  (aws-api
+   (= :version))
+  (sigv4
+   (= :version))
+  (alcotest :with-test)))
+
+(package
+ (name aws-api-lambda)
+ (synopsis "AWS Lambda Runtime API (2018-06-01) custom-runtime loop, I/O-agnostic")
+ (description
+  "The AWS Lambda Runtime API loop used by custom runtimes (next invocation,\nresponse, error). The HTTP round trip is an OCaml 5 effect; Aws_api_lambda.Http\nperforms it through the aws-api HTTP effect. The core performs no I/O.")
+ (depends
+  (ocaml
+   (>= 5.5.0))
+  dune
+  uri
+  (aws-api
+   (= :version))
+  (alcotest :with-test)
+  (aws-api-cohttp-eio :with-test)
+  (eio :with-test)
+  (eio_main :with-test)
+  (cohttp-eio :with-test)
+  (http :with-test)))

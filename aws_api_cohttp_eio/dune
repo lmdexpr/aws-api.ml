@@ -1,0 +1,20 @@
+(library
+ (name aws_api_cohttp_eio)
+ (public_name aws-api-cohttp-eio)
+ (libraries aws-api eio eio.core cohttp-eio http)
+ (modules
+  (:standard \ aws_api_cohttp_eio_test)))
+
+(test
+ (name aws_api_cohttp_eio_test)
+ (modules aws_api_cohttp_eio_test)
+ (libraries
+  aws-api
+  aws-api-cohttp-eio
+  alcotest
+  eio
+  eio.core
+  eio_main
+  cohttp-eio
+  http
+  uri))

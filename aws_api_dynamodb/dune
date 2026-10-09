@@ -1,0 +1,17 @@
+(include_subdirs qualified)
+
+(library
+ (name aws_api_dynamodb)
+ (public_name aws-api-dynamodb)
+ (libraries yojson base64 uri aws-api sigv4)
+ (preprocess
+  (pps ppx_yojson_conv))
+ (modules
+  (:standard \ aws_api_dynamodb_test value_test)))
+
+(tests
+ (names aws_api_dynamodb_test value_test)
+ (modules aws_api_dynamodb_test value_test)
+ (libraries aws-api-dynamodb aws-api sigv4 alcotest yojson uri)
+ (preprocess
+  (pps ppx_yojson_conv)))

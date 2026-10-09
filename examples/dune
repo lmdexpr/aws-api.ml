@@ -1,0 +1,19 @@
+; Built with `dune build`; not part of any package.
+
+(executable
+ (name sigv4_sign)
+ (modules sigv4_sign)
+ (libraries sigv4 uri))
+
+; Against DynamoDB Local:
+;   dune exec examples/dynamodb_crud.exe -- http://127.0.0.1:8000/ table
+
+(executable
+ (name dynamodb_crud)
+ (modules dynamodb_crud)
+ (libraries aws-api-dynamodb aws-api-cohttp-eio eio eio_main cohttp-eio uri))
+
+(executable
+ (name lambda_echo)
+ (modules lambda_echo)
+ (libraries aws-api-lambda aws-api-cohttp-eio eio eio_main cohttp-eio))

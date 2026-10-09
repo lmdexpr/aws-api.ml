@@ -1,0 +1,26 @@
+(library
+ (public_name aws-api-lambda)
+ (name aws_api_lambda)
+ (libraries aws-api uri unix)
+ (modules
+  (:standard \ aws_api_lambda_test aws_api_lambda_http_test)))
+
+(test
+ (name aws_api_lambda_test)
+ (modules aws_api_lambda_test)
+ (libraries aws-api-lambda alcotest))
+
+; Drives the loop against a fake Runtime API on the loopback interface.
+
+(test
+ (name aws_api_lambda_http_test)
+ (modules aws_api_lambda_http_test)
+ (libraries
+  aws-api-lambda
+  aws-api-cohttp-eio
+  alcotest
+  eio
+  eio.core
+  eio_main
+  cohttp-eio
+  http))

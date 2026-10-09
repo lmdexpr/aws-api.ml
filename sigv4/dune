@@ -1,0 +1,12 @@
+(library
+ (public_name sigv4)
+ (libraries uri digestif yojson)
+ (modules
+  (:standard \ aws_suite_fixtures aws_suite_test credentials_test)))
+
+(tests
+ (names aws_suite_test credentials_test)
+ (modules aws_suite_fixtures aws_suite_test credentials_test)
+ (libraries sigv4 uri alcotest yojson)
+ (deps
+  (source_tree aws-c-auth/tests/aws-signing-test-suite/v4)))

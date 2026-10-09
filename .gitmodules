@@ -1,0 +1,3 @@
+[submodule "sigv4/aws-c-auth"]
+	path = sigv4/aws-c-auth
+	url = https://github.com/awslabs/aws-c-auth.git

@@ -1,0 +1,4 @@
+(library
+ (name aws_api)
+ (public_name aws-api)
+ (libraries uri))

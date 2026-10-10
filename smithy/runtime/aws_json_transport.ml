@@ -74,15 +74,15 @@ let call { protocol; region; endpoint = uri; now; credentials } ~action ~body =
   in
   match response.status with
   | status when status >= 200 && status < 300 -> Ok response.body
-  | status when status >= 400 && status < 500 -> Error (Error.of_body response.body)
-  | status -> Error (Error.http_status ~status ~body:response.body)
+  | status when status >= 400 && status < 500 -> Error (Aws_json_error.of_body response.body)
+  | status -> Error (Aws_json_error.http_status ~status ~body:response.body)
 
-(* Decoding failures never escape with the body attached; see [Error.deserialization]. *)
+(* Decoding failures never escape with the body attached; see [Aws_json_error.deserialization]. *)
 let decode of_yojson body =
   match Yojson.Safe.from_string body |> of_yojson with
   | response -> Ok response
   | exception ((Yojson.Json_error _ | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error _) as exn) ->
-    Error (Error.deserialization exn)
+    Error (Aws_json_error.deserialization exn)
 
 (* Builds [perform] for one operation. *)
 module type Operation = sig

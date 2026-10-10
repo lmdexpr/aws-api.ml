@@ -8,5 +8,5 @@ module type S = sig
 
   val yojson_of_request : request -> Yojson.Safe.t
   val response_of_yojson : Yojson.Safe.t -> response
-  val perform : request -> (response, Error.t) result
+  val perform : Aws_json_transport.t -> request -> (response, Error.t) result
 end

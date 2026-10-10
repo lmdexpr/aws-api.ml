@@ -19,4 +19,4 @@ let delete ?condition_expression ?expression_attribute_names ?expression_attribu
     (Action.Delete_item.make ?condition_expression ?expression_attribute_names
        ?expression_attribute_values ~table_name ~key ())
 
-let write items = Action.Transact_write_items.(make items |> perform)
+let write api items = Action.Transact_write_items.(make items |> perform api)

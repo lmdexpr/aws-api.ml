@@ -85,12 +85,13 @@ let () =
       | "integer" | "long" | "short" | "byte" | "intEnum" -> "int"
       | "float" | "double" | "bigInteger" | "bigDecimal" -> "float"
       | "boolean" -> "bool"
-      | "timestamp" -> "Wire.timestamp"
-      | "blob" -> "Wire.blob"
-      | "document" -> "Wire.document"
+      | "timestamp" -> "Aws_json_wire.timestamp"
+      | "blob" -> "Aws_json_wire.blob"
+      | "document" -> "Aws_json_wire.document"
       | "list" | "set" ->
         type_expr (s.json |> member "member" |> member "target" |> to_string) ^ " list"
-      | "map" -> type_expr (s.json |> member "value" |> member "target" |> to_string) ^ " Wire.map"
+      | "map" ->
+        type_expr (s.json |> member "value" |> member "target" |> to_string) ^ " Aws_json_wire.map"
       | "structure" | "union" -> snake (local id)
       | kind -> failwith (id ^ ": unsupported shape " ^ kind))
   and prelude = function
@@ -98,10 +99,10 @@ let () =
     | "Integer" | "Long" | "Short" | "Byte" | "PrimitiveInteger" | "PrimitiveLong" -> "int"
     | "Boolean" | "PrimitiveBoolean" -> "bool"
     | "Float" | "Double" | "BigInteger" | "BigDecimal" -> "float"
-    | "Timestamp" -> "Wire.timestamp"
-    | "Blob" -> "Wire.blob"
-    | "Document" -> "Wire.document"
-    | "Unit" -> "Wire.empty"
+    | "Timestamp" -> "Aws_json_wire.timestamp"
+    | "Blob" -> "Aws_json_wire.blob"
+    | "Document" -> "Aws_json_wire.document"
+    | "Unit" -> "Aws_json_wire.empty"
     | name -> failwith ("prelude: " ^ name)
   in
   let records =
@@ -113,7 +114,7 @@ let () =
   let record (id, s) =
     let members = s.json |> member "members" |> to_assoc in
     if members = [] then
-      Printf.sprintf "%s = Wire.empty" (snake (local id))
+      Printf.sprintf "%s = Aws_json_wire.empty" (snake (local id))
     else
       let field (name, m) =
         let target = m |> member "target" |> to_string in
@@ -140,7 +141,7 @@ let () =
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end|}
       (String.capitalize_ascii (snake (local id)))
       (local id)
@@ -172,9 +173,9 @@ end|}
 
 open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 
-module Error = Error
-module Wire = Wire
-module Transport = Transport
+module Error = Aws_json_error
+module Wire = Aws_json_wire
+module Transport = Aws_json_transport
 
 type t = Transport.t
 

@@ -2,9 +2,9 @@
 
 open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 
-module Error = Error
-module Wire = Wire
-module Transport = Transport
+module Error = Aws_json_error
+module Wire = Aws_json_wire
+module Transport = Aws_json_transport
 
 type t = Transport.t
 
@@ -26,9 +26,9 @@ and activation = {
   iam_role : string option; [@key "IamRole"] [@yojson.option]
   registration_limit : int option; [@key "RegistrationLimit"] [@yojson.option]
   registrations_count : int option; [@key "RegistrationsCount"] [@yojson.option]
-  expiration_date : Wire.timestamp option; [@key "ExpirationDate"] [@yojson.option]
+  expiration_date : Aws_json_wire.timestamp option; [@key "ExpirationDate"] [@yojson.option]
   expired : bool option; [@key "Expired"] [@yojson.option]
-  created_date : Wire.timestamp option; [@key "CreatedDate"] [@yojson.option]
+  created_date : Aws_json_wire.timestamp option; [@key "CreatedDate"] [@yojson.option]
   tags : tag list option; [@key "Tags"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -40,7 +40,7 @@ and add_tags_to_resource_request = {
 }
 [@@yojson.allow_extra_fields]
 
-and add_tags_to_resource_result = Wire.empty
+and add_tags_to_resource_result = Aws_json_wire.empty
 
 and alarm = {
   name : string; [@key "Name"]
@@ -79,13 +79,13 @@ and association = {
   association_version : string option; [@key "AssociationVersion"] [@yojson.option]
   document_version : string option; [@key "DocumentVersion"] [@yojson.option]
   targets : target list option; [@key "Targets"] [@yojson.option]
-  last_execution_date : Wire.timestamp option; [@key "LastExecutionDate"] [@yojson.option]
+  last_execution_date : Aws_json_wire.timestamp option; [@key "LastExecutionDate"] [@yojson.option]
   overview : association_overview option; [@key "Overview"] [@yojson.option]
   schedule_expression : string option; [@key "ScheduleExpression"] [@yojson.option]
   association_name : string option; [@key "AssociationName"] [@yojson.option]
   schedule_offset : int option; [@key "ScheduleOffset"] [@yojson.option]
   duration : int option; [@key "Duration"] [@yojson.option]
-  target_maps : string list Wire.map list option; [@key "TargetMaps"] [@yojson.option]
+  target_maps : string list Aws_json_wire.map list option; [@key "TargetMaps"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -93,19 +93,19 @@ and association_description = {
   name : string option; [@key "Name"] [@yojson.option]
   instance_id : string option; [@key "InstanceId"] [@yojson.option]
   association_version : string option; [@key "AssociationVersion"] [@yojson.option]
-  date : Wire.timestamp option; [@key "Date"] [@yojson.option]
-  last_update_association_date : Wire.timestamp option; [@key "LastUpdateAssociationDate"] [@yojson.option]
+  date : Aws_json_wire.timestamp option; [@key "Date"] [@yojson.option]
+  last_update_association_date : Aws_json_wire.timestamp option; [@key "LastUpdateAssociationDate"] [@yojson.option]
   status : association_status option; [@key "Status"] [@yojson.option]
   overview : association_overview option; [@key "Overview"] [@yojson.option]
   document_version : string option; [@key "DocumentVersion"] [@yojson.option]
   automation_target_parameter_name : string option; [@key "AutomationTargetParameterName"] [@yojson.option]
-  parameters : string list Wire.map option; [@key "Parameters"] [@yojson.option]
+  parameters : string list Aws_json_wire.map option; [@key "Parameters"] [@yojson.option]
   association_id : string option; [@key "AssociationId"] [@yojson.option]
   targets : target list option; [@key "Targets"] [@yojson.option]
   schedule_expression : string option; [@key "ScheduleExpression"] [@yojson.option]
   output_location : instance_association_output_location option; [@key "OutputLocation"] [@yojson.option]
-  last_execution_date : Wire.timestamp option; [@key "LastExecutionDate"] [@yojson.option]
-  last_successful_execution_date : Wire.timestamp option; [@key "LastSuccessfulExecutionDate"] [@yojson.option]
+  last_execution_date : Aws_json_wire.timestamp option; [@key "LastExecutionDate"] [@yojson.option]
+  last_successful_execution_date : Aws_json_wire.timestamp option; [@key "LastSuccessfulExecutionDate"] [@yojson.option]
   association_name : string option; [@key "AssociationName"] [@yojson.option]
   max_errors : string option; [@key "MaxErrors"] [@yojson.option]
   max_concurrency : string option; [@key "MaxConcurrency"] [@yojson.option]
@@ -116,7 +116,7 @@ and association_description = {
   target_locations : target_location list option; [@key "TargetLocations"] [@yojson.option]
   schedule_offset : int option; [@key "ScheduleOffset"] [@yojson.option]
   duration : int option; [@key "Duration"] [@yojson.option]
-  target_maps : string list Wire.map list option; [@key "TargetMaps"] [@yojson.option]
+  target_maps : string list Aws_json_wire.map list option; [@key "TargetMaps"] [@yojson.option]
   alarm_configuration : alarm_configuration option; [@key "AlarmConfiguration"] [@yojson.option]
   triggered_alarms : alarm_state_information list option; [@key "TriggeredAlarms"] [@yojson.option]
   association_dispatch_assume_role : string option; [@key "AssociationDispatchAssumeRole"] [@yojson.option]
@@ -129,8 +129,8 @@ and association_execution = {
   execution_id : string option; [@key "ExecutionId"] [@yojson.option]
   status : string option; [@key "Status"] [@yojson.option]
   detailed_status : string option; [@key "DetailedStatus"] [@yojson.option]
-  created_time : Wire.timestamp option; [@key "CreatedTime"] [@yojson.option]
-  last_execution_date : Wire.timestamp option; [@key "LastExecutionDate"] [@yojson.option]
+  created_time : Aws_json_wire.timestamp option; [@key "CreatedTime"] [@yojson.option]
+  last_execution_date : Aws_json_wire.timestamp option; [@key "LastExecutionDate"] [@yojson.option]
   resource_count_by_status : string option; [@key "ResourceCountByStatus"] [@yojson.option]
   alarm_configuration : alarm_configuration option; [@key "AlarmConfiguration"] [@yojson.option]
   triggered_alarms : alarm_state_information list option; [@key "TriggeredAlarms"] [@yojson.option]
@@ -152,7 +152,7 @@ and association_execution_target = {
   resource_type : string option; [@key "ResourceType"] [@yojson.option]
   status : string option; [@key "Status"] [@yojson.option]
   detailed_status : string option; [@key "DetailedStatus"] [@yojson.option]
-  last_execution_date : Wire.timestamp option; [@key "LastExecutionDate"] [@yojson.option]
+  last_execution_date : Aws_json_wire.timestamp option; [@key "LastExecutionDate"] [@yojson.option]
   output_source : output_source option; [@key "OutputSource"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -172,12 +172,12 @@ and association_filter = {
 and association_overview = {
   status : string option; [@key "Status"] [@yojson.option]
   detailed_status : string option; [@key "DetailedStatus"] [@yojson.option]
-  association_status_aggregated_count : int Wire.map option; [@key "AssociationStatusAggregatedCount"] [@yojson.option]
+  association_status_aggregated_count : int Aws_json_wire.map option; [@key "AssociationStatusAggregatedCount"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
 and association_status = {
-  date : Wire.timestamp; [@key "Date"]
+  date : Aws_json_wire.timestamp; [@key "Date"]
   name : string; [@key "Name"]
   message : string; [@key "Message"]
   additional_info : string option; [@key "AdditionalInfo"] [@yojson.option]
@@ -187,10 +187,10 @@ and association_status = {
 and association_version_info = {
   association_id : string option; [@key "AssociationId"] [@yojson.option]
   association_version : string option; [@key "AssociationVersion"] [@yojson.option]
-  created_date : Wire.timestamp option; [@key "CreatedDate"] [@yojson.option]
+  created_date : Aws_json_wire.timestamp option; [@key "CreatedDate"] [@yojson.option]
   name : string option; [@key "Name"] [@yojson.option]
   document_version : string option; [@key "DocumentVersion"] [@yojson.option]
-  parameters : string list Wire.map option; [@key "Parameters"] [@yojson.option]
+  parameters : string list Aws_json_wire.map option; [@key "Parameters"] [@yojson.option]
   targets : target list option; [@key "Targets"] [@yojson.option]
   schedule_expression : string option; [@key "ScheduleExpression"] [@yojson.option]
   output_location : instance_association_output_location option; [@key "OutputLocation"] [@yojson.option]
@@ -204,7 +204,7 @@ and association_version_info = {
   target_locations : target_location list option; [@key "TargetLocations"] [@yojson.option]
   schedule_offset : int option; [@key "ScheduleOffset"] [@yojson.option]
   duration : int option; [@key "Duration"] [@yojson.option]
-  target_maps : string list Wire.map list option; [@key "TargetMaps"] [@yojson.option]
+  target_maps : string list Aws_json_wire.map list option; [@key "TargetMaps"] [@yojson.option]
   association_dispatch_assume_role : string option; [@key "AssociationDispatchAssumeRole"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -234,13 +234,13 @@ and automation_execution = {
   automation_execution_id : string option; [@key "AutomationExecutionId"] [@yojson.option]
   document_name : string option; [@key "DocumentName"] [@yojson.option]
   document_version : string option; [@key "DocumentVersion"] [@yojson.option]
-  execution_start_time : Wire.timestamp option; [@key "ExecutionStartTime"] [@yojson.option]
-  execution_end_time : Wire.timestamp option; [@key "ExecutionEndTime"] [@yojson.option]
+  execution_start_time : Aws_json_wire.timestamp option; [@key "ExecutionStartTime"] [@yojson.option]
+  execution_end_time : Aws_json_wire.timestamp option; [@key "ExecutionEndTime"] [@yojson.option]
   automation_execution_status : string option; [@key "AutomationExecutionStatus"] [@yojson.option]
   step_executions : step_execution list option; [@key "StepExecutions"] [@yojson.option]
   step_executions_truncated : bool option; [@key "StepExecutionsTruncated"] [@yojson.option]
-  parameters : string list Wire.map option; [@key "Parameters"] [@yojson.option]
-  outputs : string list Wire.map option; [@key "Outputs"] [@yojson.option]
+  parameters : string list Aws_json_wire.map option; [@key "Parameters"] [@yojson.option]
+  outputs : string list Aws_json_wire.map option; [@key "Outputs"] [@yojson.option]
   failure_message : string option; [@key "FailureMessage"] [@yojson.option]
   warning_message : string option; [@key "WarningMessage"] [@yojson.option]
   mode : string option; [@key "Mode"] [@yojson.option]
@@ -250,7 +250,7 @@ and automation_execution = {
   current_action : string option; [@key "CurrentAction"] [@yojson.option]
   target_parameter_name : string option; [@key "TargetParameterName"] [@yojson.option]
   targets : target list option; [@key "Targets"] [@yojson.option]
-  target_maps : string list Wire.map list option; [@key "TargetMaps"] [@yojson.option]
+  target_maps : string list Aws_json_wire.map list option; [@key "TargetMaps"] [@yojson.option]
   resolved_targets : resolved_targets option; [@key "ResolvedTargets"] [@yojson.option]
   max_concurrency : string option; [@key "MaxConcurrency"] [@yojson.option]
   max_errors : string option; [@key "MaxErrors"] [@yojson.option]
@@ -261,12 +261,12 @@ and automation_execution = {
   triggered_alarms : alarm_state_information list option; [@key "TriggeredAlarms"] [@yojson.option]
   target_locations_url : string option; [@key "TargetLocationsURL"] [@yojson.option]
   automation_subtype : string option; [@key "AutomationSubtype"] [@yojson.option]
-  scheduled_time : Wire.timestamp option; [@key "ScheduledTime"] [@yojson.option]
+  scheduled_time : Aws_json_wire.timestamp option; [@key "ScheduledTime"] [@yojson.option]
   runbooks : runbook list option; [@key "Runbooks"] [@yojson.option]
   ops_item_id : string option; [@key "OpsItemId"] [@yojson.option]
   association_id : string option; [@key "AssociationId"] [@yojson.option]
   change_request_name : string option; [@key "ChangeRequestName"] [@yojson.option]
-  variables : string list Wire.map option; [@key "Variables"] [@yojson.option]
+  variables : string list Aws_json_wire.map option; [@key "Variables"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -277,10 +277,10 @@ and automation_execution_filter = {
 [@@yojson.allow_extra_fields]
 
 and automation_execution_inputs = {
-  parameters : string list Wire.map option; [@key "Parameters"] [@yojson.option]
+  parameters : string list Aws_json_wire.map option; [@key "Parameters"] [@yojson.option]
   target_parameter_name : string option; [@key "TargetParameterName"] [@yojson.option]
   targets : target list option; [@key "Targets"] [@yojson.option]
-  target_maps : string list Wire.map list option; [@key "TargetMaps"] [@yojson.option]
+  target_maps : string list Aws_json_wire.map list option; [@key "TargetMaps"] [@yojson.option]
   target_locations : target_location list option; [@key "TargetLocations"] [@yojson.option]
   target_locations_url : string option; [@key "TargetLocationsURL"] [@yojson.option]
 }
@@ -291,11 +291,11 @@ and automation_execution_metadata = {
   document_name : string option; [@key "DocumentName"] [@yojson.option]
   document_version : string option; [@key "DocumentVersion"] [@yojson.option]
   automation_execution_status : string option; [@key "AutomationExecutionStatus"] [@yojson.option]
-  execution_start_time : Wire.timestamp option; [@key "ExecutionStartTime"] [@yojson.option]
-  execution_end_time : Wire.timestamp option; [@key "ExecutionEndTime"] [@yojson.option]
+  execution_start_time : Aws_json_wire.timestamp option; [@key "ExecutionStartTime"] [@yojson.option]
+  execution_end_time : Aws_json_wire.timestamp option; [@key "ExecutionEndTime"] [@yojson.option]
   executed_by : string option; [@key "ExecutedBy"] [@yojson.option]
   log_file : string option; [@key "LogFile"] [@yojson.option]
-  outputs : string list Wire.map option; [@key "Outputs"] [@yojson.option]
+  outputs : string list Aws_json_wire.map option; [@key "Outputs"] [@yojson.option]
   mode : string option; [@key "Mode"] [@yojson.option]
   parent_automation_execution_id : string option; [@key "ParentAutomationExecutionId"] [@yojson.option]
   current_step_name : string option; [@key "CurrentStepName"] [@yojson.option]
@@ -304,7 +304,7 @@ and automation_execution_metadata = {
   warning_message : string option; [@key "WarningMessage"] [@yojson.option]
   target_parameter_name : string option; [@key "TargetParameterName"] [@yojson.option]
   targets : target list option; [@key "Targets"] [@yojson.option]
-  target_maps : string list Wire.map list option; [@key "TargetMaps"] [@yojson.option]
+  target_maps : string list Aws_json_wire.map list option; [@key "TargetMaps"] [@yojson.option]
   resolved_targets : resolved_targets option; [@key "ResolvedTargets"] [@yojson.option]
   max_concurrency : string option; [@key "MaxConcurrency"] [@yojson.option]
   max_errors : string option; [@key "MaxErrors"] [@yojson.option]
@@ -314,7 +314,7 @@ and automation_execution_metadata = {
   triggered_alarms : alarm_state_information list option; [@key "TriggeredAlarms"] [@yojson.option]
   target_locations_url : string option; [@key "TargetLocationsURL"] [@yojson.option]
   automation_subtype : string option; [@key "AutomationSubtype"] [@yojson.option]
-  scheduled_time : Wire.timestamp option; [@key "ScheduledTime"] [@yojson.option]
+  scheduled_time : Aws_json_wire.timestamp option; [@key "ScheduledTime"] [@yojson.option]
   runbooks : runbook list option; [@key "Runbooks"] [@yojson.option]
   ops_item_id : string option; [@key "OpsItemId"] [@yojson.option]
   association_id : string option; [@key "AssociationId"] [@yojson.option]
@@ -323,7 +323,7 @@ and automation_execution_metadata = {
 [@@yojson.allow_extra_fields]
 
 and automation_execution_preview = {
-  step_previews : int Wire.map option; [@key "StepPreviews"] [@yojson.option]
+  step_previews : int Aws_json_wire.map option; [@key "StepPreviews"] [@yojson.option]
   regions : string list option; [@key "Regions"] [@yojson.option]
   target_previews : target_preview list option; [@key "TargetPreviews"] [@yojson.option]
   total_accounts : int option; [@key "TotalAccounts"] [@yojson.option]
@@ -365,7 +365,7 @@ and cancel_command_request = {
 }
 [@@yojson.allow_extra_fields]
 
-and cancel_command_result = Wire.empty
+and cancel_command_result = Aws_json_wire.empty
 
 and cancel_maintenance_window_execution_request = {
   window_execution_id : string; [@key "WindowExecutionId"]
@@ -393,8 +393,8 @@ and cloud_connector_summary = {
   display_name : string option; [@key "DisplayName"] [@yojson.option]
   description : string option; [@key "Description"] [@yojson.option]
   role_arn : string option; [@key "RoleArn"] [@yojson.option]
-  created_at : Wire.timestamp option; [@key "CreatedAt"] [@yojson.option]
-  updated_at : Wire.timestamp option; [@key "UpdatedAt"] [@yojson.option]
+  created_at : Aws_json_wire.timestamp option; [@key "CreatedAt"] [@yojson.option]
+  updated_at : Aws_json_wire.timestamp option; [@key "UpdatedAt"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -409,11 +409,11 @@ and command = {
   document_name : string option; [@key "DocumentName"] [@yojson.option]
   document_version : string option; [@key "DocumentVersion"] [@yojson.option]
   comment : string option; [@key "Comment"] [@yojson.option]
-  expires_after : Wire.timestamp option; [@key "ExpiresAfter"] [@yojson.option]
-  parameters : string list Wire.map option; [@key "Parameters"] [@yojson.option]
+  expires_after : Aws_json_wire.timestamp option; [@key "ExpiresAfter"] [@yojson.option]
+  parameters : string list Aws_json_wire.map option; [@key "Parameters"] [@yojson.option]
   instance_ids : string list option; [@key "InstanceIds"] [@yojson.option]
   targets : target list option; [@key "Targets"] [@yojson.option]
-  requested_date_time : Wire.timestamp option; [@key "RequestedDateTime"] [@yojson.option]
+  requested_date_time : Aws_json_wire.timestamp option; [@key "RequestedDateTime"] [@yojson.option]
   status : string option; [@key "Status"] [@yojson.option]
   status_details : string option; [@key "StatusDetails"] [@yojson.option]
   output_s3_region : string option; [@key "OutputS3Region"] [@yojson.option]
@@ -447,7 +447,7 @@ and command_invocation = {
   comment : string option; [@key "Comment"] [@yojson.option]
   document_name : string option; [@key "DocumentName"] [@yojson.option]
   document_version : string option; [@key "DocumentVersion"] [@yojson.option]
-  requested_date_time : Wire.timestamp option; [@key "RequestedDateTime"] [@yojson.option]
+  requested_date_time : Aws_json_wire.timestamp option; [@key "RequestedDateTime"] [@yojson.option]
   status : string option; [@key "Status"] [@yojson.option]
   status_details : string option; [@key "StatusDetails"] [@yojson.option]
   trace_output : string option; [@key "TraceOutput"] [@yojson.option]
@@ -465,8 +465,8 @@ and command_plugin = {
   status : string option; [@key "Status"] [@yojson.option]
   status_details : string option; [@key "StatusDetails"] [@yojson.option]
   response_code : int option; [@key "ResponseCode"] [@yojson.option]
-  response_start_date_time : Wire.timestamp option; [@key "ResponseStartDateTime"] [@yojson.option]
-  response_finish_date_time : Wire.timestamp option; [@key "ResponseFinishDateTime"] [@yojson.option]
+  response_start_date_time : Aws_json_wire.timestamp option; [@key "ResponseStartDateTime"] [@yojson.option]
+  response_finish_date_time : Aws_json_wire.timestamp option; [@key "ResponseFinishDateTime"] [@yojson.option]
   output : string option; [@key "Output"] [@yojson.option]
   standard_output_url : string option; [@key "StandardOutputUrl"] [@yojson.option]
   standard_error_url : string option; [@key "StandardErrorUrl"] [@yojson.option]
@@ -477,7 +477,7 @@ and command_plugin = {
 [@@yojson.allow_extra_fields]
 
 and compliance_execution_summary = {
-  execution_time : Wire.timestamp; [@key "ExecutionTime"]
+  execution_time : Aws_json_wire.timestamp; [@key "ExecutionTime"]
   execution_id : string option; [@key "ExecutionId"] [@yojson.option]
   execution_type : string option; [@key "ExecutionType"] [@yojson.option]
 }
@@ -492,7 +492,7 @@ and compliance_item = {
   status : string option; [@key "Status"] [@yojson.option]
   severity : string option; [@key "Severity"] [@yojson.option]
   execution_summary : compliance_execution_summary option; [@key "ExecutionSummary"] [@yojson.option]
-  details : string Wire.map option; [@key "Details"] [@yojson.option]
+  details : string Aws_json_wire.map option; [@key "Details"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -501,7 +501,7 @@ and compliance_item_entry = {
   title : string option; [@key "Title"] [@yojson.option]
   severity : string; [@key "Severity"]
   status : string; [@key "Status"]
-  details : string Wire.map option; [@key "Details"] [@yojson.option]
+  details : string Aws_json_wire.map option; [@key "Details"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -535,7 +535,7 @@ and create_activation_request = {
   default_instance_name : string option; [@key "DefaultInstanceName"] [@yojson.option]
   iam_role : string; [@key "IamRole"]
   registration_limit : int option; [@key "RegistrationLimit"] [@yojson.option]
-  expiration_date : Wire.timestamp option; [@key "ExpirationDate"] [@yojson.option]
+  expiration_date : Aws_json_wire.timestamp option; [@key "ExpirationDate"] [@yojson.option]
   tags : tag list option; [@key "Tags"] [@yojson.option]
   registration_metadata : registration_metadata_item list option; [@key "RegistrationMetadata"] [@yojson.option]
 }
@@ -556,7 +556,7 @@ and create_association_batch_request = {
 and create_association_batch_request_entry = {
   name : string; [@key "Name"]
   instance_id : string option; [@key "InstanceId"] [@yojson.option]
-  parameters : string list Wire.map option; [@key "Parameters"] [@yojson.option]
+  parameters : string list Aws_json_wire.map option; [@key "Parameters"] [@yojson.option]
   automation_target_parameter_name : string option; [@key "AutomationTargetParameterName"] [@yojson.option]
   document_version : string option; [@key "DocumentVersion"] [@yojson.option]
   targets : target list option; [@key "Targets"] [@yojson.option]
@@ -572,7 +572,7 @@ and create_association_batch_request_entry = {
   target_locations : target_location list option; [@key "TargetLocations"] [@yojson.option]
   schedule_offset : int option; [@key "ScheduleOffset"] [@yojson.option]
   duration : int option; [@key "Duration"] [@yojson.option]
-  target_maps : string list Wire.map list option; [@key "TargetMaps"] [@yojson.option]
+  target_maps : string list Aws_json_wire.map list option; [@key "TargetMaps"] [@yojson.option]
   alarm_configuration : alarm_configuration option; [@key "AlarmConfiguration"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -587,7 +587,7 @@ and create_association_request = {
   name : string; [@key "Name"]
   document_version : string option; [@key "DocumentVersion"] [@yojson.option]
   instance_id : string option; [@key "InstanceId"] [@yojson.option]
-  parameters : string list Wire.map option; [@key "Parameters"] [@yojson.option]
+  parameters : string list Aws_json_wire.map option; [@key "Parameters"] [@yojson.option]
   targets : target list option; [@key "Targets"] [@yojson.option]
   schedule_expression : string option; [@key "ScheduleExpression"] [@yojson.option]
   output_location : instance_association_output_location option; [@key "OutputLocation"] [@yojson.option]
@@ -602,7 +602,7 @@ and create_association_request = {
   target_locations : target_location list option; [@key "TargetLocations"] [@yojson.option]
   schedule_offset : int option; [@key "ScheduleOffset"] [@yojson.option]
   duration : int option; [@key "Duration"] [@yojson.option]
-  target_maps : string list Wire.map list option; [@key "TargetMaps"] [@yojson.option]
+  target_maps : string list Aws_json_wire.map list option; [@key "TargetMaps"] [@yojson.option]
   tags : tag list option; [@key "Tags"] [@yojson.option]
   alarm_configuration : alarm_configuration option; [@key "AlarmConfiguration"] [@yojson.option]
   association_dispatch_assume_role : string option; [@key "AssociationDispatchAssumeRole"] [@yojson.option]
@@ -672,7 +672,7 @@ and create_maintenance_window_result = {
 and create_ops_item_request = {
   description : string; [@key "Description"]
   ops_item_type : string option; [@key "OpsItemType"] [@yojson.option]
-  operational_data : ops_item_data_value Wire.map option; [@key "OperationalData"] [@yojson.option]
+  operational_data : ops_item_data_value Aws_json_wire.map option; [@key "OperationalData"] [@yojson.option]
   notifications : ops_item_notification list option; [@key "Notifications"] [@yojson.option]
   priority : int option; [@key "Priority"] [@yojson.option]
   related_ops_items : related_ops_item list option; [@key "RelatedOpsItems"] [@yojson.option]
@@ -681,10 +681,10 @@ and create_ops_item_request = {
   tags : tag list option; [@key "Tags"] [@yojson.option]
   category : string option; [@key "Category"] [@yojson.option]
   severity : string option; [@key "Severity"] [@yojson.option]
-  actual_start_time : Wire.timestamp option; [@key "ActualStartTime"] [@yojson.option]
-  actual_end_time : Wire.timestamp option; [@key "ActualEndTime"] [@yojson.option]
-  planned_start_time : Wire.timestamp option; [@key "PlannedStartTime"] [@yojson.option]
-  planned_end_time : Wire.timestamp option; [@key "PlannedEndTime"] [@yojson.option]
+  actual_start_time : Aws_json_wire.timestamp option; [@key "ActualStartTime"] [@yojson.option]
+  actual_end_time : Aws_json_wire.timestamp option; [@key "ActualEndTime"] [@yojson.option]
+  planned_start_time : Aws_json_wire.timestamp option; [@key "PlannedStartTime"] [@yojson.option]
+  planned_end_time : Aws_json_wire.timestamp option; [@key "PlannedEndTime"] [@yojson.option]
   account_id : string option; [@key "AccountId"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -697,7 +697,7 @@ and create_ops_item_response = {
 
 and create_ops_metadata_request = {
   resource_id : string; [@key "ResourceId"]
-  metadata : metadata_value Wire.map option; [@key "Metadata"] [@yojson.option]
+  metadata : metadata_value Aws_json_wire.map option; [@key "Metadata"] [@yojson.option]
   tags : tag list option; [@key "Tags"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -738,13 +738,13 @@ and create_resource_data_sync_request = {
 }
 [@@yojson.allow_extra_fields]
 
-and create_resource_data_sync_result = Wire.empty
+and create_resource_data_sync_result = Aws_json_wire.empty
 
 and credentials = {
   access_key_id : string; [@key "AccessKeyId"]
   secret_access_key : string; [@key "SecretAccessKey"]
   session_token : string; [@key "SessionToken"]
-  expiration_time : Wire.timestamp; [@key "ExpirationTime"]
+  expiration_time : Aws_json_wire.timestamp; [@key "ExpirationTime"]
 }
 [@@yojson.allow_extra_fields]
 
@@ -753,7 +753,7 @@ and delete_activation_request = {
 }
 [@@yojson.allow_extra_fields]
 
-and delete_activation_result = Wire.empty
+and delete_activation_result = Aws_json_wire.empty
 
 and delete_association_request = {
   name : string option; [@key "Name"] [@yojson.option]
@@ -762,7 +762,7 @@ and delete_association_request = {
 }
 [@@yojson.allow_extra_fields]
 
-and delete_association_result = Wire.empty
+and delete_association_result = Aws_json_wire.empty
 
 and delete_cloud_connector_request = {
   cloud_connector_id : string; [@key "CloudConnectorId"]
@@ -782,7 +782,7 @@ and delete_document_request = {
 }
 [@@yojson.allow_extra_fields]
 
-and delete_document_result = Wire.empty
+and delete_document_result = Aws_json_wire.empty
 
 and delete_inventory_request = {
   type_name : string; [@key "TypeName"]
@@ -814,21 +814,21 @@ and delete_ops_item_request = {
 }
 [@@yojson.allow_extra_fields]
 
-and delete_ops_item_response = Wire.empty
+and delete_ops_item_response = Aws_json_wire.empty
 
 and delete_ops_metadata_request = {
   ops_metadata_arn : string; [@key "OpsMetadataArn"]
 }
 [@@yojson.allow_extra_fields]
 
-and delete_ops_metadata_result = Wire.empty
+and delete_ops_metadata_result = Aws_json_wire.empty
 
 and delete_parameter_request = {
   name : string; [@key "Name"]
 }
 [@@yojson.allow_extra_fields]
 
-and delete_parameter_result = Wire.empty
+and delete_parameter_result = Aws_json_wire.empty
 
 and delete_parameters_request = {
   names : string list; [@key "Names"]
@@ -857,7 +857,7 @@ and delete_resource_data_sync_request = {
 }
 [@@yojson.allow_extra_fields]
 
-and delete_resource_data_sync_result = Wire.empty
+and delete_resource_data_sync_result = Aws_json_wire.empty
 
 and delete_resource_policy_request = {
   resource_arn : string; [@key "ResourceArn"]
@@ -867,14 +867,14 @@ and delete_resource_policy_request = {
 }
 [@@yojson.allow_extra_fields]
 
-and delete_resource_policy_response = Wire.empty
+and delete_resource_policy_response = Aws_json_wire.empty
 
 and deregister_managed_instance_request = {
   instance_id : string; [@key "InstanceId"]
 }
 [@@yojson.allow_extra_fields]
 
-and deregister_managed_instance_result = Wire.empty
+and deregister_managed_instance_result = Aws_json_wire.empty
 
 and deregister_patch_baseline_for_patch_group_request = {
   baseline_id : string; [@key "BaselineId"]
@@ -1363,7 +1363,7 @@ and describe_patch_properties_request = {
 [@@yojson.allow_extra_fields]
 
 and describe_patch_properties_result = {
-  properties : string Wire.map list option; [@key "Properties"] [@yojson.option]
+  properties : string Aws_json_wire.map list option; [@key "Properties"] [@yojson.option]
   next_token : string option; [@key "NextToken"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -1388,7 +1388,7 @@ and disassociate_ops_item_related_item_request = {
 }
 [@@yojson.allow_extra_fields]
 
-and disassociate_ops_item_related_item_response = Wire.empty
+and disassociate_ops_item_related_item_response = Aws_json_wire.empty
 
 and document_default_version_description = {
   name : string option; [@key "Name"] [@yojson.option]
@@ -1405,7 +1405,7 @@ and document_description = {
   display_name : string option; [@key "DisplayName"] [@yojson.option]
   version_name : string option; [@key "VersionName"] [@yojson.option]
   owner : string option; [@key "Owner"] [@yojson.option]
-  created_date : Wire.timestamp option; [@key "CreatedDate"] [@yojson.option]
+  created_date : Aws_json_wire.timestamp option; [@key "CreatedDate"] [@yojson.option]
   status : string option; [@key "Status"] [@yojson.option]
   status_information : string option; [@key "StatusInformation"] [@yojson.option]
   document_version : string option; [@key "DocumentVersion"] [@yojson.option]
@@ -1439,7 +1439,7 @@ and document_filter = {
 
 and document_identifier = {
   name : string option; [@key "Name"] [@yojson.option]
-  created_date : Wire.timestamp option; [@key "CreatedDate"] [@yojson.option]
+  created_date : Aws_json_wire.timestamp option; [@key "CreatedDate"] [@yojson.option]
   display_name : string option; [@key "DisplayName"] [@yojson.option]
   owner : string option; [@key "Owner"] [@yojson.option]
   version_name : string option; [@key "VersionName"] [@yojson.option]
@@ -1490,8 +1490,8 @@ and document_review_comment_source = {
 [@@yojson.allow_extra_fields]
 
 and document_reviewer_response_source = {
-  create_time : Wire.timestamp option; [@key "CreateTime"] [@yojson.option]
-  updated_time : Wire.timestamp option; [@key "UpdatedTime"] [@yojson.option]
+  create_time : Aws_json_wire.timestamp option; [@key "CreateTime"] [@yojson.option]
+  updated_time : Aws_json_wire.timestamp option; [@key "UpdatedTime"] [@yojson.option]
   review_status : string option; [@key "ReviewStatus"] [@yojson.option]
   comment : document_review_comment_source list option; [@key "Comment"] [@yojson.option]
   reviewer : string option; [@key "Reviewer"] [@yojson.option]
@@ -1509,7 +1509,7 @@ and document_version_info = {
   display_name : string option; [@key "DisplayName"] [@yojson.option]
   document_version : string option; [@key "DocumentVersion"] [@yojson.option]
   version_name : string option; [@key "VersionName"] [@yojson.option]
-  created_date : Wire.timestamp option; [@key "CreatedDate"] [@yojson.option]
+  created_date : Aws_json_wire.timestamp option; [@key "CreatedDate"] [@yojson.option]
   is_default_version : bool option; [@key "IsDefaultVersion"] [@yojson.option]
   document_format : string option; [@key "DocumentFormat"] [@yojson.option]
   status : string option; [@key "Status"] [@yojson.option]
@@ -1544,7 +1544,7 @@ and failed_create_association = {
 and failure_details = {
   failure_stage : string option; [@key "FailureStage"] [@yojson.option]
   failure_type : string option; [@key "FailureType"] [@yojson.option]
-  details : string list Wire.map option; [@key "Details"] [@yojson.option]
+  details : string list Aws_json_wire.map option; [@key "Details"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -1594,8 +1594,8 @@ and get_cloud_connector_result = {
   role_arn : string option; [@key "RoleArn"] [@yojson.option]
   configuration : cloud_connector_configuration option; [@key "Configuration"] [@yojson.option]
   config_connector_arn : string option; [@key "ConfigConnectorArn"] [@yojson.option]
-  created_at : Wire.timestamp option; [@key "CreatedAt"] [@yojson.option]
-  updated_at : Wire.timestamp option; [@key "UpdatedAt"] [@yojson.option]
+  created_at : Aws_json_wire.timestamp option; [@key "CreatedAt"] [@yojson.option]
+  updated_at : Aws_json_wire.timestamp option; [@key "UpdatedAt"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -1675,7 +1675,7 @@ and get_document_request = {
 
 and get_document_result = {
   name : string option; [@key "Name"] [@yojson.option]
-  created_date : Wire.timestamp option; [@key "CreatedDate"] [@yojson.option]
+  created_date : Aws_json_wire.timestamp option; [@key "CreatedDate"] [@yojson.option]
   display_name : string option; [@key "DisplayName"] [@yojson.option]
   version_name : string option; [@key "VersionName"] [@yojson.option]
   document_version : string option; [@key "DocumentVersion"] [@yojson.option]
@@ -1697,7 +1697,7 @@ and get_execution_preview_request = {
 
 and get_execution_preview_response = {
   execution_preview_id : string option; [@key "ExecutionPreviewId"] [@yojson.option]
-  ended_at : Wire.timestamp option; [@key "EndedAt"] [@yojson.option]
+  ended_at : Aws_json_wire.timestamp option; [@key "EndedAt"] [@yojson.option]
   status : string option; [@key "Status"] [@yojson.option]
   status_message : string option; [@key "StatusMessage"] [@yojson.option]
   execution_preview : execution_preview option; [@key "ExecutionPreview"] [@yojson.option]
@@ -1744,8 +1744,8 @@ and get_maintenance_window_execution_result = {
   task_ids : string list option; [@key "TaskIds"] [@yojson.option]
   status : string option; [@key "Status"] [@yojson.option]
   status_details : string option; [@key "StatusDetails"] [@yojson.option]
-  start_time : Wire.timestamp option; [@key "StartTime"] [@yojson.option]
-  end_time : Wire.timestamp option; [@key "EndTime"] [@yojson.option]
+  start_time : Aws_json_wire.timestamp option; [@key "StartTime"] [@yojson.option]
+  end_time : Aws_json_wire.timestamp option; [@key "EndTime"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -1765,8 +1765,8 @@ and get_maintenance_window_execution_task_invocation_result = {
   parameters : string option; [@key "Parameters"] [@yojson.option]
   status : string option; [@key "Status"] [@yojson.option]
   status_details : string option; [@key "StatusDetails"] [@yojson.option]
-  start_time : Wire.timestamp option; [@key "StartTime"] [@yojson.option]
-  end_time : Wire.timestamp option; [@key "EndTime"] [@yojson.option]
+  start_time : Aws_json_wire.timestamp option; [@key "StartTime"] [@yojson.option]
+  end_time : Aws_json_wire.timestamp option; [@key "EndTime"] [@yojson.option]
   owner_information : string option; [@key "OwnerInformation"] [@yojson.option]
   window_target_id : string option; [@key "WindowTargetId"] [@yojson.option]
 }
@@ -1784,14 +1784,14 @@ and get_maintenance_window_execution_task_result = {
   task_arn : string option; [@key "TaskArn"] [@yojson.option]
   service_role : string option; [@key "ServiceRole"] [@yojson.option]
   type_ : string option; [@key "Type"] [@yojson.option]
-  task_parameters : maintenance_window_task_parameter_value_expression Wire.map list option; [@key "TaskParameters"] [@yojson.option]
+  task_parameters : maintenance_window_task_parameter_value_expression Aws_json_wire.map list option; [@key "TaskParameters"] [@yojson.option]
   priority : int option; [@key "Priority"] [@yojson.option]
   max_concurrency : string option; [@key "MaxConcurrency"] [@yojson.option]
   max_errors : string option; [@key "MaxErrors"] [@yojson.option]
   status : string option; [@key "Status"] [@yojson.option]
   status_details : string option; [@key "StatusDetails"] [@yojson.option]
-  start_time : Wire.timestamp option; [@key "StartTime"] [@yojson.option]
-  end_time : Wire.timestamp option; [@key "EndTime"] [@yojson.option]
+  start_time : Aws_json_wire.timestamp option; [@key "StartTime"] [@yojson.option]
+  end_time : Aws_json_wire.timestamp option; [@key "EndTime"] [@yojson.option]
   alarm_configuration : alarm_configuration option; [@key "AlarmConfiguration"] [@yojson.option]
   triggered_alarms : alarm_state_information list option; [@key "TriggeredAlarms"] [@yojson.option]
 }
@@ -1816,8 +1816,8 @@ and get_maintenance_window_result = {
   cutoff : int option; [@key "Cutoff"] [@yojson.option]
   allow_unassociated_targets : bool option; [@key "AllowUnassociatedTargets"] [@yojson.option]
   enabled : bool option; [@key "Enabled"] [@yojson.option]
-  created_date : Wire.timestamp option; [@key "CreatedDate"] [@yojson.option]
-  modified_date : Wire.timestamp option; [@key "ModifiedDate"] [@yojson.option]
+  created_date : Aws_json_wire.timestamp option; [@key "CreatedDate"] [@yojson.option]
+  modified_date : Aws_json_wire.timestamp option; [@key "ModifiedDate"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -1834,7 +1834,7 @@ and get_maintenance_window_task_result = {
   task_arn : string option; [@key "TaskArn"] [@yojson.option]
   service_role_arn : string option; [@key "ServiceRoleArn"] [@yojson.option]
   task_type : string option; [@key "TaskType"] [@yojson.option]
-  task_parameters : maintenance_window_task_parameter_value_expression Wire.map option; [@key "TaskParameters"] [@yojson.option]
+  task_parameters : maintenance_window_task_parameter_value_expression Aws_json_wire.map option; [@key "TaskParameters"] [@yojson.option]
   task_invocation_parameters : maintenance_window_task_invocation_parameters option; [@key "TaskInvocationParameters"] [@yojson.option]
   priority : int option; [@key "Priority"] [@yojson.option]
   max_concurrency : string option; [@key "MaxConcurrency"] [@yojson.option]
@@ -1867,7 +1867,7 @@ and get_ops_metadata_request = {
 
 and get_ops_metadata_result = {
   resource_id : string option; [@key "ResourceId"] [@yojson.option]
-  metadata : metadata_value Wire.map option; [@key "Metadata"] [@yojson.option]
+  metadata : metadata_value Aws_json_wire.map option; [@key "Metadata"] [@yojson.option]
   next_token : string option; [@key "NextToken"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -1971,8 +1971,8 @@ and get_patch_baseline_result = {
   rejected_patches : string list option; [@key "RejectedPatches"] [@yojson.option]
   rejected_patches_action : string option; [@key "RejectedPatchesAction"] [@yojson.option]
   patch_groups : string list option; [@key "PatchGroups"] [@yojson.option]
-  created_date : Wire.timestamp option; [@key "CreatedDate"] [@yojson.option]
-  modified_date : Wire.timestamp option; [@key "ModifiedDate"] [@yojson.option]
+  created_date : Aws_json_wire.timestamp option; [@key "CreatedDate"] [@yojson.option]
+  modified_date : Aws_json_wire.timestamp option; [@key "ModifiedDate"] [@yojson.option]
   description : string option; [@key "Description"] [@yojson.option]
   sources : patch_source list option; [@key "Sources"] [@yojson.option]
   available_security_updates_compliance_status : string option; [@key "AvailableSecurityUpdatesComplianceStatus"] [@yojson.option]
@@ -2011,7 +2011,7 @@ and get_service_setting_result = {
 
 and instance_aggregated_association_overview = {
   detailed_status : string option; [@key "DetailedStatus"] [@yojson.option]
-  instance_association_status_aggregated_count : int Wire.map option; [@key "InstanceAssociationStatusAggregatedCount"] [@yojson.option]
+  instance_association_status_aggregated_count : int Aws_json_wire.map option; [@key "InstanceAssociationStatusAggregatedCount"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -2039,7 +2039,7 @@ and instance_association_status_info = {
   document_version : string option; [@key "DocumentVersion"] [@yojson.option]
   association_version : string option; [@key "AssociationVersion"] [@yojson.option]
   instance_id : string option; [@key "InstanceId"] [@yojson.option]
-  execution_date : Wire.timestamp option; [@key "ExecutionDate"] [@yojson.option]
+  execution_date : Aws_json_wire.timestamp option; [@key "ExecutionDate"] [@yojson.option]
   status : string option; [@key "Status"] [@yojson.option]
   detailed_status : string option; [@key "DetailedStatus"] [@yojson.option]
   execution_summary : string option; [@key "ExecutionSummary"] [@yojson.option]
@@ -2072,7 +2072,7 @@ and instance_info = {
 and instance_information = {
   instance_id : string option; [@key "InstanceId"] [@yojson.option]
   ping_status : string option; [@key "PingStatus"] [@yojson.option]
-  last_ping_date_time : Wire.timestamp option; [@key "LastPingDateTime"] [@yojson.option]
+  last_ping_date_time : Aws_json_wire.timestamp option; [@key "LastPingDateTime"] [@yojson.option]
   agent_version : string option; [@key "AgentVersion"] [@yojson.option]
   is_latest_version : bool option; [@key "IsLatestVersion"] [@yojson.option]
   platform_type : string option; [@key "PlatformType"] [@yojson.option]
@@ -2080,14 +2080,14 @@ and instance_information = {
   platform_version : string option; [@key "PlatformVersion"] [@yojson.option]
   activation_id : string option; [@key "ActivationId"] [@yojson.option]
   iam_role : string option; [@key "IamRole"] [@yojson.option]
-  registration_date : Wire.timestamp option; [@key "RegistrationDate"] [@yojson.option]
+  registration_date : Aws_json_wire.timestamp option; [@key "RegistrationDate"] [@yojson.option]
   resource_type : string option; [@key "ResourceType"] [@yojson.option]
   name : string option; [@key "Name"] [@yojson.option]
   ip_address : string option; [@key "IPAddress"] [@yojson.option]
   computer_name : string option; [@key "ComputerName"] [@yojson.option]
   association_status : string option; [@key "AssociationStatus"] [@yojson.option]
-  last_association_execution_date : Wire.timestamp option; [@key "LastAssociationExecutionDate"] [@yojson.option]
-  last_successful_association_execution_date : Wire.timestamp option; [@key "LastSuccessfulAssociationExecutionDate"] [@yojson.option]
+  last_association_execution_date : Aws_json_wire.timestamp option; [@key "LastAssociationExecutionDate"] [@yojson.option]
+  last_successful_association_execution_date : Aws_json_wire.timestamp option; [@key "LastSuccessfulAssociationExecutionDate"] [@yojson.option]
   association_overview : instance_aggregated_association_overview option; [@key "AssociationOverview"] [@yojson.option]
   source_id : string option; [@key "SourceId"] [@yojson.option]
   source_type : string option; [@key "SourceType"] [@yojson.option]
@@ -2123,10 +2123,10 @@ and instance_patch_state = {
   unreported_not_applicable_count : int option; [@key "UnreportedNotApplicableCount"] [@yojson.option]
   not_applicable_count : int option; [@key "NotApplicableCount"] [@yojson.option]
   available_security_update_count : int option; [@key "AvailableSecurityUpdateCount"] [@yojson.option]
-  operation_start_time : Wire.timestamp; [@key "OperationStartTime"]
-  operation_end_time : Wire.timestamp; [@key "OperationEndTime"]
+  operation_start_time : Aws_json_wire.timestamp; [@key "OperationStartTime"]
+  operation_end_time : Aws_json_wire.timestamp; [@key "OperationEndTime"]
   operation : string; [@key "Operation"]
-  last_no_reboot_install_operation_time : Wire.timestamp option; [@key "LastNoRebootInstallOperationTime"] [@yojson.option]
+  last_no_reboot_install_operation_time : Aws_json_wire.timestamp option; [@key "LastNoRebootInstallOperationTime"] [@yojson.option]
   reboot_option : string option; [@key "RebootOption"] [@yojson.option]
   critical_non_compliant_count : int option; [@key "CriticalNonCompliantCount"] [@yojson.option]
   security_non_compliant_count : int option; [@key "SecurityNonCompliantCount"] [@yojson.option]
@@ -2150,21 +2150,21 @@ and instance_property = {
   instance_state : string option; [@key "InstanceState"] [@yojson.option]
   architecture : string option; [@key "Architecture"] [@yojson.option]
   ip_address : string option; [@key "IPAddress"] [@yojson.option]
-  launch_time : Wire.timestamp option; [@key "LaunchTime"] [@yojson.option]
+  launch_time : Aws_json_wire.timestamp option; [@key "LaunchTime"] [@yojson.option]
   ping_status : string option; [@key "PingStatus"] [@yojson.option]
-  last_ping_date_time : Wire.timestamp option; [@key "LastPingDateTime"] [@yojson.option]
+  last_ping_date_time : Aws_json_wire.timestamp option; [@key "LastPingDateTime"] [@yojson.option]
   agent_version : string option; [@key "AgentVersion"] [@yojson.option]
   platform_type : string option; [@key "PlatformType"] [@yojson.option]
   platform_name : string option; [@key "PlatformName"] [@yojson.option]
   platform_version : string option; [@key "PlatformVersion"] [@yojson.option]
   activation_id : string option; [@key "ActivationId"] [@yojson.option]
   iam_role : string option; [@key "IamRole"] [@yojson.option]
-  registration_date : Wire.timestamp option; [@key "RegistrationDate"] [@yojson.option]
+  registration_date : Aws_json_wire.timestamp option; [@key "RegistrationDate"] [@yojson.option]
   resource_type : string option; [@key "ResourceType"] [@yojson.option]
   computer_name : string option; [@key "ComputerName"] [@yojson.option]
   association_status : string option; [@key "AssociationStatus"] [@yojson.option]
-  last_association_execution_date : Wire.timestamp option; [@key "LastAssociationExecutionDate"] [@yojson.option]
-  last_successful_association_execution_date : Wire.timestamp option; [@key "LastSuccessfulAssociationExecutionDate"] [@yojson.option]
+  last_association_execution_date : Aws_json_wire.timestamp option; [@key "LastAssociationExecutionDate"] [@yojson.option]
+  last_successful_association_execution_date : Aws_json_wire.timestamp option; [@key "LastSuccessfulAssociationExecutionDate"] [@yojson.option]
   association_overview : instance_aggregated_association_overview option; [@key "AssociationOverview"] [@yojson.option]
   source_id : string option; [@key "SourceId"] [@yojson.option]
   source_type : string option; [@key "SourceType"] [@yojson.option]
@@ -2196,11 +2196,11 @@ and inventory_aggregator = {
 and inventory_deletion_status_item = {
   deletion_id : string option; [@key "DeletionId"] [@yojson.option]
   type_name : string option; [@key "TypeName"] [@yojson.option]
-  deletion_start_time : Wire.timestamp option; [@key "DeletionStartTime"] [@yojson.option]
+  deletion_start_time : Aws_json_wire.timestamp option; [@key "DeletionStartTime"] [@yojson.option]
   last_status : string option; [@key "LastStatus"] [@yojson.option]
   last_status_message : string option; [@key "LastStatusMessage"] [@yojson.option]
   deletion_summary : inventory_deletion_summary option; [@key "DeletionSummary"] [@yojson.option]
-  last_status_update_time : Wire.timestamp option; [@key "LastStatusUpdateTime"] [@yojson.option]
+  last_status_update_time : Aws_json_wire.timestamp option; [@key "LastStatusUpdateTime"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -2236,8 +2236,8 @@ and inventory_item = {
   schema_version : string; [@key "SchemaVersion"]
   capture_time : string; [@key "CaptureTime"]
   content_hash : string option; [@key "ContentHash"] [@yojson.option]
-  content : string Wire.map list option; [@key "Content"] [@yojson.option]
-  context : string Wire.map option; [@key "Context"] [@yojson.option]
+  content : string Aws_json_wire.map list option; [@key "Content"] [@yojson.option]
+  context : string Aws_json_wire.map option; [@key "Context"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -2257,7 +2257,7 @@ and inventory_item_schema = {
 
 and inventory_result_entity = {
   id : string option; [@key "Id"] [@yojson.option]
-  data : inventory_result_item Wire.map option; [@key "Data"] [@yojson.option]
+  data : inventory_result_item Aws_json_wire.map option; [@key "Data"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -2266,7 +2266,7 @@ and inventory_result_item = {
   schema_version : string; [@key "SchemaVersion"]
   capture_time : string option; [@key "CaptureTime"] [@yojson.option]
   content_hash : string option; [@key "ContentHash"] [@yojson.option]
-  content : string Wire.map list; [@key "Content"]
+  content : string Aws_json_wire.map list; [@key "Content"]
 }
 [@@yojson.allow_extra_fields]
 
@@ -2440,7 +2440,7 @@ and list_inventory_entries_result = {
   instance_id : string option; [@key "InstanceId"] [@yojson.option]
   schema_version : string option; [@key "SchemaVersion"] [@yojson.option]
   capture_time : string option; [@key "CaptureTime"] [@yojson.option]
-  entries : string Wire.map list option; [@key "Entries"] [@yojson.option]
+  entries : string Aws_json_wire.map list option; [@key "Entries"] [@yojson.option]
   next_token : string option; [@key "NextToken"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -2469,7 +2469,7 @@ and list_nodes_summary_request = {
 [@@yojson.allow_extra_fields]
 
 and list_nodes_summary_result = {
-  summary : string Wire.map list option; [@key "Summary"] [@yojson.option]
+  summary : string Aws_json_wire.map list option; [@key "Summary"] [@yojson.option]
   next_token : string option; [@key "NextToken"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -2560,7 +2560,7 @@ and logging_info = {
 
 and maintenance_window_automation_parameters = {
   document_version : string option; [@key "DocumentVersion"] [@yojson.option]
-  parameters : string list Wire.map option; [@key "Parameters"] [@yojson.option]
+  parameters : string list Aws_json_wire.map option; [@key "Parameters"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -2569,8 +2569,8 @@ and maintenance_window_execution = {
   window_execution_id : string option; [@key "WindowExecutionId"] [@yojson.option]
   status : string option; [@key "Status"] [@yojson.option]
   status_details : string option; [@key "StatusDetails"] [@yojson.option]
-  start_time : Wire.timestamp option; [@key "StartTime"] [@yojson.option]
-  end_time : Wire.timestamp option; [@key "EndTime"] [@yojson.option]
+  start_time : Aws_json_wire.timestamp option; [@key "StartTime"] [@yojson.option]
+  end_time : Aws_json_wire.timestamp option; [@key "EndTime"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -2579,8 +2579,8 @@ and maintenance_window_execution_task_identity = {
   task_execution_id : string option; [@key "TaskExecutionId"] [@yojson.option]
   status : string option; [@key "Status"] [@yojson.option]
   status_details : string option; [@key "StatusDetails"] [@yojson.option]
-  start_time : Wire.timestamp option; [@key "StartTime"] [@yojson.option]
-  end_time : Wire.timestamp option; [@key "EndTime"] [@yojson.option]
+  start_time : Aws_json_wire.timestamp option; [@key "StartTime"] [@yojson.option]
+  end_time : Aws_json_wire.timestamp option; [@key "EndTime"] [@yojson.option]
   task_arn : string option; [@key "TaskArn"] [@yojson.option]
   task_type : string option; [@key "TaskType"] [@yojson.option]
   alarm_configuration : alarm_configuration option; [@key "AlarmConfiguration"] [@yojson.option]
@@ -2597,8 +2597,8 @@ and maintenance_window_execution_task_invocation_identity = {
   parameters : string option; [@key "Parameters"] [@yojson.option]
   status : string option; [@key "Status"] [@yojson.option]
   status_details : string option; [@key "StatusDetails"] [@yojson.option]
-  start_time : Wire.timestamp option; [@key "StartTime"] [@yojson.option]
-  end_time : Wire.timestamp option; [@key "EndTime"] [@yojson.option]
+  start_time : Aws_json_wire.timestamp option; [@key "StartTime"] [@yojson.option]
+  end_time : Aws_json_wire.timestamp option; [@key "EndTime"] [@yojson.option]
   owner_information : string option; [@key "OwnerInformation"] [@yojson.option]
   window_target_id : string option; [@key "WindowTargetId"] [@yojson.option]
 }
@@ -2635,7 +2635,7 @@ and maintenance_window_identity_for_target = {
 and maintenance_window_lambda_parameters = {
   client_context : string option; [@key "ClientContext"] [@yojson.option]
   qualifier : string option; [@key "Qualifier"] [@yojson.option]
-  payload : Wire.blob option; [@key "Payload"] [@yojson.option]
+  payload : Aws_json_wire.blob option; [@key "Payload"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -2648,7 +2648,7 @@ and maintenance_window_run_command_parameters = {
   notification_config : notification_config option; [@key "NotificationConfig"] [@yojson.option]
   output_s3_bucket_name : string option; [@key "OutputS3BucketName"] [@yojson.option]
   output_s3_key_prefix : string option; [@key "OutputS3KeyPrefix"] [@yojson.option]
-  parameters : string list Wire.map option; [@key "Parameters"] [@yojson.option]
+  parameters : string list Aws_json_wire.map option; [@key "Parameters"] [@yojson.option]
   service_role_arn : string option; [@key "ServiceRoleArn"] [@yojson.option]
   timeout_seconds : int option; [@key "TimeoutSeconds"] [@yojson.option]
 }
@@ -2677,7 +2677,7 @@ and maintenance_window_task = {
   task_arn : string option; [@key "TaskArn"] [@yojson.option]
   type_ : string option; [@key "Type"] [@yojson.option]
   targets : target list option; [@key "Targets"] [@yojson.option]
-  task_parameters : maintenance_window_task_parameter_value_expression Wire.map option; [@key "TaskParameters"] [@yojson.option]
+  task_parameters : maintenance_window_task_parameter_value_expression Aws_json_wire.map option; [@key "TaskParameters"] [@yojson.option]
   priority : int option; [@key "Priority"] [@yojson.option]
   logging_info : logging_info option; [@key "LoggingInfo"] [@yojson.option]
   service_role_arn : string option; [@key "ServiceRoleArn"] [@yojson.option]
@@ -2717,10 +2717,10 @@ and modify_document_permission_request = {
 }
 [@@yojson.allow_extra_fields]
 
-and modify_document_permission_response = Wire.empty
+and modify_document_permission_response = Aws_json_wire.empty
 
 and node = {
-  capture_time : Wire.timestamp option; [@key "CaptureTime"] [@yojson.option]
+  capture_time : Aws_json_wire.timestamp option; [@key "CaptureTime"] [@yojson.option]
   id : string option; [@key "Id"] [@yojson.option]
   owner : node_owner_info option; [@key "Owner"] [@yojson.option]
   region : string option; [@key "Region"] [@yojson.option]
@@ -2772,7 +2772,7 @@ and ops_aggregator = {
   aggregator_type : string option; [@key "AggregatorType"] [@yojson.option]
   type_name : string option; [@key "TypeName"] [@yojson.option]
   attribute_name : string option; [@key "AttributeName"] [@yojson.option]
-  values : string Wire.map option; [@key "Values"] [@yojson.option]
+  values : string Aws_json_wire.map option; [@key "Values"] [@yojson.option]
   filters : ops_filter list option; [@key "Filters"] [@yojson.option]
   aggregators : ops_aggregator list option; [@key "Aggregators"] [@yojson.option]
 }
@@ -2780,13 +2780,13 @@ and ops_aggregator = {
 
 and ops_entity = {
   id : string option; [@key "Id"] [@yojson.option]
-  data : ops_entity_item Wire.map option; [@key "Data"] [@yojson.option]
+  data : ops_entity_item Aws_json_wire.map option; [@key "Data"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
 and ops_entity_item = {
   capture_time : string option; [@key "CaptureTime"] [@yojson.option]
-  content : string Wire.map list option; [@key "Content"] [@yojson.option]
+  content : string Aws_json_wire.map list option; [@key "Content"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -2800,10 +2800,10 @@ and ops_filter = {
 and ops_item = {
   created_by : string option; [@key "CreatedBy"] [@yojson.option]
   ops_item_type : string option; [@key "OpsItemType"] [@yojson.option]
-  created_time : Wire.timestamp option; [@key "CreatedTime"] [@yojson.option]
+  created_time : Aws_json_wire.timestamp option; [@key "CreatedTime"] [@yojson.option]
   description : string option; [@key "Description"] [@yojson.option]
   last_modified_by : string option; [@key "LastModifiedBy"] [@yojson.option]
-  last_modified_time : Wire.timestamp option; [@key "LastModifiedTime"] [@yojson.option]
+  last_modified_time : Aws_json_wire.timestamp option; [@key "LastModifiedTime"] [@yojson.option]
   notifications : ops_item_notification list option; [@key "Notifications"] [@yojson.option]
   priority : int option; [@key "Priority"] [@yojson.option]
   related_ops_items : related_ops_item list option; [@key "RelatedOpsItems"] [@yojson.option]
@@ -2812,13 +2812,13 @@ and ops_item = {
   version : string option; [@key "Version"] [@yojson.option]
   title : string option; [@key "Title"] [@yojson.option]
   source : string option; [@key "Source"] [@yojson.option]
-  operational_data : ops_item_data_value Wire.map option; [@key "OperationalData"] [@yojson.option]
+  operational_data : ops_item_data_value Aws_json_wire.map option; [@key "OperationalData"] [@yojson.option]
   category : string option; [@key "Category"] [@yojson.option]
   severity : string option; [@key "Severity"] [@yojson.option]
-  actual_start_time : Wire.timestamp option; [@key "ActualStartTime"] [@yojson.option]
-  actual_end_time : Wire.timestamp option; [@key "ActualEndTime"] [@yojson.option]
-  planned_start_time : Wire.timestamp option; [@key "PlannedStartTime"] [@yojson.option]
-  planned_end_time : Wire.timestamp option; [@key "PlannedEndTime"] [@yojson.option]
+  actual_start_time : Aws_json_wire.timestamp option; [@key "ActualStartTime"] [@yojson.option]
+  actual_end_time : Aws_json_wire.timestamp option; [@key "ActualEndTime"] [@yojson.option]
+  planned_start_time : Aws_json_wire.timestamp option; [@key "PlannedStartTime"] [@yojson.option]
+  planned_end_time : Aws_json_wire.timestamp option; [@key "PlannedEndTime"] [@yojson.option]
   ops_item_arn : string option; [@key "OpsItemArn"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -2843,7 +2843,7 @@ and ops_item_event_summary = {
   detail_type : string option; [@key "DetailType"] [@yojson.option]
   detail : string option; [@key "Detail"] [@yojson.option]
   created_by : ops_item_identity option; [@key "CreatedBy"] [@yojson.option]
-  created_time : Wire.timestamp option; [@key "CreatedTime"] [@yojson.option]
+  created_time : Aws_json_wire.timestamp option; [@key "CreatedTime"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -2871,9 +2871,9 @@ and ops_item_related_item_summary = {
   association_type : string option; [@key "AssociationType"] [@yojson.option]
   resource_uri : string option; [@key "ResourceUri"] [@yojson.option]
   created_by : ops_item_identity option; [@key "CreatedBy"] [@yojson.option]
-  created_time : Wire.timestamp option; [@key "CreatedTime"] [@yojson.option]
+  created_time : Aws_json_wire.timestamp option; [@key "CreatedTime"] [@yojson.option]
   last_modified_by : ops_item_identity option; [@key "LastModifiedBy"] [@yojson.option]
-  last_modified_time : Wire.timestamp option; [@key "LastModifiedTime"] [@yojson.option]
+  last_modified_time : Aws_json_wire.timestamp option; [@key "LastModifiedTime"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -2886,31 +2886,31 @@ and ops_item_related_items_filter = {
 
 and ops_item_summary = {
   created_by : string option; [@key "CreatedBy"] [@yojson.option]
-  created_time : Wire.timestamp option; [@key "CreatedTime"] [@yojson.option]
+  created_time : Aws_json_wire.timestamp option; [@key "CreatedTime"] [@yojson.option]
   last_modified_by : string option; [@key "LastModifiedBy"] [@yojson.option]
-  last_modified_time : Wire.timestamp option; [@key "LastModifiedTime"] [@yojson.option]
+  last_modified_time : Aws_json_wire.timestamp option; [@key "LastModifiedTime"] [@yojson.option]
   priority : int option; [@key "Priority"] [@yojson.option]
   source : string option; [@key "Source"] [@yojson.option]
   status : string option; [@key "Status"] [@yojson.option]
   ops_item_id : string option; [@key "OpsItemId"] [@yojson.option]
   title : string option; [@key "Title"] [@yojson.option]
-  operational_data : ops_item_data_value Wire.map option; [@key "OperationalData"] [@yojson.option]
+  operational_data : ops_item_data_value Aws_json_wire.map option; [@key "OperationalData"] [@yojson.option]
   category : string option; [@key "Category"] [@yojson.option]
   severity : string option; [@key "Severity"] [@yojson.option]
   ops_item_type : string option; [@key "OpsItemType"] [@yojson.option]
-  actual_start_time : Wire.timestamp option; [@key "ActualStartTime"] [@yojson.option]
-  actual_end_time : Wire.timestamp option; [@key "ActualEndTime"] [@yojson.option]
-  planned_start_time : Wire.timestamp option; [@key "PlannedStartTime"] [@yojson.option]
-  planned_end_time : Wire.timestamp option; [@key "PlannedEndTime"] [@yojson.option]
+  actual_start_time : Aws_json_wire.timestamp option; [@key "ActualStartTime"] [@yojson.option]
+  actual_end_time : Aws_json_wire.timestamp option; [@key "ActualEndTime"] [@yojson.option]
+  planned_start_time : Aws_json_wire.timestamp option; [@key "PlannedStartTime"] [@yojson.option]
+  planned_end_time : Aws_json_wire.timestamp option; [@key "PlannedEndTime"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
 and ops_metadata = {
   resource_id : string option; [@key "ResourceId"] [@yojson.option]
   ops_metadata_arn : string option; [@key "OpsMetadataArn"] [@yojson.option]
-  last_modified_date : Wire.timestamp option; [@key "LastModifiedDate"] [@yojson.option]
+  last_modified_date : Aws_json_wire.timestamp option; [@key "LastModifiedDate"] [@yojson.option]
   last_modified_user : string option; [@key "LastModifiedUser"] [@yojson.option]
-  creation_date : Wire.timestamp option; [@key "CreationDate"] [@yojson.option]
+  creation_date : Aws_json_wire.timestamp option; [@key "CreationDate"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -2938,7 +2938,7 @@ and parameter = {
   version : int option; [@key "Version"] [@yojson.option]
   selector : string option; [@key "Selector"] [@yojson.option]
   source_result : string option; [@key "SourceResult"] [@yojson.option]
-  last_modified_date : Wire.timestamp option; [@key "LastModifiedDate"] [@yojson.option]
+  last_modified_date : Aws_json_wire.timestamp option; [@key "LastModifiedDate"] [@yojson.option]
   arn : string option; [@key "ARN"] [@yojson.option]
   data_type : string option; [@key "DataType"] [@yojson.option]
 }
@@ -2948,7 +2948,7 @@ and parameter_history = {
   name : string option; [@key "Name"] [@yojson.option]
   type_ : string option; [@key "Type"] [@yojson.option]
   key_id : string option; [@key "KeyId"] [@yojson.option]
-  last_modified_date : Wire.timestamp option; [@key "LastModifiedDate"] [@yojson.option]
+  last_modified_date : Aws_json_wire.timestamp option; [@key "LastModifiedDate"] [@yojson.option]
   last_modified_user : string option; [@key "LastModifiedUser"] [@yojson.option]
   description : string option; [@key "Description"] [@yojson.option]
   value : string option; [@key "Value"] [@yojson.option]
@@ -2973,7 +2973,7 @@ and parameter_metadata = {
   arn : string option; [@key "ARN"] [@yojson.option]
   type_ : string option; [@key "Type"] [@yojson.option]
   key_id : string option; [@key "KeyId"] [@yojson.option]
-  last_modified_date : Wire.timestamp option; [@key "LastModifiedDate"] [@yojson.option]
+  last_modified_date : Aws_json_wire.timestamp option; [@key "LastModifiedDate"] [@yojson.option]
   last_modified_user : string option; [@key "LastModifiedUser"] [@yojson.option]
   description : string option; [@key "Description"] [@yojson.option]
   allowed_pattern : string option; [@key "AllowedPattern"] [@yojson.option]
@@ -3008,7 +3008,7 @@ and parent_step_details = {
 
 and patch = {
   id : string option; [@key "Id"] [@yojson.option]
-  release_date : Wire.timestamp option; [@key "ReleaseDate"] [@yojson.option]
+  release_date : Aws_json_wire.timestamp option; [@key "ReleaseDate"] [@yojson.option]
   title : string option; [@key "Title"] [@yojson.option]
   description : string option; [@key "Description"] [@yojson.option]
   content_url : string option; [@key "ContentUrl"] [@yojson.option]
@@ -3048,7 +3048,7 @@ and patch_compliance_data = {
   classification : string; [@key "Classification"]
   severity : string; [@key "Severity"]
   state : string; [@key "State"]
-  installed_time : Wire.timestamp; [@key "InstalledTime"]
+  installed_time : Aws_json_wire.timestamp; [@key "InstalledTime"]
   cve_ids : string option; [@key "CVEIds"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -3100,7 +3100,7 @@ and patch_source = {
 and patch_status = {
   deployment_status : string option; [@key "DeploymentStatus"] [@yojson.option]
   compliance_level : string option; [@key "ComplianceLevel"] [@yojson.option]
-  approval_date : Wire.timestamp option; [@key "ApprovalDate"] [@yojson.option]
+  approval_date : Aws_json_wire.timestamp option; [@key "ApprovalDate"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -3124,7 +3124,7 @@ and put_compliance_items_request = {
 }
 [@@yojson.allow_extra_fields]
 
-and put_compliance_items_result = Wire.empty
+and put_compliance_items_result = Aws_json_wire.empty
 
 and put_inventory_request = {
   instance_id : string; [@key "InstanceId"]
@@ -3216,7 +3216,7 @@ and register_task_with_maintenance_window_request = {
   task_arn : string; [@key "TaskArn"]
   service_role_arn : string option; [@key "ServiceRoleArn"] [@yojson.option]
   task_type : string; [@key "TaskType"]
-  task_parameters : maintenance_window_task_parameter_value_expression Wire.map option; [@key "TaskParameters"] [@yojson.option]
+  task_parameters : maintenance_window_task_parameter_value_expression Aws_json_wire.map option; [@key "TaskParameters"] [@yojson.option]
   task_invocation_parameters : maintenance_window_task_invocation_parameters option; [@key "TaskInvocationParameters"] [@yojson.option]
   priority : int option; [@key "Priority"] [@yojson.option]
   max_concurrency : string option; [@key "MaxConcurrency"] [@yojson.option]
@@ -3253,7 +3253,7 @@ and remove_tags_from_resource_request = {
 }
 [@@yojson.allow_extra_fields]
 
-and remove_tags_from_resource_result = Wire.empty
+and remove_tags_from_resource_result = Aws_json_wire.empty
 
 and reset_service_setting_request = {
   setting_id : string; [@key "SettingId"]
@@ -3299,11 +3299,11 @@ and resource_data_sync_item = {
   sync_type : string option; [@key "SyncType"] [@yojson.option]
   sync_source : resource_data_sync_source_with_state option; [@key "SyncSource"] [@yojson.option]
   s3_destination : resource_data_sync_s3_destination option; [@key "S3Destination"] [@yojson.option]
-  last_sync_time : Wire.timestamp option; [@key "LastSyncTime"] [@yojson.option]
-  last_successful_sync_time : Wire.timestamp option; [@key "LastSuccessfulSyncTime"] [@yojson.option]
-  sync_last_modified_time : Wire.timestamp option; [@key "SyncLastModifiedTime"] [@yojson.option]
+  last_sync_time : Aws_json_wire.timestamp option; [@key "LastSyncTime"] [@yojson.option]
+  last_successful_sync_time : Aws_json_wire.timestamp option; [@key "LastSuccessfulSyncTime"] [@yojson.option]
+  sync_last_modified_time : Aws_json_wire.timestamp option; [@key "SyncLastModifiedTime"] [@yojson.option]
   last_status : string option; [@key "LastStatus"] [@yojson.option]
-  sync_created_time : Wire.timestamp option; [@key "SyncCreatedTime"] [@yojson.option]
+  sync_created_time : Aws_json_wire.timestamp option; [@key "SyncCreatedTime"] [@yojson.option]
   last_sync_status_message : string option; [@key "LastSyncStatusMessage"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -3360,7 +3360,7 @@ and resume_session_response = {
 [@@yojson.allow_extra_fields]
 
 and review_information = {
-  reviewed_time : Wire.timestamp option; [@key "ReviewedTime"] [@yojson.option]
+  reviewed_time : Aws_json_wire.timestamp option; [@key "ReviewedTime"] [@yojson.option]
   status : string option; [@key "Status"] [@yojson.option]
   reviewer : string option; [@key "Reviewer"] [@yojson.option]
 }
@@ -3369,10 +3369,10 @@ and review_information = {
 and runbook = {
   document_name : string; [@key "DocumentName"]
   document_version : string option; [@key "DocumentVersion"] [@yojson.option]
-  parameters : string list Wire.map option; [@key "Parameters"] [@yojson.option]
+  parameters : string list Aws_json_wire.map option; [@key "Parameters"] [@yojson.option]
   target_parameter_name : string option; [@key "TargetParameterName"] [@yojson.option]
   targets : target list option; [@key "Targets"] [@yojson.option]
-  target_maps : string list Wire.map list option; [@key "TargetMaps"] [@yojson.option]
+  target_maps : string list Aws_json_wire.map list option; [@key "TargetMaps"] [@yojson.option]
   max_concurrency : string option; [@key "MaxConcurrency"] [@yojson.option]
   max_errors : string option; [@key "MaxErrors"] [@yojson.option]
   target_locations : target_location list option; [@key "TargetLocations"] [@yojson.option]
@@ -3401,11 +3401,11 @@ and scheduled_window_execution = {
 and send_automation_signal_request = {
   automation_execution_id : string; [@key "AutomationExecutionId"]
   signal_type : string; [@key "SignalType"]
-  payload : string list Wire.map option; [@key "Payload"] [@yojson.option]
+  payload : string list Aws_json_wire.map option; [@key "Payload"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
-and send_automation_signal_result = Wire.empty
+and send_automation_signal_result = Aws_json_wire.empty
 
 and send_command_request = {
   instance_ids : string list option; [@key "InstanceIds"] [@yojson.option]
@@ -3416,7 +3416,7 @@ and send_command_request = {
   document_hash_type : string option; [@key "DocumentHashType"] [@yojson.option]
   timeout_seconds : int option; [@key "TimeoutSeconds"] [@yojson.option]
   comment : string option; [@key "Comment"] [@yojson.option]
-  parameters : string list Wire.map option; [@key "Parameters"] [@yojson.option]
+  parameters : string list Aws_json_wire.map option; [@key "Parameters"] [@yojson.option]
   output_s3_region : string option; [@key "OutputS3Region"] [@yojson.option]
   output_s3_bucket_name : string option; [@key "OutputS3BucketName"] [@yojson.option]
   output_s3_key_prefix : string option; [@key "OutputS3KeyPrefix"] [@yojson.option]
@@ -3437,7 +3437,7 @@ and send_command_result = {
 and service_setting = {
   setting_id : string option; [@key "SettingId"] [@yojson.option]
   setting_value : string option; [@key "SettingValue"] [@yojson.option]
-  last_modified_date : Wire.timestamp option; [@key "LastModifiedDate"] [@yojson.option]
+  last_modified_date : Aws_json_wire.timestamp option; [@key "LastModifiedDate"] [@yojson.option]
   last_modified_user : string option; [@key "LastModifiedUser"] [@yojson.option]
   arn : string option; [@key "ARN"] [@yojson.option]
   status : string option; [@key "Status"] [@yojson.option]
@@ -3448,8 +3448,8 @@ and session = {
   session_id : string option; [@key "SessionId"] [@yojson.option]
   target : string option; [@key "Target"] [@yojson.option]
   status : string option; [@key "Status"] [@yojson.option]
-  start_date : Wire.timestamp option; [@key "StartDate"] [@yojson.option]
-  end_date : Wire.timestamp option; [@key "EndDate"] [@yojson.option]
+  start_date : Aws_json_wire.timestamp option; [@key "StartDate"] [@yojson.option]
+  end_date : Aws_json_wire.timestamp option; [@key "EndDate"] [@yojson.option]
   document_name : string option; [@key "DocumentName"] [@yojson.option]
   owner : string option; [@key "Owner"] [@yojson.option]
   reason : string option; [@key "Reason"] [@yojson.option]
@@ -3499,17 +3499,17 @@ and start_associations_once_request = {
 }
 [@@yojson.allow_extra_fields]
 
-and start_associations_once_result = Wire.empty
+and start_associations_once_result = Aws_json_wire.empty
 
 and start_automation_execution_request = {
   document_name : string; [@key "DocumentName"]
   document_version : string option; [@key "DocumentVersion"] [@yojson.option]
-  parameters : string list Wire.map option; [@key "Parameters"] [@yojson.option]
+  parameters : string list Aws_json_wire.map option; [@key "Parameters"] [@yojson.option]
   client_token : string option; [@key "ClientToken"] [@yojson.option]
   mode : string option; [@key "Mode"] [@yojson.option]
   target_parameter_name : string option; [@key "TargetParameterName"] [@yojson.option]
   targets : target list option; [@key "Targets"] [@yojson.option]
-  target_maps : string list Wire.map list option; [@key "TargetMaps"] [@yojson.option]
+  target_maps : string list Aws_json_wire.map list option; [@key "TargetMaps"] [@yojson.option]
   max_concurrency : string option; [@key "MaxConcurrency"] [@yojson.option]
   max_errors : string option; [@key "MaxErrors"] [@yojson.option]
   target_locations : target_location list option; [@key "TargetLocations"] [@yojson.option]
@@ -3525,16 +3525,16 @@ and start_automation_execution_result = {
 [@@yojson.allow_extra_fields]
 
 and start_change_request_execution_request = {
-  scheduled_time : Wire.timestamp option; [@key "ScheduledTime"] [@yojson.option]
+  scheduled_time : Aws_json_wire.timestamp option; [@key "ScheduledTime"] [@yojson.option]
   document_name : string; [@key "DocumentName"]
   document_version : string option; [@key "DocumentVersion"] [@yojson.option]
-  parameters : string list Wire.map option; [@key "Parameters"] [@yojson.option]
+  parameters : string list Aws_json_wire.map option; [@key "Parameters"] [@yojson.option]
   change_request_name : string option; [@key "ChangeRequestName"] [@yojson.option]
   client_token : string option; [@key "ClientToken"] [@yojson.option]
   auto_approve : bool option; [@key "AutoApprove"] [@yojson.option]
   runbooks : runbook list; [@key "Runbooks"]
   tags : tag list option; [@key "Tags"] [@yojson.option]
-  scheduled_end_time : Wire.timestamp option; [@key "ScheduledEndTime"] [@yojson.option]
+  scheduled_end_time : Aws_json_wire.timestamp option; [@key "ScheduledEndTime"] [@yojson.option]
   change_details : string option; [@key "ChangeDetails"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -3560,7 +3560,7 @@ and start_session_request = {
   target : string; [@key "Target"]
   document_name : string option; [@key "DocumentName"] [@yojson.option]
   reason : string option; [@key "Reason"] [@yojson.option]
-  parameters : string list Wire.map option; [@key "Parameters"] [@yojson.option]
+  parameters : string list Aws_json_wire.map option; [@key "Parameters"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -3577,18 +3577,18 @@ and step_execution = {
   timeout_seconds : int option; [@key "TimeoutSeconds"] [@yojson.option]
   on_failure : string option; [@key "OnFailure"] [@yojson.option]
   max_attempts : int option; [@key "MaxAttempts"] [@yojson.option]
-  execution_start_time : Wire.timestamp option; [@key "ExecutionStartTime"] [@yojson.option]
-  execution_end_time : Wire.timestamp option; [@key "ExecutionEndTime"] [@yojson.option]
+  execution_start_time : Aws_json_wire.timestamp option; [@key "ExecutionStartTime"] [@yojson.option]
+  execution_end_time : Aws_json_wire.timestamp option; [@key "ExecutionEndTime"] [@yojson.option]
   step_status : string option; [@key "StepStatus"] [@yojson.option]
   response_code : string option; [@key "ResponseCode"] [@yojson.option]
-  inputs : string Wire.map option; [@key "Inputs"] [@yojson.option]
-  outputs : string list Wire.map option; [@key "Outputs"] [@yojson.option]
+  inputs : string Aws_json_wire.map option; [@key "Inputs"] [@yojson.option]
+  outputs : string list Aws_json_wire.map option; [@key "Outputs"] [@yojson.option]
   response : string option; [@key "Response"] [@yojson.option]
   failure_message : string option; [@key "FailureMessage"] [@yojson.option]
   warning_message : string option; [@key "WarningMessage"] [@yojson.option]
   failure_details : failure_details option; [@key "FailureDetails"] [@yojson.option]
   step_execution_id : string option; [@key "StepExecutionId"] [@yojson.option]
-  overridden_parameters : string list Wire.map option; [@key "OverriddenParameters"] [@yojson.option]
+  overridden_parameters : string list Aws_json_wire.map option; [@key "OverriddenParameters"] [@yojson.option]
   is_end : bool option; [@key "IsEnd"] [@yojson.option]
   next_step : string option; [@key "NextStep"] [@yojson.option]
   is_critical : bool option; [@key "IsCritical"] [@yojson.option]
@@ -3612,7 +3612,7 @@ and stop_automation_execution_request = {
 }
 [@@yojson.allow_extra_fields]
 
-and stop_automation_execution_result = Wire.empty
+and stop_automation_execution_result = Aws_json_wire.empty
 
 and tag = {
   key : string; [@key "Key"]
@@ -3672,7 +3672,7 @@ and unlabel_parameter_version_result = {
 
 and update_association_request = {
   association_id : string; [@key "AssociationId"]
-  parameters : string list Wire.map option; [@key "Parameters"] [@yojson.option]
+  parameters : string list Aws_json_wire.map option; [@key "Parameters"] [@yojson.option]
   document_version : string option; [@key "DocumentVersion"] [@yojson.option]
   schedule_expression : string option; [@key "ScheduleExpression"] [@yojson.option]
   output_location : instance_association_output_location option; [@key "OutputLocation"] [@yojson.option]
@@ -3690,7 +3690,7 @@ and update_association_request = {
   target_locations : target_location list option; [@key "TargetLocations"] [@yojson.option]
   schedule_offset : int option; [@key "ScheduleOffset"] [@yojson.option]
   duration : int option; [@key "Duration"] [@yojson.option]
-  target_maps : string list Wire.map list option; [@key "TargetMaps"] [@yojson.option]
+  target_maps : string list Aws_json_wire.map list option; [@key "TargetMaps"] [@yojson.option]
   alarm_configuration : alarm_configuration option; [@key "AlarmConfiguration"] [@yojson.option]
   association_dispatch_assume_role : string option; [@key "AssociationDispatchAssumeRole"] [@yojson.option]
 }
@@ -3744,7 +3744,7 @@ and update_document_metadata_request = {
 }
 [@@yojson.allow_extra_fields]
 
-and update_document_metadata_response = Wire.empty
+and update_document_metadata_response = Aws_json_wire.empty
 
 and update_document_request = {
   content : string; [@key "Content"]
@@ -3823,7 +3823,7 @@ and update_maintenance_window_task_request = {
   targets : target list option; [@key "Targets"] [@yojson.option]
   task_arn : string option; [@key "TaskArn"] [@yojson.option]
   service_role_arn : string option; [@key "ServiceRoleArn"] [@yojson.option]
-  task_parameters : maintenance_window_task_parameter_value_expression Wire.map option; [@key "TaskParameters"] [@yojson.option]
+  task_parameters : maintenance_window_task_parameter_value_expression Aws_json_wire.map option; [@key "TaskParameters"] [@yojson.option]
   task_invocation_parameters : maintenance_window_task_invocation_parameters option; [@key "TaskInvocationParameters"] [@yojson.option]
   priority : int option; [@key "Priority"] [@yojson.option]
   max_concurrency : string option; [@key "MaxConcurrency"] [@yojson.option]
@@ -3843,7 +3843,7 @@ and update_maintenance_window_task_result = {
   targets : target list option; [@key "Targets"] [@yojson.option]
   task_arn : string option; [@key "TaskArn"] [@yojson.option]
   service_role_arn : string option; [@key "ServiceRoleArn"] [@yojson.option]
-  task_parameters : maintenance_window_task_parameter_value_expression Wire.map option; [@key "TaskParameters"] [@yojson.option]
+  task_parameters : maintenance_window_task_parameter_value_expression Aws_json_wire.map option; [@key "TaskParameters"] [@yojson.option]
   task_invocation_parameters : maintenance_window_task_invocation_parameters option; [@key "TaskInvocationParameters"] [@yojson.option]
   priority : int option; [@key "Priority"] [@yojson.option]
   max_concurrency : string option; [@key "MaxConcurrency"] [@yojson.option]
@@ -3862,11 +3862,11 @@ and update_managed_instance_role_request = {
 }
 [@@yojson.allow_extra_fields]
 
-and update_managed_instance_role_result = Wire.empty
+and update_managed_instance_role_result = Aws_json_wire.empty
 
 and update_ops_item_request = {
   description : string option; [@key "Description"] [@yojson.option]
-  operational_data : ops_item_data_value Wire.map option; [@key "OperationalData"] [@yojson.option]
+  operational_data : ops_item_data_value Aws_json_wire.map option; [@key "OperationalData"] [@yojson.option]
   operational_data_to_delete : string list option; [@key "OperationalDataToDelete"] [@yojson.option]
   notifications : ops_item_notification list option; [@key "Notifications"] [@yojson.option]
   priority : int option; [@key "Priority"] [@yojson.option]
@@ -3876,19 +3876,19 @@ and update_ops_item_request = {
   title : string option; [@key "Title"] [@yojson.option]
   category : string option; [@key "Category"] [@yojson.option]
   severity : string option; [@key "Severity"] [@yojson.option]
-  actual_start_time : Wire.timestamp option; [@key "ActualStartTime"] [@yojson.option]
-  actual_end_time : Wire.timestamp option; [@key "ActualEndTime"] [@yojson.option]
-  planned_start_time : Wire.timestamp option; [@key "PlannedStartTime"] [@yojson.option]
-  planned_end_time : Wire.timestamp option; [@key "PlannedEndTime"] [@yojson.option]
+  actual_start_time : Aws_json_wire.timestamp option; [@key "ActualStartTime"] [@yojson.option]
+  actual_end_time : Aws_json_wire.timestamp option; [@key "ActualEndTime"] [@yojson.option]
+  planned_start_time : Aws_json_wire.timestamp option; [@key "PlannedStartTime"] [@yojson.option]
+  planned_end_time : Aws_json_wire.timestamp option; [@key "PlannedEndTime"] [@yojson.option]
   ops_item_arn : string option; [@key "OpsItemArn"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
-and update_ops_item_response = Wire.empty
+and update_ops_item_response = Aws_json_wire.empty
 
 and update_ops_metadata_request = {
   ops_metadata_arn : string; [@key "OpsMetadataArn"]
-  metadata_to_update : metadata_value Wire.map option; [@key "MetadataToUpdate"] [@yojson.option]
+  metadata_to_update : metadata_value Aws_json_wire.map option; [@key "MetadataToUpdate"] [@yojson.option]
   keys_to_delete : string list option; [@key "KeysToDelete"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -3926,8 +3926,8 @@ and update_patch_baseline_result = {
   approved_patches_enable_non_security : bool option; [@key "ApprovedPatchesEnableNonSecurity"] [@yojson.option]
   rejected_patches : string list option; [@key "RejectedPatches"] [@yojson.option]
   rejected_patches_action : string option; [@key "RejectedPatchesAction"] [@yojson.option]
-  created_date : Wire.timestamp option; [@key "CreatedDate"] [@yojson.option]
-  modified_date : Wire.timestamp option; [@key "ModifiedDate"] [@yojson.option]
+  created_date : Aws_json_wire.timestamp option; [@key "CreatedDate"] [@yojson.option]
+  modified_date : Aws_json_wire.timestamp option; [@key "ModifiedDate"] [@yojson.option]
   description : string option; [@key "Description"] [@yojson.option]
   sources : patch_source list option; [@key "Sources"] [@yojson.option]
   available_security_updates_compliance_status : string option; [@key "AvailableSecurityUpdatesComplianceStatus"] [@yojson.option]
@@ -3941,7 +3941,7 @@ and update_resource_data_sync_request = {
 }
 [@@yojson.allow_extra_fields]
 
-and update_resource_data_sync_result = Wire.empty
+and update_resource_data_sync_result = Aws_json_wire.empty
 
 and update_service_setting_request = {
   setting_id : string; [@key "SettingId"]
@@ -3949,7 +3949,7 @@ and update_service_setting_request = {
 }
 [@@yojson.allow_extra_fields]
 
-and update_service_setting_result = Wire.empty
+and update_service_setting_result = Aws_json_wire.empty
 
 and validate_cloud_connector_request = {
   cloud_connector_id : string; [@key "CloudConnectorId"]
@@ -3989,7 +3989,7 @@ module Add_tags_to_resource = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Associate_ops_item_related_item = struct
@@ -4001,7 +4001,7 @@ module Associate_ops_item_related_item = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Cancel_command = struct
@@ -4013,7 +4013,7 @@ module Cancel_command = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Cancel_maintenance_window_execution = struct
@@ -4025,7 +4025,7 @@ module Cancel_maintenance_window_execution = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Create_activation = struct
@@ -4037,7 +4037,7 @@ module Create_activation = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Create_association = struct
@@ -4049,7 +4049,7 @@ module Create_association = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Create_association_batch = struct
@@ -4061,7 +4061,7 @@ module Create_association_batch = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Create_cloud_connector = struct
@@ -4073,7 +4073,7 @@ module Create_cloud_connector = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Create_document = struct
@@ -4085,7 +4085,7 @@ module Create_document = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Create_maintenance_window = struct
@@ -4097,7 +4097,7 @@ module Create_maintenance_window = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Create_ops_item = struct
@@ -4109,7 +4109,7 @@ module Create_ops_item = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Create_ops_metadata = struct
@@ -4121,7 +4121,7 @@ module Create_ops_metadata = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Create_patch_baseline = struct
@@ -4133,7 +4133,7 @@ module Create_patch_baseline = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Create_resource_data_sync = struct
@@ -4145,7 +4145,7 @@ module Create_resource_data_sync = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Delete_activation = struct
@@ -4157,7 +4157,7 @@ module Delete_activation = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Delete_association = struct
@@ -4169,7 +4169,7 @@ module Delete_association = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Delete_cloud_connector = struct
@@ -4181,7 +4181,7 @@ module Delete_cloud_connector = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Delete_document = struct
@@ -4193,7 +4193,7 @@ module Delete_document = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Delete_inventory = struct
@@ -4205,7 +4205,7 @@ module Delete_inventory = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Delete_maintenance_window = struct
@@ -4217,7 +4217,7 @@ module Delete_maintenance_window = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Delete_ops_item = struct
@@ -4229,7 +4229,7 @@ module Delete_ops_item = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Delete_ops_metadata = struct
@@ -4241,7 +4241,7 @@ module Delete_ops_metadata = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Delete_parameter = struct
@@ -4253,7 +4253,7 @@ module Delete_parameter = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Delete_parameters = struct
@@ -4265,7 +4265,7 @@ module Delete_parameters = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Delete_patch_baseline = struct
@@ -4277,7 +4277,7 @@ module Delete_patch_baseline = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Delete_resource_data_sync = struct
@@ -4289,7 +4289,7 @@ module Delete_resource_data_sync = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Delete_resource_policy = struct
@@ -4301,7 +4301,7 @@ module Delete_resource_policy = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Deregister_managed_instance = struct
@@ -4313,7 +4313,7 @@ module Deregister_managed_instance = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Deregister_patch_baseline_for_patch_group = struct
@@ -4325,7 +4325,7 @@ module Deregister_patch_baseline_for_patch_group = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Deregister_target_from_maintenance_window = struct
@@ -4337,7 +4337,7 @@ module Deregister_target_from_maintenance_window = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Deregister_task_from_maintenance_window = struct
@@ -4349,7 +4349,7 @@ module Deregister_task_from_maintenance_window = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Describe_activations = struct
@@ -4361,7 +4361,7 @@ module Describe_activations = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Describe_association = struct
@@ -4373,7 +4373,7 @@ module Describe_association = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Describe_association_executions = struct
@@ -4385,7 +4385,7 @@ module Describe_association_executions = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Describe_association_execution_targets = struct
@@ -4397,7 +4397,7 @@ module Describe_association_execution_targets = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Describe_automation_executions = struct
@@ -4409,7 +4409,7 @@ module Describe_automation_executions = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Describe_automation_step_executions = struct
@@ -4421,7 +4421,7 @@ module Describe_automation_step_executions = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Describe_available_patches = struct
@@ -4433,7 +4433,7 @@ module Describe_available_patches = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Describe_document = struct
@@ -4445,7 +4445,7 @@ module Describe_document = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Describe_document_permission = struct
@@ -4457,7 +4457,7 @@ module Describe_document_permission = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Describe_effective_instance_associations = struct
@@ -4469,7 +4469,7 @@ module Describe_effective_instance_associations = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Describe_effective_patches_for_patch_baseline = struct
@@ -4481,7 +4481,7 @@ module Describe_effective_patches_for_patch_baseline = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Describe_instance_associations_status = struct
@@ -4493,7 +4493,7 @@ module Describe_instance_associations_status = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Describe_instance_information = struct
@@ -4505,7 +4505,7 @@ module Describe_instance_information = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Describe_instance_patches = struct
@@ -4517,7 +4517,7 @@ module Describe_instance_patches = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Describe_instance_patch_states = struct
@@ -4529,7 +4529,7 @@ module Describe_instance_patch_states = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Describe_instance_patch_states_for_patch_group = struct
@@ -4541,7 +4541,7 @@ module Describe_instance_patch_states_for_patch_group = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Describe_instance_properties = struct
@@ -4553,7 +4553,7 @@ module Describe_instance_properties = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Describe_inventory_deletions = struct
@@ -4565,7 +4565,7 @@ module Describe_inventory_deletions = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Describe_maintenance_window_executions = struct
@@ -4577,7 +4577,7 @@ module Describe_maintenance_window_executions = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Describe_maintenance_window_execution_task_invocations = struct
@@ -4589,7 +4589,7 @@ module Describe_maintenance_window_execution_task_invocations = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Describe_maintenance_window_execution_tasks = struct
@@ -4601,7 +4601,7 @@ module Describe_maintenance_window_execution_tasks = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Describe_maintenance_windows = struct
@@ -4613,7 +4613,7 @@ module Describe_maintenance_windows = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Describe_maintenance_window_schedule = struct
@@ -4625,7 +4625,7 @@ module Describe_maintenance_window_schedule = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Describe_maintenance_windows_for_target = struct
@@ -4637,7 +4637,7 @@ module Describe_maintenance_windows_for_target = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Describe_maintenance_window_targets = struct
@@ -4649,7 +4649,7 @@ module Describe_maintenance_window_targets = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Describe_maintenance_window_tasks = struct
@@ -4661,7 +4661,7 @@ module Describe_maintenance_window_tasks = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Describe_ops_items = struct
@@ -4673,7 +4673,7 @@ module Describe_ops_items = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Describe_parameters = struct
@@ -4685,7 +4685,7 @@ module Describe_parameters = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Describe_patch_baselines = struct
@@ -4697,7 +4697,7 @@ module Describe_patch_baselines = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Describe_patch_groups = struct
@@ -4709,7 +4709,7 @@ module Describe_patch_groups = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Describe_patch_group_state = struct
@@ -4721,7 +4721,7 @@ module Describe_patch_group_state = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Describe_patch_properties = struct
@@ -4733,7 +4733,7 @@ module Describe_patch_properties = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Describe_sessions = struct
@@ -4745,7 +4745,7 @@ module Describe_sessions = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Disassociate_ops_item_related_item = struct
@@ -4757,7 +4757,7 @@ module Disassociate_ops_item_related_item = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Get_access_token = struct
@@ -4769,7 +4769,7 @@ module Get_access_token = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Get_automation_execution = struct
@@ -4781,7 +4781,7 @@ module Get_automation_execution = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Get_calendar_state = struct
@@ -4793,7 +4793,7 @@ module Get_calendar_state = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Get_cloud_connector = struct
@@ -4805,7 +4805,7 @@ module Get_cloud_connector = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Get_command_invocation = struct
@@ -4817,7 +4817,7 @@ module Get_command_invocation = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Get_connection_status = struct
@@ -4829,7 +4829,7 @@ module Get_connection_status = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Get_default_patch_baseline = struct
@@ -4841,7 +4841,7 @@ module Get_default_patch_baseline = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Get_deployable_patch_snapshot_for_instance = struct
@@ -4853,7 +4853,7 @@ module Get_deployable_patch_snapshot_for_instance = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Get_document = struct
@@ -4865,7 +4865,7 @@ module Get_document = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Get_execution_preview = struct
@@ -4877,7 +4877,7 @@ module Get_execution_preview = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Get_inventory = struct
@@ -4889,7 +4889,7 @@ module Get_inventory = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Get_inventory_schema = struct
@@ -4901,7 +4901,7 @@ module Get_inventory_schema = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Get_maintenance_window = struct
@@ -4913,7 +4913,7 @@ module Get_maintenance_window = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Get_maintenance_window_execution = struct
@@ -4925,7 +4925,7 @@ module Get_maintenance_window_execution = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Get_maintenance_window_execution_task = struct
@@ -4937,7 +4937,7 @@ module Get_maintenance_window_execution_task = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Get_maintenance_window_execution_task_invocation = struct
@@ -4949,7 +4949,7 @@ module Get_maintenance_window_execution_task_invocation = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Get_maintenance_window_task = struct
@@ -4961,7 +4961,7 @@ module Get_maintenance_window_task = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Get_ops_item = struct
@@ -4973,7 +4973,7 @@ module Get_ops_item = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Get_ops_metadata = struct
@@ -4985,7 +4985,7 @@ module Get_ops_metadata = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Get_ops_summary = struct
@@ -4997,7 +4997,7 @@ module Get_ops_summary = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Get_parameter = struct
@@ -5009,7 +5009,7 @@ module Get_parameter = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Get_parameter_history = struct
@@ -5021,7 +5021,7 @@ module Get_parameter_history = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Get_parameters = struct
@@ -5033,7 +5033,7 @@ module Get_parameters = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Get_parameters_by_path = struct
@@ -5045,7 +5045,7 @@ module Get_parameters_by_path = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Get_patch_baseline = struct
@@ -5057,7 +5057,7 @@ module Get_patch_baseline = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Get_patch_baseline_for_patch_group = struct
@@ -5069,7 +5069,7 @@ module Get_patch_baseline_for_patch_group = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Get_resource_policies = struct
@@ -5081,7 +5081,7 @@ module Get_resource_policies = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Get_service_setting = struct
@@ -5093,7 +5093,7 @@ module Get_service_setting = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Label_parameter_version = struct
@@ -5105,7 +5105,7 @@ module Label_parameter_version = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module List_associations = struct
@@ -5117,7 +5117,7 @@ module List_associations = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module List_association_versions = struct
@@ -5129,7 +5129,7 @@ module List_association_versions = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module List_cloud_connectors = struct
@@ -5141,7 +5141,7 @@ module List_cloud_connectors = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module List_command_invocations = struct
@@ -5153,7 +5153,7 @@ module List_command_invocations = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module List_commands = struct
@@ -5165,7 +5165,7 @@ module List_commands = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module List_compliance_items = struct
@@ -5177,7 +5177,7 @@ module List_compliance_items = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module List_compliance_summaries = struct
@@ -5189,7 +5189,7 @@ module List_compliance_summaries = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module List_document_metadata_history = struct
@@ -5201,7 +5201,7 @@ module List_document_metadata_history = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module List_documents = struct
@@ -5213,7 +5213,7 @@ module List_documents = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module List_document_versions = struct
@@ -5225,7 +5225,7 @@ module List_document_versions = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module List_inventory_entries = struct
@@ -5237,7 +5237,7 @@ module List_inventory_entries = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module List_nodes = struct
@@ -5249,7 +5249,7 @@ module List_nodes = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module List_nodes_summary = struct
@@ -5261,7 +5261,7 @@ module List_nodes_summary = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module List_ops_item_events = struct
@@ -5273,7 +5273,7 @@ module List_ops_item_events = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module List_ops_item_related_items = struct
@@ -5285,7 +5285,7 @@ module List_ops_item_related_items = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module List_ops_metadata = struct
@@ -5297,7 +5297,7 @@ module List_ops_metadata = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module List_resource_compliance_summaries = struct
@@ -5309,7 +5309,7 @@ module List_resource_compliance_summaries = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module List_resource_data_sync = struct
@@ -5321,7 +5321,7 @@ module List_resource_data_sync = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module List_tags_for_resource = struct
@@ -5333,7 +5333,7 @@ module List_tags_for_resource = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Modify_document_permission = struct
@@ -5345,7 +5345,7 @@ module Modify_document_permission = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Put_compliance_items = struct
@@ -5357,7 +5357,7 @@ module Put_compliance_items = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Put_inventory = struct
@@ -5369,7 +5369,7 @@ module Put_inventory = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Put_parameter = struct
@@ -5381,7 +5381,7 @@ module Put_parameter = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Put_resource_policy = struct
@@ -5393,7 +5393,7 @@ module Put_resource_policy = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Register_default_patch_baseline = struct
@@ -5405,7 +5405,7 @@ module Register_default_patch_baseline = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Register_patch_baseline_for_patch_group = struct
@@ -5417,7 +5417,7 @@ module Register_patch_baseline_for_patch_group = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Register_target_with_maintenance_window = struct
@@ -5429,7 +5429,7 @@ module Register_target_with_maintenance_window = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Register_task_with_maintenance_window = struct
@@ -5441,7 +5441,7 @@ module Register_task_with_maintenance_window = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Remove_tags_from_resource = struct
@@ -5453,7 +5453,7 @@ module Remove_tags_from_resource = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Reset_service_setting = struct
@@ -5465,7 +5465,7 @@ module Reset_service_setting = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Resume_session = struct
@@ -5477,7 +5477,7 @@ module Resume_session = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Send_automation_signal = struct
@@ -5489,7 +5489,7 @@ module Send_automation_signal = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Send_command = struct
@@ -5501,7 +5501,7 @@ module Send_command = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Start_access_request = struct
@@ -5513,7 +5513,7 @@ module Start_access_request = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Start_associations_once = struct
@@ -5525,7 +5525,7 @@ module Start_associations_once = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Start_automation_execution = struct
@@ -5537,7 +5537,7 @@ module Start_automation_execution = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Start_change_request_execution = struct
@@ -5549,7 +5549,7 @@ module Start_change_request_execution = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Start_execution_preview = struct
@@ -5561,7 +5561,7 @@ module Start_execution_preview = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Start_session = struct
@@ -5573,7 +5573,7 @@ module Start_session = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Stop_automation_execution = struct
@@ -5585,7 +5585,7 @@ module Stop_automation_execution = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Terminate_session = struct
@@ -5597,7 +5597,7 @@ module Terminate_session = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Unlabel_parameter_version = struct
@@ -5609,7 +5609,7 @@ module Unlabel_parameter_version = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Update_association = struct
@@ -5621,7 +5621,7 @@ module Update_association = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Update_association_status = struct
@@ -5633,7 +5633,7 @@ module Update_association_status = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Update_cloud_connector = struct
@@ -5645,7 +5645,7 @@ module Update_cloud_connector = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Update_document = struct
@@ -5657,7 +5657,7 @@ module Update_document = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Update_document_default_version = struct
@@ -5669,7 +5669,7 @@ module Update_document_default_version = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Update_document_metadata = struct
@@ -5681,7 +5681,7 @@ module Update_document_metadata = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Update_maintenance_window = struct
@@ -5693,7 +5693,7 @@ module Update_maintenance_window = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Update_maintenance_window_target = struct
@@ -5705,7 +5705,7 @@ module Update_maintenance_window_target = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Update_maintenance_window_task = struct
@@ -5717,7 +5717,7 @@ module Update_maintenance_window_task = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Update_managed_instance_role = struct
@@ -5729,7 +5729,7 @@ module Update_managed_instance_role = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Update_ops_item = struct
@@ -5741,7 +5741,7 @@ module Update_ops_item = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Update_ops_metadata = struct
@@ -5753,7 +5753,7 @@ module Update_ops_metadata = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Update_patch_baseline = struct
@@ -5765,7 +5765,7 @@ module Update_patch_baseline = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Update_resource_data_sync = struct
@@ -5777,7 +5777,7 @@ module Update_resource_data_sync = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Update_service_setting = struct
@@ -5789,7 +5789,7 @@ module Update_service_setting = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end
 
 module Validate_cloud_connector = struct
@@ -5801,5 +5801,5 @@ module Validate_cloud_connector = struct
   end
 
   include Def
-  include Transport.Make (Def)
+  include Aws_json_transport.Make (Def)
 end

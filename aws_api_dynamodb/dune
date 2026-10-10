@@ -1,5 +1,7 @@
 (include_subdirs qualified)
 
+(copy_files# ../smithy/runtime/aws_json_*.ml)
+
 (library
  (name aws_api_dynamodb)
  (public_name aws-api-dynamodb)

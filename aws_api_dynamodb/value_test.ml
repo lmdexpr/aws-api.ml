@@ -119,18 +119,29 @@ let test_wire_round_trip () =
   let received = ref None in
   let run f =
     try f ()
-    with effect Effects.Call { action; body }, k ->
+    with effect Aws_api.Http.Call request, k ->
       let response =
-        if action = "GetItem" then
+        if Aws_api.Http.header "X-Amz-Target" request.headers = Some "DynamoDB_20120810.GetItem"
+        then
           `Assoc [ "Item", wire ]
         else (
-          received := Some (Yojson.Safe.from_string body |> Yojson.Safe.Util.member "Item");
+          received :=
+            Some
+              (Yojson.Safe.from_string (Option.get request.body) |> Yojson.Safe.Util.member "Item");
           `Assoc [])
       in
-      Effect.Deep.continue k (Ok response)
+      Effect.Deep.continue k
+        Aws_api.Http.{ status = 200; headers = []; body = Yojson.Safe.to_string response }
   in
   run (fun () ->
-    let db = Client.make ~table:"example-table" in
+    let api =
+      Aws_api_dynamodb.make
+        ~provider:(Sigv4.Provider.Static.make ~access_key:"k" ~secret_key:"s" ())
+        ~region:"us-east-1"
+        ~now:(fun () -> 0.)
+        ()
+    in
+    let db = Client.make api ~table:"example-table" in
     match Client.get db ~key:(Item.singleton "pk" (Value.String "a")) with
     | Ok (Some item) -> (
       match Client.put db ~item with Ok () -> () | _ -> Alcotest.fail "put failed")

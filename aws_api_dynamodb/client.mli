@@ -2,7 +2,9 @@
 
 type t
 
-val make : table:string -> t
+val make : Aws_json_transport.t -> table:string -> t
+(** The transport comes from [Aws_api_dynamodb.make] (or [local]). *)
+
 val table : t -> string
 
 val put :

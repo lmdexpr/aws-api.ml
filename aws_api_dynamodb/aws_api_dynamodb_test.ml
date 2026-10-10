@@ -14,11 +14,36 @@ let item =
     Item.equal
 
 let parse = Yojson.Safe.from_string
+let static = Sigv4.Provider.Static.make ~access_key:"AKIDEXAMPLE" ~secret_key:"secret" ()
+let now () = 0.
+let api = Aws_api_dynamodb.make ~provider:static ~region:"us-east-1" ~now ()
 
+(* Answers Aws_api.Http.Call from a script; records every request. *)
+let with_http ~(respond : Aws_api.Http.request -> Aws_api.Http.response) k =
+  let seen = ref [] in
+  let result =
+    try k ()
+    with effect Aws_api.Http.Call request, k ->
+      seen := request :: !seen;
+      Effect.Deep.continue k (respond request)
+  in
+  result, List.rev !seen
+
+(* Same, at the action level: [respond] sees the action name and JSON body, answers with a 2xx
+   JSON or a 4xx body. *)
 let with_stub ~(respond : action:string -> body:string -> (Yojson.Safe.t, string) result) k =
-  try k ()
-  with effect Aws_api_dynamodb.Effects.Call { action; body }, k ->
-    Effect.Deep.continue k (respond ~action ~body)
+  let respond (request : Aws_api.Http.request) : Aws_api.Http.response =
+    let action =
+      match Aws_api.Http.header "X-Amz-Target" request.headers with
+      | Some target -> (
+        match String.split_last ~sep:"." target with Some (_, a) -> a | None -> target)
+      | None -> ""
+    in
+    match respond ~action ~body:(Option.value ~default:"" request.body) with
+    | Ok json -> { status = 200; headers = []; body = Yojson.Safe.to_string json }
+    | Error body -> { status = 400; headers = []; body }
+  in
+  fst (with_http ~respond k)
 
 let record ~response =
   let seen = ref [] in
@@ -28,7 +53,7 @@ let record ~response =
   in
   seen, respond
 
-let db = Client.make ~table:"example-table"
+let db = Client.make api ~table:"example-table"
 let alice = Item.(empty |> add "pk" (Value.String "alice") |> add "age" (Value.int 30))
 let alice_key = Item.singleton "pk" (Value.String "alice")
 let json_item xs = Projection.item_of_yojson_exn (`Assoc xs)
@@ -273,7 +298,7 @@ let test_transact_write () =
   let result =
     with_stub ~respond @@ fun () ->
     Aws_api_dynamodb.Transaction.(
-      write
+      write api
         [
           put_if_not_exists ~table_name:"example-table" ~item:alice ~primary_key:"pk";
           delete ~table_name:"example-table" ~key:(Item.singleton "pk" (Value.String "bob")) ();
@@ -323,40 +348,20 @@ let test_transaction_cancelled_by_condition () =
   Alcotest.(check (list string))
     "reasons"
     [ "None"; "ConditionalCheckFailed" ]
-    e.cancellation_reasons
+    (Aws_api_dynamodb.Error.cancellation_reasons e)
 
 let test_unparseable_error_keeps_body () =
   let e = Aws_api_dynamodb.Error.of_body "<html>gateway</html>" in
-  Alcotest.check error "raw body"
-    { code = ""; message = None; cancellation_reasons = []; body = "<html>gateway</html>" }
-    e;
+  Alcotest.check error "raw body" { code = ""; message = None; body = "<html>gateway</html>" } e;
   Alcotest.(check bool)
     "not conditional" false
     (Aws_api_dynamodb.Error.is_conditional_check_failed e)
 
 (* --- Http bridge --- *)
 
-(* Answers Aws_api.Http.Call from a script; records every request. *)
-let with_http ~(respond : Aws_api.Http.request -> Aws_api.Http.response) k =
-  let seen = ref [] in
-  let result =
-    try k ()
-    with effect Aws_api.Http.Call request, k ->
-      seen := request :: !seen;
-      Effect.Deep.continue k (respond request)
-  in
-  result, List.rev !seen
-
-let static = Sigv4.Provider.Static.make ~access_key:"AKIDEXAMPLE" ~secret_key:"secret" ()
-let config = Aws_api_dynamodb.Config.aws ~region:"us-east-1"
-
 let test_http_signs_and_posts () =
   let respond _ : Aws_api.Http.response = { status = 200; headers = []; body = {|{"Item":{}}|} } in
-  let result, seen =
-    with_http ~respond @@ fun () ->
-    Aws_api_dynamodb.Http.run ~provider:static ~now:(fun () -> 0.) ~config @@ fun () ->
-    Client.get db ~key:alice_key
-  in
+  let result, seen = with_http ~respond @@ fun () -> Client.get db ~key:alice_key in
   Alcotest.(check bool) "ok" true (Result.is_ok result);
   match seen with
   | [ request ] ->
@@ -387,19 +392,13 @@ let test_http_status_mapping () =
     let respond _ : Aws_api.Http.response = { status; headers = []; body } in
     fst
       ( with_http ~respond @@ fun () ->
-        Aws_api_dynamodb.Http.run ~provider:static ~now:(fun () -> 0.) ~config @@ fun () ->
-        match Client.get db ~key:alice_key with
-        | Ok _ -> "ok"
-        | Error e -> "error:" ^ e.code
-        | exception Failure msg -> "raised:" ^ msg )
+        match Client.get db ~key:alice_key with Ok _ -> "ok" | Error e -> "error:" ^ e.code )
   in
   Alcotest.(check string) "2xx" "ok" (run 200 {|{}|});
   Alcotest.(check string)
     "4xx" "error:AccessDeniedException"
     (run 400 {|{"__type":"com.amazon.coral.service#AccessDeniedException","Message":"no"}|});
-  Alcotest.(check string)
-    "5xx raises at the perform site" "raised:DynamoDB request failed with status 503: down"
-    (run 503 "down")
+  Alcotest.(check string) "5xx" "error:HttpStatus" (run 503 "down")
 
 let test_http_default_provider_fetches_through_effect () =
   let respond (r : Aws_api.Http.request) : Aws_api.Http.response =
@@ -418,11 +417,13 @@ let test_http_default_provider_fetches_through_effect () =
     | _ -> None
   in
   let provider =
-    Aws_api_dynamodb.Http.default_provider ~getenv ~read_file:(fun _ -> None) ~now:(fun () -> 0.) ()
+    Sigv4.Provider.default ~getenv
+      ~read_file:(fun _ -> None)
+      ~now ~http:Aws_api_dynamodb.Transport.http ()
   in
+  let db = Client.make (Aws_api_dynamodb.make ~provider ~region:"us-east-1" ~now ()) ~table:"t" in
   let _, seen =
     with_http ~respond @@ fun () ->
-    Aws_api_dynamodb.Http.run ~provider ~now:(fun () -> 0.) ~config @@ fun () ->
     ignore (Client.get db ~key:alice_key);
     ignore (Client.get db ~key:alice_key)
   in

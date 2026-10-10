@@ -25,4 +25,4 @@ val delete :
   unit ->
   item
 
-val write : item list -> (unit, Error.t) result
+val write : Aws_json_transport.t -> item list -> (unit, Error.t) result

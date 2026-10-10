@@ -45,9 +45,9 @@ opam pin add aws-api-ssm https://github.com/lmdexpr/aws-api.ml.git
 
 ## Usage
 
-Handlers stack from the outside in: the transport (`Aws_api_cohttp_eio.run`), then the service
-bridge (`Aws_api_dynamodb.Http.run` / `Aws_api_lambda.Http.run`), then your code. `aws-api-ssm`
-has no bridge: `Aws_api_ssm.make` returns a value that `perform` signs and sends with. See each package's README.
+The transport handler (`Aws_api_cohttp_eio.run`) wraps your code. Inside it,
+`Aws_api_dynamodb.make` / `Aws_api_ssm.make` return a value that each operation signs and sends
+with; `Aws_api_lambda.Http.run` is the Runtime API loop. See each package's README.
 
 With another HTTP client, handle `Aws_api.Http.Call` yourself instead of `Aws_api_cohttp_eio.run`:
 

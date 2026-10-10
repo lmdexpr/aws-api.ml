@@ -10,6 +10,9 @@ module Sk = struct
   let meta = "META"
 end
 
+let ttl = "ttl"
+let attach_ttl ~ttl:expires_at item = Item.add ttl (Value.int expires_at) item
+
 module Map = struct
   include Map.Make (String)
 
@@ -77,3 +80,10 @@ let query ~db pk =
     ~expression_attribute_names:[ "#pk", Pk.label ]
     ~expression_attribute_values:(Item.singleton ":pk" @@ Value.String pk)
   |> Result.map sk_indexed
+
+let query_sk_prefix ~db pk sk_prefix =
+  Client.query db ~key_condition_expression:"#pk = :pk AND begins_with(#sk, :sk)"
+    ~expression_attribute_names:[ "#pk", Pk.label; "#sk", Sk.label ]
+    ~expression_attribute_values:
+      Item.(
+        empty |> add ":pk" (Value.String pk) |> add ":sk" (Value.String (sk_prefix ^ separator)))

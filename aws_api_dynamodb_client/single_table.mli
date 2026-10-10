@@ -1,6 +1,9 @@
 (** One set of single-table conventions: [pk] / [sk] attributes, [#]-separated key segments, a
     [META] sort key for an entity's own row. Optional; for tables laid out this way. *)
 
+val segment : string -> string -> string
+(** [segment label value] is [label#value]. *)
+
 module Pk : sig
   val label : string
 end
@@ -12,6 +15,18 @@ end
 
 val key : ?sk:string -> string -> Item.t
 (** The key item for [pk] and [sk] ([META] by default). *)
+
+val attach_key : pk:string -> ?sk:string -> Item.t -> Item.t
+(** Adds [pk] and [sk] ([META] by default) to the item. *)
+
+val strip_key : Item.t -> Item.t
+(** Removes [pk] and [sk], keeping the other attributes and their types. *)
+
+val ttl : string
+(** The [ttl] attribute name. *)
+
+val attach_ttl : ttl:int -> Item.t -> Item.t
+(** Sets the [ttl] attribute to the given expiry in epoch seconds. *)
 
 module Map : sig
   include Map.S with type key = string
@@ -68,3 +83,6 @@ end
 
 val put_if_not_exists : Client.t -> item:Item.t -> (unit, Error.t) result
 val query : db:Client.t -> string -> (Item.t Map.t, Error.t) result
+
+val query_sk_prefix : db:Client.t -> string -> string -> (Item.t list, Error.t) result
+(** [query_sk_prefix ~db pk label] reads the rows under [pk] whose [sk] starts with [label#]. *)

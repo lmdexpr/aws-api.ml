@@ -173,6 +173,44 @@ let test_get () =
     !seen;
   Alcotest.(check (result (option item) reject)) "response" (Ok (Some alice)) result
 
+(* Single_table *)
+
+module St = Aws_api_dynamodb_client.Single_table
+
+let test_single_table_query_sk_prefix () =
+  let seen, respond =
+    record ~response:(Ok (parse {|{"Items":[{"pk":{"S":"USER#a"},"sk":{"S":"PAGE#x"}}]}|}))
+  in
+  let result = with_stub ~respond @@ fun () -> St.query_sk_prefix ~db "USER#a" "PAGE" in
+  Alcotest.(check (list (pair string json)))
+    "request"
+    [
+      ( "Query",
+        parse
+          {|{"TableName":"example-table",
+             "KeyConditionExpression":"#pk = :pk AND begins_with(#sk, :sk)",
+             "ExpressionAttributeNames":{"#pk":"pk","#sk":"sk"},
+             "ExpressionAttributeValues":{":pk":{"S":"USER#a"},":sk":{"S":"PAGE#"}}}|}
+      );
+    ]
+    !seen;
+  Alcotest.(check (result (list item) reject))
+    "response"
+    (Ok [ St.key ~sk:"PAGE#x" "USER#a" ])
+    result
+
+let test_single_table_attach_and_strip () =
+  let profile = Item.singleton "age" (Value.int 30) in
+  let stored = profile |> St.attach_key ~pk:(St.segment "USER" "alice") |> St.attach_ttl ~ttl:60 in
+  Alcotest.check item "attached"
+    Item.(
+      profile
+      |> add "pk" (Value.String "USER#alice")
+      |> add "sk" (Value.String "META")
+      |> add "ttl" (Value.int 60))
+    stored;
+  Alcotest.check item "stripped" profile (stored |> Item.remove St.ttl |> St.strip_key)
+
 let test_query_follows_pagination () =
   let pages =
     ref
@@ -496,6 +534,11 @@ let () =
           Alcotest.test_case "scan follows pagination" `Quick test_scan_follows_pagination;
           Alcotest.test_case "update requests ALL_NEW" `Quick test_update_requests_all_new;
           Alcotest.test_case "transact write" `Quick test_transact_write;
+        ] );
+      ( "single_table",
+        [
+          Alcotest.test_case "query_sk_prefix" `Quick test_single_table_query_sk_prefix;
+          Alcotest.test_case "attach and strip" `Quick test_single_table_attach_and_strip;
         ] );
       ( "error",
         [

@@ -1,6 +1,7 @@
 type t = { api : Aws_api_dynamodb.t; table : string }
 
 let make api ~table = { api; table }
+let api { api; _ } = api
 let table { table; _ } = table
 let unit r = Result.map ignore r
 let values = Option.map Envelope.of_item

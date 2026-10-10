@@ -351,6 +351,10 @@ let test_transact_write () =
     ]
     !seen
 
+let test_client_accessors () =
+  Alcotest.(check bool) "api is the value given to make" true (Client.api db == api);
+  Alcotest.(check string) "table" "example-table" (Client.table db)
+
 (* Errors *)
 
 let error =
@@ -534,6 +538,7 @@ let () =
           Alcotest.test_case "scan follows pagination" `Quick test_scan_follows_pagination;
           Alcotest.test_case "update requests ALL_NEW" `Quick test_update_requests_all_new;
           Alcotest.test_case "transact write" `Quick test_transact_write;
+          Alcotest.test_case "accessors" `Quick test_client_accessors;
         ] );
       ( "single_table",
         [

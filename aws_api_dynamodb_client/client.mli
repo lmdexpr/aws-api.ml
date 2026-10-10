@@ -5,6 +5,9 @@ type t
 val make : Aws_api_dynamodb.t -> table:string -> t
 (** The first argument is [Aws_api_dynamodb.t], from [Aws_api_dynamodb.make] or [local]. *)
 
+val api : t -> Aws_api_dynamodb.t
+(** The value passed to {!make}, e.g. for [Transaction.write (Client.api db) items]. *)
+
 val table : t -> string
 
 val put :

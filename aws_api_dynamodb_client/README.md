@@ -53,7 +53,7 @@ Runnable version against DynamoDB Local: [`examples/dynamodb_crud.ml`](../exampl
 - Authentication errors (`AccessDeniedException`, `ExpiredTokenException`, ...) carry their text in `Message`; `Error.message` reads both spellings.
 - Every `Client` function returns `(_, Error.t) result` (the same type as `Aws_api_dynamodb.Error.t`): a parsed 4xx, `Error.http_status` for any other non-2xx status, or `Error.deserialization` for a 2xx body the types cannot read. `Error.is_conditional_check_failed` recognizes failed conditions, including cancelled transactions.
 - Expressions (`condition_expression`, `key_condition_expression`, ...) are raw strings. Pass values through `expression_attribute_values`, never by string concatenation.
-- `Transaction.write api` takes `Aws_api_dynamodb.transact_write_item`s, built with `Transaction.put` / `Transaction.delete` or the generated constructor directly.
+- `Transaction.write api` takes `Aws_api_dynamodb.transact_write_item`s, built with `Transaction.put` / `Transaction.delete` or the generated constructor directly. With only a `Client.t` at hand, `Client.api db` returns the `Aws_api_dynamodb.t` it was made with: `Transaction.write (Client.api db) items`.
 
 In tests, handle `Aws_api.Http.Call` yourself and pass a `Sigv4.Provider.Static` to `make`; the
 action name is in the `X-Amz-Target` header and the JSON body in `request.body`.

@@ -1,18 +1,13 @@
-module Item = Aws_api_dynamodb.Item
-module Client = Aws_api_dynamodb.Client
-module Value = Aws_api_dynamodb.Value
-module Number = Aws_api_dynamodb.Number
-module Projection = Aws_api_dynamodb.Projection
+module Item = Aws_api_dynamodb_client.Item
+module Client = Aws_api_dynamodb_client.Client
+module Value = Aws_api_dynamodb_client.Value
+module Number = Aws_api_dynamodb_client.Number
+module Projection = Aws_api_dynamodb_client.Projection
 
 let json = Alcotest.testable Yojson.Safe.pp Yojson.Safe.equal
-
-let item =
-  Alcotest.testable
-    (fun fmt i ->
-      Yojson.Safe.pp fmt
-        Aws_api_dynamodb.Action.Put_item.(make ~table_name:"t" ~item:i () |> yojson_of_request))
-    Item.equal
-
+let encode item = Aws_api_dynamodb_client.Envelope.(of_item item |> yojson_of_attrs)
+let decode json = Aws_api_dynamodb_client.Envelope.(attrs_of_yojson json |> to_item)
+let item = Alcotest.testable (fun fmt i -> Yojson.Safe.pp fmt (encode i)) Item.equal
 let parse = Yojson.Safe.from_string
 let static = Sigv4.Provider.Static.make ~access_key:"AKIDEXAMPLE" ~secret_key:"secret" ()
 let now () = 0.
@@ -78,14 +73,17 @@ let test_wire_encodes_every_json_kind () =
     (parse
        {|{"TableName":"example-table","Item":{"b":{"BOOL":true},"f":{"N":"1.5"},"i":{"N":"1"},
           "l":{"L":[{"N":"1"},{"S":"y"}]},"m":{"M":{"k":{"BOOL":false}}},"n":{"NULL":true},"s":{"S":"x"}}}|})
-    Aws_api_dynamodb.Action.Put_item.(
-      make ~table_name:"example-table" ~item () |> yojson_of_request)
+    Aws_api_dynamodb.(
+      put_item_input ~table_name:"example-table"
+        ~item:(Aws_api_dynamodb_client.Envelope.of_item item)
+        ()
+      |> yojson_of_put_item_input)
 
 let test_wire_decodes_numbers_and_sets () =
-  let Aws_api_dynamodb.Action.Get_item.{ item = decoded } =
-    Aws_api_dynamodb.Action.Get_item.response_of_yojson
-      (parse
-         {|{"Item":{"i":{"N":"42"},"f":{"N":"0.5"},"ss":{"SS":["a","b"]},"ns":{"NS":["1","2.5"]}}}|})
+  let decoded =
+    Some
+      (decode
+         (parse {|{"i":{"N":"42"},"f":{"N":"0.5"},"ss":{"SS":["a","b"]},"ns":{"NS":["1","2.5"]}}|}))
   in
   Alcotest.(check (option item))
     "decoded"
@@ -106,29 +104,29 @@ let test_wire_numbers_round_trip () =
   let big = "12345678901234567890123456789012345678" in
   let third = 1.0 /. 3.0 in
   let numbers = json_item [ "big", `Intlit big; "third", `Float third; "tenth", `Float 0.1 ] in
-  let wire =
-    Aws_api_dynamodb.Action.Put_item.(make ~table_name:"t" ~item:numbers () |> yojson_of_request)
-    |> Yojson.Safe.Util.member "Item"
-  in
+  let wire = encode numbers in
   Alcotest.check json "encoded"
     (parse
        {|{"big":{"N":"12345678901234567890123456789012345678"},"tenth":{"N":"0.1"},"third":{"N":"0.33333333333333331"}}|})
     wire;
-  let Aws_api_dynamodb.Action.Get_item.{ item = decoded } =
-    Aws_api_dynamodb.Action.Get_item.response_of_yojson (`Assoc [ "Item", wire ])
-  in
-  Alcotest.(check (option item)) "decoded" (Some numbers) decoded
+  Alcotest.(check (option item)) "decoded" (Some numbers) (Some (decode wire))
 
 (* Absent optional fields must be omitted, not null. *)
 
 let query ?limit ?scan_index_forward ?exclusive_start_key () =
-  Aws_api_dynamodb.Action.Query.(
-    make ?limit ?scan_index_forward ?exclusive_start_key ~table_name:"example-table"
-      ~key_condition_expression:"#pk = :pk"
+  Aws_api_dynamodb.(
+    query_input ?limit ?scan_index_forward
+      ?exclusive_start_key:(Option.map Aws_api_dynamodb_client.Envelope.of_item exclusive_start_key)
+      ~table_name:"example-table" ~key_condition_expression:"#pk = :pk"
       ~expression_attribute_names:[ "#pk", "pk" ]
-      ~expression_attribute_values:(Item.singleton ":pk" (Value.String "alice"))
+      ~expression_attribute_values:
+        (Aws_api_dynamodb_client.Envelope.of_item (Item.singleton ":pk" (Value.String "alice")))
       ()
-    |> yojson_of_request)
+    |> yojson_of_query_input)
+
+let query_output json =
+  let (o : Aws_api_dynamodb.query_output) = Aws_api_dynamodb.query_output_of_yojson json in
+  Aws_api_dynamodb_client.Envelope.(items o.items, Option.map to_item o.last_evaluated_key)
 
 let test_query_omits_absent_fields () =
   Alcotest.(check string)
@@ -149,8 +147,8 @@ let test_query_emits_exclusive_start_key () =
     (query ~exclusive_start_key:alice_key ())
 
 let test_query_decodes_last_evaluated_key () =
-  let Aws_api_dynamodb.Action.Query.{ items; last_evaluated_key } =
-    Aws_api_dynamodb.Action.Query.response_of_yojson
+  let items, last_evaluated_key =
+    query_output
       (parse
          {|{"Items":[{"pk":{"S":"alice"},"age":{"N":"30"}}],"LastEvaluatedKey":{"pk":{"S":"alice"}},"Count":1}|})
   in
@@ -158,9 +156,7 @@ let test_query_decodes_last_evaluated_key () =
   Alcotest.(check (option item)) "LastEvaluatedKey" (Some alice_key) last_evaluated_key
 
 let test_query_decodes_absent_last_evaluated_key () =
-  let Aws_api_dynamodb.Action.Query.{ items; last_evaluated_key } =
-    Aws_api_dynamodb.Action.Query.response_of_yojson (parse {|{"Items":[{"pk":{"S":"alice"}}]}|})
-  in
+  let items, last_evaluated_key = query_output (parse {|{"Items":[{"pk":{"S":"alice"}}]}|}) in
   Alcotest.(check (list item)) "items" [ alice_key ] items;
   Alcotest.(check (option item)) "no LastEvaluatedKey" None last_evaluated_key
 
@@ -297,7 +293,7 @@ let test_transact_write () =
   let seen, respond = record ~response:(Ok (`Assoc [])) in
   let result =
     with_stub ~respond @@ fun () ->
-    Aws_api_dynamodb.Transaction.(
+    Aws_api_dynamodb_client.Transaction.(
       write api
         [
           put_if_not_exists ~table_name:"example-table" ~item:alice ~primary_key:"pk";
@@ -321,7 +317,7 @@ let test_transact_write () =
 
 let error =
   Alcotest.testable
-    (fun fmt e -> Format.pp_print_string fmt (Aws_api_dynamodb.Error.to_string e))
+    (fun fmt e -> Format.pp_print_string fmt (Aws_api_dynamodb_client.Error.to_string e))
     ( = )
 
 let test_conditional_check_failed () =
@@ -334,28 +330,32 @@ let test_conditional_check_failed () =
   in
   match result with
   | Error e ->
-    Alcotest.(check bool) "recognized" true (Aws_api_dynamodb.Error.is_conditional_check_failed e);
+    Alcotest.(check bool)
+      "recognized" true
+      (Aws_api_dynamodb_client.Error.is_conditional_check_failed e);
     Alcotest.(check string) "code" "ConditionalCheckFailedException" e.code;
     Alcotest.(check (option string)) "message" (Some "The conditional request failed") e.message
   | Ok () -> Alcotest.fail "expected an error"
 
 let test_transaction_cancelled_by_condition () =
   let e =
-    Aws_api_dynamodb.Error.of_body
+    Aws_api_dynamodb_client.Error.of_body
       {|{"__type":"com.amazonaws.dynamodb.v20120810#TransactionCanceledException","CancellationReasons":[{"Code":"None"},{"Code":"ConditionalCheckFailed","Message":"The conditional request failed"}]}|}
   in
-  Alcotest.(check bool) "recognized" true (Aws_api_dynamodb.Error.is_conditional_check_failed e);
+  Alcotest.(check bool)
+    "recognized" true
+    (Aws_api_dynamodb_client.Error.is_conditional_check_failed e);
   Alcotest.(check (list string))
     "reasons"
     [ "None"; "ConditionalCheckFailed" ]
-    (Aws_api_dynamodb.Error.cancellation_reasons e)
+    (Aws_api_dynamodb_client.Error.cancellation_reasons e)
 
 let test_unparseable_error_keeps_body () =
-  let e = Aws_api_dynamodb.Error.of_body "<html>gateway</html>" in
+  let e = Aws_api_dynamodb_client.Error.of_body "<html>gateway</html>" in
   Alcotest.check error "raw body" { code = ""; message = None; body = "<html>gateway</html>" } e;
   Alcotest.(check bool)
     "not conditional" false
-    (Aws_api_dynamodb.Error.is_conditional_check_failed e)
+    (Aws_api_dynamodb_client.Error.is_conditional_check_failed e)
 
 (* --- Http bridge --- *)
 
@@ -448,18 +448,18 @@ let test_max_pages () =
   let result = with_stub ~respond @@ fun () -> Client.scan ~max_pages:3 db in
   (match result with
   | Error e ->
-    Alcotest.(check bool) "too many pages" true (Aws_api_dynamodb.Error.is_too_many_pages e)
+    Alcotest.(check bool) "too many pages" true (Aws_api_dynamodb_client.Error.is_too_many_pages e)
   | Ok _ -> Alcotest.fail "expected Error");
   Alcotest.(check int) "stopped after max_pages requests" 3 !calls
 
 let test_error_message_capitalized () =
   let e =
-    Aws_api_dynamodb.Error.of_body
+    Aws_api_dynamodb_client.Error.of_body
       {|{"__type":"com.amazon.coral.service#ExpiredTokenException","Message":"The security token included in the request is expired"}|}
   in
   Alcotest.(check string)
     "to_string" "ExpiredTokenException: The security token included in the request is expired"
-    (Aws_api_dynamodb.Error.to_string e)
+    (Aws_api_dynamodb_client.Error.to_string e)
 
 let test_number_long_exponent () =
   Alcotest.(check bool)

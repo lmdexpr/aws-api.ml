@@ -1,9 +1,9 @@
-(** Table-bound wrappers over {!Action}. *)
+(** Table-bound wrappers over the common {!Api} operations, in typed items. *)
 
 type t
 
-val make : Aws_json_transport.t -> table:string -> t
-(** The transport comes from [Aws_api_dynamodb.make] (or [local]). *)
+val make : Aws_api_dynamodb.t -> table:string -> t
+(** The first argument is [Aws_api_dynamodb.t], from [Aws_api_dynamodb.make] or [local]. *)
 
 val table : t -> string
 
@@ -29,10 +29,6 @@ val delete :
   t ->
   key:Item.t ->
   (unit, Error.t) result
-
-val compare_and_delete :
-  t -> key:Item.t -> attribute:string -> expected:Value.t -> (unit, Error.t) result
-(** Condition [#attr = :expected]. *)
 
 val update :
   t ->

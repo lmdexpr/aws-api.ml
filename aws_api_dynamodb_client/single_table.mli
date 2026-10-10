@@ -1,8 +1,5 @@
-(** Single-table layout: [pk] / [sk] attributes, [#]-separated segments, [META] sort key. *)
-
-val separator : string
-val segment : string -> string -> string
-val compose : string list -> string
+(** One set of single-table conventions: [pk] / [sk] attributes, [#]-separated key segments, a
+    [META] sort key for an entity's own row. Optional; for tables laid out this way. *)
 
 module Pk : sig
   val label : string
@@ -13,13 +10,8 @@ module Sk : sig
   val meta : string
 end
 
-val ttl : string
-val attach_ttl : ttl:int -> Item.t -> Item.t
-val attach_key : pk:string -> ?sk:string -> Item.t -> Item.t
 val key : ?sk:string -> string -> Item.t
-
-val strip_key : Item.t -> Item.t
-(** Removes [pk]/[sk] without projecting or discarding the types of other attributes. *)
+(** The key item for [pk] and [sk] ([META] by default). *)
 
 module Map : sig
   include Map.S with type key = string
@@ -29,8 +21,6 @@ module Map : sig
   val ( .*[] ) : 'a t -> string -> 'a t
   (** Entries whose key starts with the given segment. *)
 end
-
-val sk_indexed : Item.t list -> Item.t Map.t
 
 module Pk_row (M : sig
   type t [@@deriving yojson]
@@ -78,8 +68,3 @@ end
 
 val put_if_not_exists : Client.t -> item:Item.t -> (unit, Error.t) result
 val query : db:Client.t -> string -> (Item.t Map.t, Error.t) result
-val query_sk_prefix : db:Client.t -> string -> string -> (Item.t list, Error.t) result
-
-module Transact : sig
-  val put_if_not_exists : table_name:string -> item:Item.t -> Transaction.item
-end

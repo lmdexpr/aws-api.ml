@@ -1,6 +1,6 @@
 (** Typed DynamoDB attributes. JSON conversion is explicit in {!Projection}. *)
 
-type t
+type t = Value.t Value.String_map.t
 
 val empty : t
 val singleton : string -> Value.t -> t

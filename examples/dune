@@ -11,7 +11,13 @@
 (executable
  (name dynamodb_crud)
  (modules dynamodb_crud)
- (libraries aws-api-dynamodb aws-api-cohttp-eio eio eio_main cohttp-eio uri))
+ (libraries
+  aws-api-dynamodb-client
+  aws-api-cohttp-eio
+  eio
+  eio_main
+  cohttp-eio
+  uri))
 
 (executable
  (name lambda_echo)

@@ -1,6 +1,6 @@
 (* Exercises every Client operation and Transaction against DynamoDB Local. *)
 
-open Aws_api_dynamodb
+open Aws_api_dynamodb_client
 
 let ok = function Ok x -> x | Error e -> failwith (Error.to_string e)
 let value = function Ok v -> v | Error e -> failwith e

@@ -38,7 +38,8 @@ let snake name =
 
 (* Names the generated module defines before the model's: a shape or operation mapping onto
    one would shadow it, and two shapes mapping onto one identifier would silently merge. *)
-let reserved_types = [ "t" ]
+(* Constructors share the value namespace with [protocol] and [make]. *)
+let reserved_types = [ "t"; "protocol"; "make" ]
 let reserved_modules = [ "error"; "wire"; "transport"; "def" ]
 
 (* Goes into the host name. *)
@@ -128,6 +129,24 @@ let () =
         (snake (local id))
         (String.concat "\n  " (List.map field members))
   in
+  (* [let get_item_input ?consistent_read ~table_name ~key () = { ... }]: optional members as
+     optional arguments, so callers name only what they set. *)
+  let constructor (id, s) =
+    let members = s.json |> member "members" |> to_assoc in
+    if members = [] then
+      None
+    else
+      let required (_, m) = s.kind = "structure" && has_trait "smithy.api#required" m in
+      let arg ((name, _) as m) = (if required m then "~" else "?") ^ snake name in
+      let unit = if List.for_all required members then "" else " ()" in
+      Some
+        (Printf.sprintf "let %s %s%s : %s = { %s }"
+           (snake (local id))
+           (String.concat " " (List.map arg members))
+           unit
+           (snake (local id))
+           (String.concat "; " (List.map (fun (name, _) -> snake name) members)))
+  in
   let operation id =
     let s = shape id in
     let io key = s.json |> member key |> member "target" |> to_string in
@@ -188,9 +207,12 @@ type %s
 [@@deriving yojson]
 
 %s
+
+%s
 |}
     (Filename.basename path) version (local service.id)
     (trait "aws.auth#sigv4" service.json |> member "name" |> to_string |> host_label)
     (trait "aws.api#service" service.json |> member "endpointPrefix" |> to_string |> host_label)
     (String.concat "\n\nand " (List.map record records))
+    (List.filter_map constructor records |> String.concat "\n")
     (List.map operation operations |> String.concat "\n\n")

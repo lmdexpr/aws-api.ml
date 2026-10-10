@@ -1,7 +1,7 @@
 (** DynamoDB 4xx error, another HTTP failure, or a client-side limit ({!too_many_pages}). The type
-    is the shared JSON-protocol error; see [smithy/runtime/aws_json_error.ml]. *)
+    is the shared JSON-protocol error; see [Aws_api_dynamodb.Error]. *)
 
-type t = Aws_json_error.t = {
+type t = Aws_api_dynamodb.Error.t = {
   code : string;
     (** [__type] without namespace; [""] when the body is not parseable; [TooManyPages] for
         {!too_many_pages}; {!http_status_code} / {!deserialization_code} for transport failures. *)

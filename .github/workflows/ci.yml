@@ -41,3 +41,5 @@ jobs:
           dune tools install ocamlformat
           eval "$(dune tools env)"
           dune build @fmt
+      - run: dune build
+      - run: dune test

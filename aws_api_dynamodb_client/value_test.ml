@@ -1,17 +1,11 @@
-open Aws_api_dynamodb
+open Aws_api_dynamodb_client
 open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 
 let json = Alcotest.testable Yojson.Safe.pp Yojson.Safe.equal
 let ok = function Ok x -> x | Error message -> Alcotest.fail message
 let number = Number.of_string_exn
-
-let encode item =
-  Action.Put_item.(make ~table_name:"example-table" ~item () |> yojson_of_request)
-  |> Yojson.Safe.Util.member "Item"
-
-let decode wire =
-  let Action.Get_item.{ item } = Action.Get_item.response_of_yojson (`Assoc [ "Item", wire ]) in
-  Option.get item
+let encode item = Envelope.(of_item item |> yojson_of_attrs)
+let decode wire = Envelope.(attrs_of_yojson wire |> to_item)
 
 let expect_error label = function
   | Error _ -> ()
@@ -161,13 +155,20 @@ let test_bad_wire () =
           (String.starts_with ~prefix:"Wire $[\"outer\"][0]" message))
     [
       `Assoc [ "N", `String "nan" ];
-      `Assoc [ "B", `String "!!!" ];
       `Assoc [ "SS", `List [] ];
-      `Assoc [ "SS", `List [ `Int 1 ] ];
       `Assoc [ "NS", `List [ `String "1"; `String "1.0" ] ];
       `Assoc [ "NULL", `Bool false ];
       `Assoc [ "S", `String "x"; "N", `String "1" ];
     ];
+  (* Shape errors (bad base64, wrong JSON type) are caught by the generated decoder, before
+     [Wire] sees the value and can name a path. *)
+  List.iter
+    (fun attribute ->
+      let wire = `Assoc [ "outer", `Assoc [ "L", `List [ attribute ] ] ] in
+      match decode wire with
+      | _ -> Alcotest.fail "invalid wire accepted"
+      | exception Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error _ -> ())
+    [ `Assoc [ "B", `String "!!!" ]; `Assoc [ "SS", `List [ `Int 1 ] ] ];
   match decode (`Assoc [ "x", `Assoc [ "S", `String "a" ]; "x", `Assoc [ "S", `String "b" ] ]) with
   | _ -> Alcotest.fail "duplicate wire attribute accepted"
   | exception Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error _ -> ()
@@ -230,10 +231,8 @@ let test_record_codec () =
   in
   let r = decode old |> Projection.yojson_of_item_exn |> record_of_yojson in
   Alcotest.(check (float 0.)) "existing decimal timestamp" 1700000000.125 r.timestamp;
-  let stripped = Row.to_item r |> Single_table.strip_key in
-  Alcotest.(check bool)
-    "strip only removes keys" false
-    (Item.mem "pk" stripped || Item.mem "sk" stripped)
+  let back = Row.to_item r |> Row.of_item in
+  Alcotest.(check bool) "of_item strips the key attributes" true (back = r)
 
 let () =
   Alcotest.run "typed values"

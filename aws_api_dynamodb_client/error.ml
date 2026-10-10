@@ -1,21 +1,11 @@
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
-include Aws_json_error
-
-module Body = struct
-  type cancellation_reason = { code : string [@key "Code"] }
-  [@@deriving of_yojson] [@@yojson.allow_extra_fields]
-
-  type t = {
-    cancellation_reasons : cancellation_reason list; [@key "CancellationReasons"] [@default []]
-  }
-  [@@deriving of_yojson] [@@yojson.allow_extra_fields]
-end
+include Aws_api_dynamodb.Error
 
 (* [TransactionCanceledException] lists one reason per transact item. *)
 let cancellation_reasons { body; _ } =
-  match Yojson.Safe.from_string body |> Body.t_of_yojson with
-  | Body.{ cancellation_reasons } -> List.map (fun Body.{ code } -> code) cancellation_reasons
-  | exception (Yojson.Json_error _ | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error _) -> []
+  let open Yojson.Safe.Util in
+  match Yojson.Safe.from_string body |> member "CancellationReasons" |> to_list with
+  | reasons -> List.filter_map (fun r -> member "Code" r |> to_string_option) reasons
+  | exception (Yojson.Json_error _ | Type_error _) -> []
 
 let too_many_pages_code = "TooManyPages"
 

@@ -2,7 +2,6 @@ type error = { path : string; message : string }
 
 exception Conversion_error of error
 
-let error_to_string { path; message } = path ^ ": " ^ message
 let fail path message = raise (Conversion_error { path; message })
 let field path name = path ^ Printf.sprintf "[%S]" name
 let index path i = path ^ Printf.sprintf "[%d]" i

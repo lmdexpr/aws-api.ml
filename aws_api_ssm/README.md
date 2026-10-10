@@ -26,6 +26,7 @@ let () =
   `Error.deserialization`, with the body dropped since responses may carry secrets.
 - `make` raises `Invalid_argument` if `region` is not `[a-z0-9-]+`, since it becomes part of the
   host name. `?endpoint` is taken as given, including its scheme.
-- Enums are strings; see [`smithy/`](../smithy) for what is and is not generated.
+- Enums are polymorphic variants with `` `Unknown_value of string `` for values newer than the
+  model; see [`smithy/`](../smithy) for what is and is not generated.
 
 [api]: https://docs.aws.amazon.com/systems-manager/latest/APIReference/Welcome.html

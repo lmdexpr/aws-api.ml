@@ -13,6 +13,1945 @@ let protocol =
 
 let make ?endpoint ?provider ~region ~now () = Transport.make ?endpoint ?provider ~protocol ~region ~now ()
 
+type access_request_status = [ `APPROVED | `REJECTED | `REVOKED | `EXPIRED | `PENDING | `Unknown_value of string ]
+
+let yojson_of_access_request_status : access_request_status -> Yojson.Safe.t = function
+  | `APPROVED -> `String "Approved"
+  | `REJECTED -> `String "Rejected"
+  | `REVOKED -> `String "Revoked"
+  | `EXPIRED -> `String "Expired"
+  | `PENDING -> `String "Pending"
+  | `Unknown_value s -> `String s
+
+let access_request_status_of_yojson : Yojson.Safe.t -> access_request_status = function
+  | `String "Approved" -> `APPROVED
+  | `String "Rejected" -> `REJECTED
+  | `String "Revoked" -> `REVOKED
+  | `String "Expired" -> `EXPIRED
+  | `String "Pending" -> `PENDING
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "access_request_status: string expected" json
+
+type access_type = [ `STANDARD | `JUSTINTIME | `Unknown_value of string ]
+
+let yojson_of_access_type : access_type -> Yojson.Safe.t = function
+  | `STANDARD -> `String "Standard"
+  | `JUSTINTIME -> `String "JustInTime"
+  | `Unknown_value s -> `String s
+
+let access_type_of_yojson : Yojson.Safe.t -> access_type = function
+  | `String "Standard" -> `STANDARD
+  | `String "JustInTime" -> `JUSTINTIME
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "access_type: string expected" json
+
+type association_compliance_severity = [ `Critical | `High | `Medium | `Low | `Unspecified | `Unknown_value of string ]
+
+let yojson_of_association_compliance_severity : association_compliance_severity -> Yojson.Safe.t = function
+  | `Critical -> `String "CRITICAL"
+  | `High -> `String "HIGH"
+  | `Medium -> `String "MEDIUM"
+  | `Low -> `String "LOW"
+  | `Unspecified -> `String "UNSPECIFIED"
+  | `Unknown_value s -> `String s
+
+let association_compliance_severity_of_yojson : Yojson.Safe.t -> association_compliance_severity = function
+  | `String "CRITICAL" -> `Critical
+  | `String "HIGH" -> `High
+  | `String "MEDIUM" -> `Medium
+  | `String "LOW" -> `Low
+  | `String "UNSPECIFIED" -> `Unspecified
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "association_compliance_severity: string expected" json
+
+type association_execution_filter_key = [ `ExecutionId | `Status | `CreatedTime | `Unknown_value of string ]
+
+let yojson_of_association_execution_filter_key : association_execution_filter_key -> Yojson.Safe.t = function
+  | `ExecutionId -> `String "ExecutionId"
+  | `Status -> `String "Status"
+  | `CreatedTime -> `String "CreatedTime"
+  | `Unknown_value s -> `String s
+
+let association_execution_filter_key_of_yojson : Yojson.Safe.t -> association_execution_filter_key = function
+  | `String "ExecutionId" -> `ExecutionId
+  | `String "Status" -> `Status
+  | `String "CreatedTime" -> `CreatedTime
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "association_execution_filter_key: string expected" json
+
+type association_execution_targets_filter_key = [ `Status | `ResourceId | `ResourceType | `Unknown_value of string ]
+
+let yojson_of_association_execution_targets_filter_key : association_execution_targets_filter_key -> Yojson.Safe.t = function
+  | `Status -> `String "Status"
+  | `ResourceId -> `String "ResourceId"
+  | `ResourceType -> `String "ResourceType"
+  | `Unknown_value s -> `String s
+
+let association_execution_targets_filter_key_of_yojson : Yojson.Safe.t -> association_execution_targets_filter_key = function
+  | `String "Status" -> `Status
+  | `String "ResourceId" -> `ResourceId
+  | `String "ResourceType" -> `ResourceType
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "association_execution_targets_filter_key: string expected" json
+
+type association_filter_key = [ `InstanceId | `Name | `AssociationId | `Status | `LastExecutedBefore | `LastExecutedAfter | `AssociationName | `ResourceGroupName | `CloudConnectorId | `Unknown_value of string ]
+
+let yojson_of_association_filter_key : association_filter_key -> Yojson.Safe.t = function
+  | `InstanceId -> `String "InstanceId"
+  | `Name -> `String "Name"
+  | `AssociationId -> `String "AssociationId"
+  | `Status -> `String "AssociationStatusName"
+  | `LastExecutedBefore -> `String "LastExecutedBefore"
+  | `LastExecutedAfter -> `String "LastExecutedAfter"
+  | `AssociationName -> `String "AssociationName"
+  | `ResourceGroupName -> `String "ResourceGroupName"
+  | `CloudConnectorId -> `String "CloudConnectorId"
+  | `Unknown_value s -> `String s
+
+let association_filter_key_of_yojson : Yojson.Safe.t -> association_filter_key = function
+  | `String "InstanceId" -> `InstanceId
+  | `String "Name" -> `Name
+  | `String "AssociationId" -> `AssociationId
+  | `String "AssociationStatusName" -> `Status
+  | `String "LastExecutedBefore" -> `LastExecutedBefore
+  | `String "LastExecutedAfter" -> `LastExecutedAfter
+  | `String "AssociationName" -> `AssociationName
+  | `String "ResourceGroupName" -> `ResourceGroupName
+  | `String "CloudConnectorId" -> `CloudConnectorId
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "association_filter_key: string expected" json
+
+type association_filter_operator_type = [ `Equal | `LessThan | `GreaterThan | `Unknown_value of string ]
+
+let yojson_of_association_filter_operator_type : association_filter_operator_type -> Yojson.Safe.t = function
+  | `Equal -> `String "EQUAL"
+  | `LessThan -> `String "LESS_THAN"
+  | `GreaterThan -> `String "GREATER_THAN"
+  | `Unknown_value s -> `String s
+
+let association_filter_operator_type_of_yojson : Yojson.Safe.t -> association_filter_operator_type = function
+  | `String "EQUAL" -> `Equal
+  | `String "LESS_THAN" -> `LessThan
+  | `String "GREATER_THAN" -> `GreaterThan
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "association_filter_operator_type: string expected" json
+
+type association_status_name = [ `Pending | `Success | `Failed | `Unknown_value of string ]
+
+let yojson_of_association_status_name : association_status_name -> Yojson.Safe.t = function
+  | `Pending -> `String "Pending"
+  | `Success -> `String "Success"
+  | `Failed -> `String "Failed"
+  | `Unknown_value s -> `String s
+
+let association_status_name_of_yojson : Yojson.Safe.t -> association_status_name = function
+  | `String "Pending" -> `Pending
+  | `String "Success" -> `Success
+  | `String "Failed" -> `Failed
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "association_status_name: string expected" json
+
+type association_sync_compliance = [ `Auto | `Manual | `Unknown_value of string ]
+
+let yojson_of_association_sync_compliance : association_sync_compliance -> Yojson.Safe.t = function
+  | `Auto -> `String "AUTO"
+  | `Manual -> `String "MANUAL"
+  | `Unknown_value s -> `String s
+
+let association_sync_compliance_of_yojson : Yojson.Safe.t -> association_sync_compliance = function
+  | `String "AUTO" -> `Auto
+  | `String "MANUAL" -> `Manual
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "association_sync_compliance: string expected" json
+
+type attachment_hash_type = [ `SHA256 | `Unknown_value of string ]
+
+let yojson_of_attachment_hash_type : attachment_hash_type -> Yojson.Safe.t = function
+  | `SHA256 -> `String "Sha256"
+  | `Unknown_value s -> `String s
+
+let attachment_hash_type_of_yojson : Yojson.Safe.t -> attachment_hash_type = function
+  | `String "Sha256" -> `SHA256
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "attachment_hash_type: string expected" json
+
+type attachments_source_key = [ `SourceUrl | `S3FileUrl | `AttachmentReference | `Unknown_value of string ]
+
+let yojson_of_attachments_source_key : attachments_source_key -> Yojson.Safe.t = function
+  | `SourceUrl -> `String "SourceUrl"
+  | `S3FileUrl -> `String "S3FileUrl"
+  | `AttachmentReference -> `String "AttachmentReference"
+  | `Unknown_value s -> `String s
+
+let attachments_source_key_of_yojson : Yojson.Safe.t -> attachments_source_key = function
+  | `String "SourceUrl" -> `SourceUrl
+  | `String "S3FileUrl" -> `S3FileUrl
+  | `String "AttachmentReference" -> `AttachmentReference
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "attachments_source_key: string expected" json
+
+type automation_execution_filter_key = [ `DOCUMENT_NAME_PREFIX | `EXECUTION_STATUS | `EXECUTION_ID | `PARENT_EXECUTION_ID | `CURRENT_ACTION | `START_TIME_BEFORE | `START_TIME_AFTER | `AUTOMATION_TYPE | `TAG_KEY | `TARGET_RESOURCE_GROUP | `AUTOMATION_SUBTYPE | `OPS_ITEM_ID | `Unknown_value of string ]
+
+let yojson_of_automation_execution_filter_key : automation_execution_filter_key -> Yojson.Safe.t = function
+  | `DOCUMENT_NAME_PREFIX -> `String "DocumentNamePrefix"
+  | `EXECUTION_STATUS -> `String "ExecutionStatus"
+  | `EXECUTION_ID -> `String "ExecutionId"
+  | `PARENT_EXECUTION_ID -> `String "ParentExecutionId"
+  | `CURRENT_ACTION -> `String "CurrentAction"
+  | `START_TIME_BEFORE -> `String "StartTimeBefore"
+  | `START_TIME_AFTER -> `String "StartTimeAfter"
+  | `AUTOMATION_TYPE -> `String "AutomationType"
+  | `TAG_KEY -> `String "TagKey"
+  | `TARGET_RESOURCE_GROUP -> `String "TargetResourceGroup"
+  | `AUTOMATION_SUBTYPE -> `String "AutomationSubtype"
+  | `OPS_ITEM_ID -> `String "OpsItemId"
+  | `Unknown_value s -> `String s
+
+let automation_execution_filter_key_of_yojson : Yojson.Safe.t -> automation_execution_filter_key = function
+  | `String "DocumentNamePrefix" -> `DOCUMENT_NAME_PREFIX
+  | `String "ExecutionStatus" -> `EXECUTION_STATUS
+  | `String "ExecutionId" -> `EXECUTION_ID
+  | `String "ParentExecutionId" -> `PARENT_EXECUTION_ID
+  | `String "CurrentAction" -> `CURRENT_ACTION
+  | `String "StartTimeBefore" -> `START_TIME_BEFORE
+  | `String "StartTimeAfter" -> `START_TIME_AFTER
+  | `String "AutomationType" -> `AUTOMATION_TYPE
+  | `String "TagKey" -> `TAG_KEY
+  | `String "TargetResourceGroup" -> `TARGET_RESOURCE_GROUP
+  | `String "AutomationSubtype" -> `AUTOMATION_SUBTYPE
+  | `String "OpsItemId" -> `OPS_ITEM_ID
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "automation_execution_filter_key: string expected" json
+
+type automation_execution_status = [ `PENDING | `INPROGRESS | `WAITING | `SUCCESS | `TIMEDOUT | `CANCELLING | `CANCELLED | `FAILED | `PENDING_APPROVAL | `APPROVED | `REJECTED | `SCHEDULED | `RUNBOOK_INPROGRESS | `PENDING_CHANGE_CALENDAR_OVERRIDE | `CHANGE_CALENDAR_OVERRIDE_APPROVED | `CHANGE_CALENDAR_OVERRIDE_REJECTED | `COMPLETED_WITH_SUCCESS | `COMPLETED_WITH_FAILURE | `EXITED | `Unknown_value of string ]
+
+let yojson_of_automation_execution_status : automation_execution_status -> Yojson.Safe.t = function
+  | `PENDING -> `String "Pending"
+  | `INPROGRESS -> `String "InProgress"
+  | `WAITING -> `String "Waiting"
+  | `SUCCESS -> `String "Success"
+  | `TIMEDOUT -> `String "TimedOut"
+  | `CANCELLING -> `String "Cancelling"
+  | `CANCELLED -> `String "Cancelled"
+  | `FAILED -> `String "Failed"
+  | `PENDING_APPROVAL -> `String "PendingApproval"
+  | `APPROVED -> `String "Approved"
+  | `REJECTED -> `String "Rejected"
+  | `SCHEDULED -> `String "Scheduled"
+  | `RUNBOOK_INPROGRESS -> `String "RunbookInProgress"
+  | `PENDING_CHANGE_CALENDAR_OVERRIDE -> `String "PendingChangeCalendarOverride"
+  | `CHANGE_CALENDAR_OVERRIDE_APPROVED -> `String "ChangeCalendarOverrideApproved"
+  | `CHANGE_CALENDAR_OVERRIDE_REJECTED -> `String "ChangeCalendarOverrideRejected"
+  | `COMPLETED_WITH_SUCCESS -> `String "CompletedWithSuccess"
+  | `COMPLETED_WITH_FAILURE -> `String "CompletedWithFailure"
+  | `EXITED -> `String "Exited"
+  | `Unknown_value s -> `String s
+
+let automation_execution_status_of_yojson : Yojson.Safe.t -> automation_execution_status = function
+  | `String "Pending" -> `PENDING
+  | `String "InProgress" -> `INPROGRESS
+  | `String "Waiting" -> `WAITING
+  | `String "Success" -> `SUCCESS
+  | `String "TimedOut" -> `TIMEDOUT
+  | `String "Cancelling" -> `CANCELLING
+  | `String "Cancelled" -> `CANCELLED
+  | `String "Failed" -> `FAILED
+  | `String "PendingApproval" -> `PENDING_APPROVAL
+  | `String "Approved" -> `APPROVED
+  | `String "Rejected" -> `REJECTED
+  | `String "Scheduled" -> `SCHEDULED
+  | `String "RunbookInProgress" -> `RUNBOOK_INPROGRESS
+  | `String "PendingChangeCalendarOverride" -> `PENDING_CHANGE_CALENDAR_OVERRIDE
+  | `String "ChangeCalendarOverrideApproved" -> `CHANGE_CALENDAR_OVERRIDE_APPROVED
+  | `String "ChangeCalendarOverrideRejected" -> `CHANGE_CALENDAR_OVERRIDE_REJECTED
+  | `String "CompletedWithSuccess" -> `COMPLETED_WITH_SUCCESS
+  | `String "CompletedWithFailure" -> `COMPLETED_WITH_FAILURE
+  | `String "Exited" -> `EXITED
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "automation_execution_status: string expected" json
+
+type automation_subtype = [ `ChangeRequest | `AccessRequest | `Unknown_value of string ]
+
+let yojson_of_automation_subtype : automation_subtype -> Yojson.Safe.t = function
+  | `ChangeRequest -> `String "ChangeRequest"
+  | `AccessRequest -> `String "AccessRequest"
+  | `Unknown_value s -> `String s
+
+let automation_subtype_of_yojson : Yojson.Safe.t -> automation_subtype = function
+  | `String "ChangeRequest" -> `ChangeRequest
+  | `String "AccessRequest" -> `AccessRequest
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "automation_subtype: string expected" json
+
+type automation_type = [ `CrossAccount | `Local | `Unknown_value of string ]
+
+let yojson_of_automation_type : automation_type -> Yojson.Safe.t = function
+  | `CrossAccount -> `String "CrossAccount"
+  | `Local -> `String "Local"
+  | `Unknown_value s -> `String s
+
+let automation_type_of_yojson : Yojson.Safe.t -> automation_type = function
+  | `String "CrossAccount" -> `CrossAccount
+  | `String "Local" -> `Local
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "automation_type: string expected" json
+
+type calendar_state = [ `OPEN | `CLOSED | `Unknown_value of string ]
+
+let yojson_of_calendar_state : calendar_state -> Yojson.Safe.t = function
+  | `OPEN -> `String "OPEN"
+  | `CLOSED -> `String "CLOSED"
+  | `Unknown_value s -> `String s
+
+let calendar_state_of_yojson : Yojson.Safe.t -> calendar_state = function
+  | `String "OPEN" -> `OPEN
+  | `String "CLOSED" -> `CLOSED
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "calendar_state: string expected" json
+
+type cloud_connector_filter_key = [ `SubscriptionId | `TenantId | `Unknown_value of string ]
+
+let yojson_of_cloud_connector_filter_key : cloud_connector_filter_key -> Yojson.Safe.t = function
+  | `SubscriptionId -> `String "SubscriptionId"
+  | `TenantId -> `String "TenantId"
+  | `Unknown_value s -> `String s
+
+let cloud_connector_filter_key_of_yojson : Yojson.Safe.t -> cloud_connector_filter_key = function
+  | `String "SubscriptionId" -> `SubscriptionId
+  | `String "TenantId" -> `TenantId
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "cloud_connector_filter_key: string expected" json
+
+type command_filter_key = [ `INVOKED_AFTER | `INVOKED_BEFORE | `STATUS | `EXECUTION_STAGE | `DOCUMENT_NAME | `Unknown_value of string ]
+
+let yojson_of_command_filter_key : command_filter_key -> Yojson.Safe.t = function
+  | `INVOKED_AFTER -> `String "InvokedAfter"
+  | `INVOKED_BEFORE -> `String "InvokedBefore"
+  | `STATUS -> `String "Status"
+  | `EXECUTION_STAGE -> `String "ExecutionStage"
+  | `DOCUMENT_NAME -> `String "DocumentName"
+  | `Unknown_value s -> `String s
+
+let command_filter_key_of_yojson : Yojson.Safe.t -> command_filter_key = function
+  | `String "InvokedAfter" -> `INVOKED_AFTER
+  | `String "InvokedBefore" -> `INVOKED_BEFORE
+  | `String "Status" -> `STATUS
+  | `String "ExecutionStage" -> `EXECUTION_STAGE
+  | `String "DocumentName" -> `DOCUMENT_NAME
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "command_filter_key: string expected" json
+
+type command_invocation_status = [ `PENDING | `IN_PROGRESS | `DELAYED | `SUCCESS | `CANCELLED | `TIMED_OUT | `FAILED | `CANCELLING | `Unknown_value of string ]
+
+let yojson_of_command_invocation_status : command_invocation_status -> Yojson.Safe.t = function
+  | `PENDING -> `String "Pending"
+  | `IN_PROGRESS -> `String "InProgress"
+  | `DELAYED -> `String "Delayed"
+  | `SUCCESS -> `String "Success"
+  | `CANCELLED -> `String "Cancelled"
+  | `TIMED_OUT -> `String "TimedOut"
+  | `FAILED -> `String "Failed"
+  | `CANCELLING -> `String "Cancelling"
+  | `Unknown_value s -> `String s
+
+let command_invocation_status_of_yojson : Yojson.Safe.t -> command_invocation_status = function
+  | `String "Pending" -> `PENDING
+  | `String "InProgress" -> `IN_PROGRESS
+  | `String "Delayed" -> `DELAYED
+  | `String "Success" -> `SUCCESS
+  | `String "Cancelled" -> `CANCELLED
+  | `String "TimedOut" -> `TIMED_OUT
+  | `String "Failed" -> `FAILED
+  | `String "Cancelling" -> `CANCELLING
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "command_invocation_status: string expected" json
+
+type command_plugin_status = [ `PENDING | `IN_PROGRESS | `SUCCESS | `TIMED_OUT | `CANCELLED | `FAILED | `Unknown_value of string ]
+
+let yojson_of_command_plugin_status : command_plugin_status -> Yojson.Safe.t = function
+  | `PENDING -> `String "Pending"
+  | `IN_PROGRESS -> `String "InProgress"
+  | `SUCCESS -> `String "Success"
+  | `TIMED_OUT -> `String "TimedOut"
+  | `CANCELLED -> `String "Cancelled"
+  | `FAILED -> `String "Failed"
+  | `Unknown_value s -> `String s
+
+let command_plugin_status_of_yojson : Yojson.Safe.t -> command_plugin_status = function
+  | `String "Pending" -> `PENDING
+  | `String "InProgress" -> `IN_PROGRESS
+  | `String "Success" -> `SUCCESS
+  | `String "TimedOut" -> `TIMED_OUT
+  | `String "Cancelled" -> `CANCELLED
+  | `String "Failed" -> `FAILED
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "command_plugin_status: string expected" json
+
+type command_status = [ `PENDING | `IN_PROGRESS | `SUCCESS | `CANCELLED | `FAILED | `TIMED_OUT | `CANCELLING | `Unknown_value of string ]
+
+let yojson_of_command_status : command_status -> Yojson.Safe.t = function
+  | `PENDING -> `String "Pending"
+  | `IN_PROGRESS -> `String "InProgress"
+  | `SUCCESS -> `String "Success"
+  | `CANCELLED -> `String "Cancelled"
+  | `FAILED -> `String "Failed"
+  | `TIMED_OUT -> `String "TimedOut"
+  | `CANCELLING -> `String "Cancelling"
+  | `Unknown_value s -> `String s
+
+let command_status_of_yojson : Yojson.Safe.t -> command_status = function
+  | `String "Pending" -> `PENDING
+  | `String "InProgress" -> `IN_PROGRESS
+  | `String "Success" -> `SUCCESS
+  | `String "Cancelled" -> `CANCELLED
+  | `String "Failed" -> `FAILED
+  | `String "TimedOut" -> `TIMED_OUT
+  | `String "Cancelling" -> `CANCELLING
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "command_status: string expected" json
+
+type compliance_query_operator_type = [ `Equal | `NotEqual | `BeginWith | `LessThan | `GreaterThan | `Unknown_value of string ]
+
+let yojson_of_compliance_query_operator_type : compliance_query_operator_type -> Yojson.Safe.t = function
+  | `Equal -> `String "EQUAL"
+  | `NotEqual -> `String "NOT_EQUAL"
+  | `BeginWith -> `String "BEGIN_WITH"
+  | `LessThan -> `String "LESS_THAN"
+  | `GreaterThan -> `String "GREATER_THAN"
+  | `Unknown_value s -> `String s
+
+let compliance_query_operator_type_of_yojson : Yojson.Safe.t -> compliance_query_operator_type = function
+  | `String "EQUAL" -> `Equal
+  | `String "NOT_EQUAL" -> `NotEqual
+  | `String "BEGIN_WITH" -> `BeginWith
+  | `String "LESS_THAN" -> `LessThan
+  | `String "GREATER_THAN" -> `GreaterThan
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "compliance_query_operator_type: string expected" json
+
+type compliance_severity = [ `Critical | `High | `Medium | `Low | `Informational | `Unspecified | `Unknown_value of string ]
+
+let yojson_of_compliance_severity : compliance_severity -> Yojson.Safe.t = function
+  | `Critical -> `String "CRITICAL"
+  | `High -> `String "HIGH"
+  | `Medium -> `String "MEDIUM"
+  | `Low -> `String "LOW"
+  | `Informational -> `String "INFORMATIONAL"
+  | `Unspecified -> `String "UNSPECIFIED"
+  | `Unknown_value s -> `String s
+
+let compliance_severity_of_yojson : Yojson.Safe.t -> compliance_severity = function
+  | `String "CRITICAL" -> `Critical
+  | `String "HIGH" -> `High
+  | `String "MEDIUM" -> `Medium
+  | `String "LOW" -> `Low
+  | `String "INFORMATIONAL" -> `Informational
+  | `String "UNSPECIFIED" -> `Unspecified
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "compliance_severity: string expected" json
+
+type compliance_status = [ `Compliant | `NonCompliant | `Unknown_value of string ]
+
+let yojson_of_compliance_status : compliance_status -> Yojson.Safe.t = function
+  | `Compliant -> `String "COMPLIANT"
+  | `NonCompliant -> `String "NON_COMPLIANT"
+  | `Unknown_value s -> `String s
+
+let compliance_status_of_yojson : Yojson.Safe.t -> compliance_status = function
+  | `String "COMPLIANT" -> `Compliant
+  | `String "NON_COMPLIANT" -> `NonCompliant
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "compliance_status: string expected" json
+
+type compliance_upload_type = [ `Complete | `Partial | `Unknown_value of string ]
+
+let yojson_of_compliance_upload_type : compliance_upload_type -> Yojson.Safe.t = function
+  | `Complete -> `String "COMPLETE"
+  | `Partial -> `String "PARTIAL"
+  | `Unknown_value s -> `String s
+
+let compliance_upload_type_of_yojson : Yojson.Safe.t -> compliance_upload_type = function
+  | `String "COMPLETE" -> `Complete
+  | `String "PARTIAL" -> `Partial
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "compliance_upload_type: string expected" json
+
+type connection_status = [ `CONNECTED | `NOT_CONNECTED | `Unknown_value of string ]
+
+let yojson_of_connection_status : connection_status -> Yojson.Safe.t = function
+  | `CONNECTED -> `String "connected"
+  | `NOT_CONNECTED -> `String "notconnected"
+  | `Unknown_value s -> `String s
+
+let connection_status_of_yojson : Yojson.Safe.t -> connection_status = function
+  | `String "connected" -> `CONNECTED
+  | `String "notconnected" -> `NOT_CONNECTED
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "connection_status: string expected" json
+
+type deletion_mode = [ `RemoveSharing | `RollbackMigration | `Unknown_value of string ]
+
+let yojson_of_deletion_mode : deletion_mode -> Yojson.Safe.t = function
+  | `RemoveSharing -> `String "RemoveSharing"
+  | `RollbackMigration -> `String "RollbackMigration"
+  | `Unknown_value s -> `String s
+
+let deletion_mode_of_yojson : Yojson.Safe.t -> deletion_mode = function
+  | `String "RemoveSharing" -> `RemoveSharing
+  | `String "RollbackMigration" -> `RollbackMigration
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "deletion_mode: string expected" json
+
+type describe_activations_filter_keys = [ `ACTIVATION_IDS | `DEFAULT_INSTANCE_NAME | `IAM_ROLE | `Unknown_value of string ]
+
+let yojson_of_describe_activations_filter_keys : describe_activations_filter_keys -> Yojson.Safe.t = function
+  | `ACTIVATION_IDS -> `String "ActivationIds"
+  | `DEFAULT_INSTANCE_NAME -> `String "DefaultInstanceName"
+  | `IAM_ROLE -> `String "IamRole"
+  | `Unknown_value s -> `String s
+
+let describe_activations_filter_keys_of_yojson : Yojson.Safe.t -> describe_activations_filter_keys = function
+  | `String "ActivationIds" -> `ACTIVATION_IDS
+  | `String "DefaultInstanceName" -> `DEFAULT_INSTANCE_NAME
+  | `String "IamRole" -> `IAM_ROLE
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "describe_activations_filter_keys: string expected" json
+
+type document_filter_key = [ `Name | `Owner | `PlatformTypes | `DocumentType | `Unknown_value of string ]
+
+let yojson_of_document_filter_key : document_filter_key -> Yojson.Safe.t = function
+  | `Name -> `String "Name"
+  | `Owner -> `String "Owner"
+  | `PlatformTypes -> `String "PlatformTypes"
+  | `DocumentType -> `String "DocumentType"
+  | `Unknown_value s -> `String s
+
+let document_filter_key_of_yojson : Yojson.Safe.t -> document_filter_key = function
+  | `String "Name" -> `Name
+  | `String "Owner" -> `Owner
+  | `String "PlatformTypes" -> `PlatformTypes
+  | `String "DocumentType" -> `DocumentType
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "document_filter_key: string expected" json
+
+type document_format = [ `YAML | `JSON | `TEXT | `Unknown_value of string ]
+
+let yojson_of_document_format : document_format -> Yojson.Safe.t = function
+  | `YAML -> `String "YAML"
+  | `JSON -> `String "JSON"
+  | `TEXT -> `String "TEXT"
+  | `Unknown_value s -> `String s
+
+let document_format_of_yojson : Yojson.Safe.t -> document_format = function
+  | `String "YAML" -> `YAML
+  | `String "JSON" -> `JSON
+  | `String "TEXT" -> `TEXT
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "document_format: string expected" json
+
+type document_hash_type = [ `SHA256 | `SHA1 | `Unknown_value of string ]
+
+let yojson_of_document_hash_type : document_hash_type -> Yojson.Safe.t = function
+  | `SHA256 -> `String "Sha256"
+  | `SHA1 -> `String "Sha1"
+  | `Unknown_value s -> `String s
+
+let document_hash_type_of_yojson : Yojson.Safe.t -> document_hash_type = function
+  | `String "Sha256" -> `SHA256
+  | `String "Sha1" -> `SHA1
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "document_hash_type: string expected" json
+
+type document_metadata_enum = [ `DocumentReviews | `Unknown_value of string ]
+
+let yojson_of_document_metadata_enum : document_metadata_enum -> Yojson.Safe.t = function
+  | `DocumentReviews -> `String "DocumentReviews"
+  | `Unknown_value s -> `String s
+
+let document_metadata_enum_of_yojson : Yojson.Safe.t -> document_metadata_enum = function
+  | `String "DocumentReviews" -> `DocumentReviews
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "document_metadata_enum: string expected" json
+
+type document_parameter_type = [ `String | `StringList | `Unknown_value of string ]
+
+let yojson_of_document_parameter_type : document_parameter_type -> Yojson.Safe.t = function
+  | `String -> `String "String"
+  | `StringList -> `String "StringList"
+  | `Unknown_value s -> `String s
+
+let document_parameter_type_of_yojson : Yojson.Safe.t -> document_parameter_type = function
+  | `String "String" -> `String
+  | `String "StringList" -> `StringList
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "document_parameter_type: string expected" json
+
+type document_permission_type = [ `SHARE | `Unknown_value of string ]
+
+let yojson_of_document_permission_type : document_permission_type -> Yojson.Safe.t = function
+  | `SHARE -> `String "Share"
+  | `Unknown_value s -> `String s
+
+let document_permission_type_of_yojson : Yojson.Safe.t -> document_permission_type = function
+  | `String "Share" -> `SHARE
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "document_permission_type: string expected" json
+
+type document_review_action = [ `SendForReview | `UpdateReview | `Approve | `Reject | `Unknown_value of string ]
+
+let yojson_of_document_review_action : document_review_action -> Yojson.Safe.t = function
+  | `SendForReview -> `String "SendForReview"
+  | `UpdateReview -> `String "UpdateReview"
+  | `Approve -> `String "Approve"
+  | `Reject -> `String "Reject"
+  | `Unknown_value s -> `String s
+
+let document_review_action_of_yojson : Yojson.Safe.t -> document_review_action = function
+  | `String "SendForReview" -> `SendForReview
+  | `String "UpdateReview" -> `UpdateReview
+  | `String "Approve" -> `Approve
+  | `String "Reject" -> `Reject
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "document_review_action: string expected" json
+
+type document_review_comment_type = [ `Comment | `Unknown_value of string ]
+
+let yojson_of_document_review_comment_type : document_review_comment_type -> Yojson.Safe.t = function
+  | `Comment -> `String "Comment"
+  | `Unknown_value s -> `String s
+
+let document_review_comment_type_of_yojson : Yojson.Safe.t -> document_review_comment_type = function
+  | `String "Comment" -> `Comment
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "document_review_comment_type: string expected" json
+
+type document_status = [ `Creating | `Active | `Updating | `Deleting | `Failed | `Unknown_value of string ]
+
+let yojson_of_document_status : document_status -> Yojson.Safe.t = function
+  | `Creating -> `String "Creating"
+  | `Active -> `String "Active"
+  | `Updating -> `String "Updating"
+  | `Deleting -> `String "Deleting"
+  | `Failed -> `String "Failed"
+  | `Unknown_value s -> `String s
+
+let document_status_of_yojson : Yojson.Safe.t -> document_status = function
+  | `String "Creating" -> `Creating
+  | `String "Active" -> `Active
+  | `String "Updating" -> `Updating
+  | `String "Deleting" -> `Deleting
+  | `String "Failed" -> `Failed
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "document_status: string expected" json
+
+type document_type = [ `Command | `Policy | `Automation | `Session | `Package | `ApplicationConfiguration | `ApplicationConfigurationSchema | `DeploymentStrategy | `ChangeCalendar | `ChangeTemplate | `ProblemAnalysis | `ProblemAnalysisTemplate | `CloudFormation | `ConformancePackTemplate | `QuickSetup | `ManualApprovalPolicy | `AutoApprovalPolicy | `Unknown_value of string ]
+
+let yojson_of_document_type : document_type -> Yojson.Safe.t = function
+  | `Command -> `String "Command"
+  | `Policy -> `String "Policy"
+  | `Automation -> `String "Automation"
+  | `Session -> `String "Session"
+  | `Package -> `String "Package"
+  | `ApplicationConfiguration -> `String "ApplicationConfiguration"
+  | `ApplicationConfigurationSchema -> `String "ApplicationConfigurationSchema"
+  | `DeploymentStrategy -> `String "DeploymentStrategy"
+  | `ChangeCalendar -> `String "ChangeCalendar"
+  | `ChangeTemplate -> `String "Automation.ChangeTemplate"
+  | `ProblemAnalysis -> `String "ProblemAnalysis"
+  | `ProblemAnalysisTemplate -> `String "ProblemAnalysisTemplate"
+  | `CloudFormation -> `String "CloudFormation"
+  | `ConformancePackTemplate -> `String "ConformancePackTemplate"
+  | `QuickSetup -> `String "QuickSetup"
+  | `ManualApprovalPolicy -> `String "ManualApprovalPolicy"
+  | `AutoApprovalPolicy -> `String "AutoApprovalPolicy"
+  | `Unknown_value s -> `String s
+
+let document_type_of_yojson : Yojson.Safe.t -> document_type = function
+  | `String "Command" -> `Command
+  | `String "Policy" -> `Policy
+  | `String "Automation" -> `Automation
+  | `String "Session" -> `Session
+  | `String "Package" -> `Package
+  | `String "ApplicationConfiguration" -> `ApplicationConfiguration
+  | `String "ApplicationConfigurationSchema" -> `ApplicationConfigurationSchema
+  | `String "DeploymentStrategy" -> `DeploymentStrategy
+  | `String "ChangeCalendar" -> `ChangeCalendar
+  | `String "Automation.ChangeTemplate" -> `ChangeTemplate
+  | `String "ProblemAnalysis" -> `ProblemAnalysis
+  | `String "ProblemAnalysisTemplate" -> `ProblemAnalysisTemplate
+  | `String "CloudFormation" -> `CloudFormation
+  | `String "ConformancePackTemplate" -> `ConformancePackTemplate
+  | `String "QuickSetup" -> `QuickSetup
+  | `String "ManualApprovalPolicy" -> `ManualApprovalPolicy
+  | `String "AutoApprovalPolicy" -> `AutoApprovalPolicy
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "document_type: string expected" json
+
+type execution_mode = [ `Auto | `Interactive | `Unknown_value of string ]
+
+let yojson_of_execution_mode : execution_mode -> Yojson.Safe.t = function
+  | `Auto -> `String "Auto"
+  | `Interactive -> `String "Interactive"
+  | `Unknown_value s -> `String s
+
+let execution_mode_of_yojson : Yojson.Safe.t -> execution_mode = function
+  | `String "Auto" -> `Auto
+  | `String "Interactive" -> `Interactive
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "execution_mode: string expected" json
+
+type execution_preview_status = [ `PENDING | `IN_PROGRESS | `SUCCESS | `FAILED | `Unknown_value of string ]
+
+let yojson_of_execution_preview_status : execution_preview_status -> Yojson.Safe.t = function
+  | `PENDING -> `String "Pending"
+  | `IN_PROGRESS -> `String "InProgress"
+  | `SUCCESS -> `String "Success"
+  | `FAILED -> `String "Failed"
+  | `Unknown_value s -> `String s
+
+let execution_preview_status_of_yojson : Yojson.Safe.t -> execution_preview_status = function
+  | `String "Pending" -> `PENDING
+  | `String "InProgress" -> `IN_PROGRESS
+  | `String "Success" -> `SUCCESS
+  | `String "Failed" -> `FAILED
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "execution_preview_status: string expected" json
+
+type external_alarm_state = [ `UNKNOWN | `ALARM | `Unknown_value of string ]
+
+let yojson_of_external_alarm_state : external_alarm_state -> Yojson.Safe.t = function
+  | `UNKNOWN -> `String "UNKNOWN"
+  | `ALARM -> `String "ALARM"
+  | `Unknown_value s -> `String s
+
+let external_alarm_state_of_yojson : Yojson.Safe.t -> external_alarm_state = function
+  | `String "UNKNOWN" -> `UNKNOWN
+  | `String "ALARM" -> `ALARM
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "external_alarm_state: string expected" json
+
+type fault = [ `Client | `Server | `Unknown | `Unknown_value of string ]
+
+let yojson_of_fault : fault -> Yojson.Safe.t = function
+  | `Client -> `String "Client"
+  | `Server -> `String "Server"
+  | `Unknown -> `String "Unknown"
+  | `Unknown_value s -> `String s
+
+let fault_of_yojson : Yojson.Safe.t -> fault = function
+  | `String "Client" -> `Client
+  | `String "Server" -> `Server
+  | `String "Unknown" -> `Unknown
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "fault: string expected" json
+
+type impact_type = [ `MUTATING | `NON_MUTATING | `UNDETERMINED | `Unknown_value of string ]
+
+let yojson_of_impact_type : impact_type -> Yojson.Safe.t = function
+  | `MUTATING -> `String "Mutating"
+  | `NON_MUTATING -> `String "NonMutating"
+  | `UNDETERMINED -> `String "Undetermined"
+  | `Unknown_value s -> `String s
+
+let impact_type_of_yojson : Yojson.Safe.t -> impact_type = function
+  | `String "Mutating" -> `MUTATING
+  | `String "NonMutating" -> `NON_MUTATING
+  | `String "Undetermined" -> `UNDETERMINED
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "impact_type: string expected" json
+
+type instance_information_filter_key = [ `INSTANCE_IDS | `AGENT_VERSION | `PING_STATUS | `PLATFORM_TYPES | `ACTIVATION_IDS | `IAM_ROLE | `RESOURCE_TYPE | `ASSOCIATION_STATUS | `Unknown_value of string ]
+
+let yojson_of_instance_information_filter_key : instance_information_filter_key -> Yojson.Safe.t = function
+  | `INSTANCE_IDS -> `String "InstanceIds"
+  | `AGENT_VERSION -> `String "AgentVersion"
+  | `PING_STATUS -> `String "PingStatus"
+  | `PLATFORM_TYPES -> `String "PlatformTypes"
+  | `ACTIVATION_IDS -> `String "ActivationIds"
+  | `IAM_ROLE -> `String "IamRole"
+  | `RESOURCE_TYPE -> `String "ResourceType"
+  | `ASSOCIATION_STATUS -> `String "AssociationStatus"
+  | `Unknown_value s -> `String s
+
+let instance_information_filter_key_of_yojson : Yojson.Safe.t -> instance_information_filter_key = function
+  | `String "InstanceIds" -> `INSTANCE_IDS
+  | `String "AgentVersion" -> `AGENT_VERSION
+  | `String "PingStatus" -> `PING_STATUS
+  | `String "PlatformTypes" -> `PLATFORM_TYPES
+  | `String "ActivationIds" -> `ACTIVATION_IDS
+  | `String "IamRole" -> `IAM_ROLE
+  | `String "ResourceType" -> `RESOURCE_TYPE
+  | `String "AssociationStatus" -> `ASSOCIATION_STATUS
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "instance_information_filter_key: string expected" json
+
+type instance_patch_state_operator_type = [ `EQUAL | `NOT_EQUAL | `LESS_THAN | `GREATER_THAN | `Unknown_value of string ]
+
+let yojson_of_instance_patch_state_operator_type : instance_patch_state_operator_type -> Yojson.Safe.t = function
+  | `EQUAL -> `String "Equal"
+  | `NOT_EQUAL -> `String "NotEqual"
+  | `LESS_THAN -> `String "LessThan"
+  | `GREATER_THAN -> `String "GreaterThan"
+  | `Unknown_value s -> `String s
+
+let instance_patch_state_operator_type_of_yojson : Yojson.Safe.t -> instance_patch_state_operator_type = function
+  | `String "Equal" -> `EQUAL
+  | `String "NotEqual" -> `NOT_EQUAL
+  | `String "LessThan" -> `LESS_THAN
+  | `String "GreaterThan" -> `GREATER_THAN
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "instance_patch_state_operator_type: string expected" json
+
+type instance_property_filter_key = [ `INSTANCE_IDS | `AGENT_VERSION | `PING_STATUS | `PLATFORM_TYPES | `DOCUMENT_NAME | `ACTIVATION_IDS | `IAM_ROLE | `RESOURCE_TYPE | `ASSOCIATION_STATUS | `Unknown_value of string ]
+
+let yojson_of_instance_property_filter_key : instance_property_filter_key -> Yojson.Safe.t = function
+  | `INSTANCE_IDS -> `String "InstanceIds"
+  | `AGENT_VERSION -> `String "AgentVersion"
+  | `PING_STATUS -> `String "PingStatus"
+  | `PLATFORM_TYPES -> `String "PlatformTypes"
+  | `DOCUMENT_NAME -> `String "DocumentName"
+  | `ACTIVATION_IDS -> `String "ActivationIds"
+  | `IAM_ROLE -> `String "IamRole"
+  | `RESOURCE_TYPE -> `String "ResourceType"
+  | `ASSOCIATION_STATUS -> `String "AssociationStatus"
+  | `Unknown_value s -> `String s
+
+let instance_property_filter_key_of_yojson : Yojson.Safe.t -> instance_property_filter_key = function
+  | `String "InstanceIds" -> `INSTANCE_IDS
+  | `String "AgentVersion" -> `AGENT_VERSION
+  | `String "PingStatus" -> `PING_STATUS
+  | `String "PlatformTypes" -> `PLATFORM_TYPES
+  | `String "DocumentName" -> `DOCUMENT_NAME
+  | `String "ActivationIds" -> `ACTIVATION_IDS
+  | `String "IamRole" -> `IAM_ROLE
+  | `String "ResourceType" -> `RESOURCE_TYPE
+  | `String "AssociationStatus" -> `ASSOCIATION_STATUS
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "instance_property_filter_key: string expected" json
+
+type instance_property_filter_operator = [ `EQUAL | `NOT_EQUAL | `BEGIN_WITH | `LESS_THAN | `GREATER_THAN | `Unknown_value of string ]
+
+let yojson_of_instance_property_filter_operator : instance_property_filter_operator -> Yojson.Safe.t = function
+  | `EQUAL -> `String "Equal"
+  | `NOT_EQUAL -> `String "NotEqual"
+  | `BEGIN_WITH -> `String "BeginWith"
+  | `LESS_THAN -> `String "LessThan"
+  | `GREATER_THAN -> `String "GreaterThan"
+  | `Unknown_value s -> `String s
+
+let instance_property_filter_operator_of_yojson : Yojson.Safe.t -> instance_property_filter_operator = function
+  | `String "Equal" -> `EQUAL
+  | `String "NotEqual" -> `NOT_EQUAL
+  | `String "BeginWith" -> `BEGIN_WITH
+  | `String "LessThan" -> `LESS_THAN
+  | `String "GreaterThan" -> `GREATER_THAN
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "instance_property_filter_operator: string expected" json
+
+type inventory_attribute_data_type = [ `STRING | `NUMBER | `Unknown_value of string ]
+
+let yojson_of_inventory_attribute_data_type : inventory_attribute_data_type -> Yojson.Safe.t = function
+  | `STRING -> `String "string"
+  | `NUMBER -> `String "number"
+  | `Unknown_value s -> `String s
+
+let inventory_attribute_data_type_of_yojson : Yojson.Safe.t -> inventory_attribute_data_type = function
+  | `String "string" -> `STRING
+  | `String "number" -> `NUMBER
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "inventory_attribute_data_type: string expected" json
+
+type inventory_deletion_status = [ `IN_PROGRESS | `COMPLETE | `Unknown_value of string ]
+
+let yojson_of_inventory_deletion_status : inventory_deletion_status -> Yojson.Safe.t = function
+  | `IN_PROGRESS -> `String "InProgress"
+  | `COMPLETE -> `String "Complete"
+  | `Unknown_value s -> `String s
+
+let inventory_deletion_status_of_yojson : Yojson.Safe.t -> inventory_deletion_status = function
+  | `String "InProgress" -> `IN_PROGRESS
+  | `String "Complete" -> `COMPLETE
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "inventory_deletion_status: string expected" json
+
+type inventory_query_operator_type = [ `EQUAL | `NOT_EQUAL | `BEGIN_WITH | `LESS_THAN | `GREATER_THAN | `EXISTS | `Unknown_value of string ]
+
+let yojson_of_inventory_query_operator_type : inventory_query_operator_type -> Yojson.Safe.t = function
+  | `EQUAL -> `String "Equal"
+  | `NOT_EQUAL -> `String "NotEqual"
+  | `BEGIN_WITH -> `String "BeginWith"
+  | `LESS_THAN -> `String "LessThan"
+  | `GREATER_THAN -> `String "GreaterThan"
+  | `EXISTS -> `String "Exists"
+  | `Unknown_value s -> `String s
+
+let inventory_query_operator_type_of_yojson : Yojson.Safe.t -> inventory_query_operator_type = function
+  | `String "Equal" -> `EQUAL
+  | `String "NotEqual" -> `NOT_EQUAL
+  | `String "BeginWith" -> `BEGIN_WITH
+  | `String "LessThan" -> `LESS_THAN
+  | `String "GreaterThan" -> `GREATER_THAN
+  | `String "Exists" -> `EXISTS
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "inventory_query_operator_type: string expected" json
+
+type inventory_schema_delete_option = [ `DISABLE_SCHEMA | `DELETE_SCHEMA | `Unknown_value of string ]
+
+let yojson_of_inventory_schema_delete_option : inventory_schema_delete_option -> Yojson.Safe.t = function
+  | `DISABLE_SCHEMA -> `String "DisableSchema"
+  | `DELETE_SCHEMA -> `String "DeleteSchema"
+  | `Unknown_value s -> `String s
+
+let inventory_schema_delete_option_of_yojson : Yojson.Safe.t -> inventory_schema_delete_option = function
+  | `String "DisableSchema" -> `DISABLE_SCHEMA
+  | `String "DeleteSchema" -> `DELETE_SCHEMA
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "inventory_schema_delete_option: string expected" json
+
+type last_resource_data_sync_status = [ `SUCCESSFUL | `FAILED | `INPROGRESS | `Unknown_value of string ]
+
+let yojson_of_last_resource_data_sync_status : last_resource_data_sync_status -> Yojson.Safe.t = function
+  | `SUCCESSFUL -> `String "Successful"
+  | `FAILED -> `String "Failed"
+  | `INPROGRESS -> `String "InProgress"
+  | `Unknown_value s -> `String s
+
+let last_resource_data_sync_status_of_yojson : Yojson.Safe.t -> last_resource_data_sync_status = function
+  | `String "Successful" -> `SUCCESSFUL
+  | `String "Failed" -> `FAILED
+  | `String "InProgress" -> `INPROGRESS
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "last_resource_data_sync_status: string expected" json
+
+type maintenance_window_execution_status = [ `Pending | `InProgress | `Success | `Failed | `TimedOut | `Cancelling | `Cancelled | `SkippedOverlapping | `Unknown_value of string ]
+
+let yojson_of_maintenance_window_execution_status : maintenance_window_execution_status -> Yojson.Safe.t = function
+  | `Pending -> `String "PENDING"
+  | `InProgress -> `String "IN_PROGRESS"
+  | `Success -> `String "SUCCESS"
+  | `Failed -> `String "FAILED"
+  | `TimedOut -> `String "TIMED_OUT"
+  | `Cancelling -> `String "CANCELLING"
+  | `Cancelled -> `String "CANCELLED"
+  | `SkippedOverlapping -> `String "SKIPPED_OVERLAPPING"
+  | `Unknown_value s -> `String s
+
+let maintenance_window_execution_status_of_yojson : Yojson.Safe.t -> maintenance_window_execution_status = function
+  | `String "PENDING" -> `Pending
+  | `String "IN_PROGRESS" -> `InProgress
+  | `String "SUCCESS" -> `Success
+  | `String "FAILED" -> `Failed
+  | `String "TIMED_OUT" -> `TimedOut
+  | `String "CANCELLING" -> `Cancelling
+  | `String "CANCELLED" -> `Cancelled
+  | `String "SKIPPED_OVERLAPPING" -> `SkippedOverlapping
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "maintenance_window_execution_status: string expected" json
+
+type maintenance_window_resource_type = [ `Instance | `ResourceGroup | `Unknown_value of string ]
+
+let yojson_of_maintenance_window_resource_type : maintenance_window_resource_type -> Yojson.Safe.t = function
+  | `Instance -> `String "INSTANCE"
+  | `ResourceGroup -> `String "RESOURCE_GROUP"
+  | `Unknown_value s -> `String s
+
+let maintenance_window_resource_type_of_yojson : Yojson.Safe.t -> maintenance_window_resource_type = function
+  | `String "INSTANCE" -> `Instance
+  | `String "RESOURCE_GROUP" -> `ResourceGroup
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "maintenance_window_resource_type: string expected" json
+
+type maintenance_window_task_cutoff_behavior = [ `ContinueTask | `CancelTask | `Unknown_value of string ]
+
+let yojson_of_maintenance_window_task_cutoff_behavior : maintenance_window_task_cutoff_behavior -> Yojson.Safe.t = function
+  | `ContinueTask -> `String "CONTINUE_TASK"
+  | `CancelTask -> `String "CANCEL_TASK"
+  | `Unknown_value s -> `String s
+
+let maintenance_window_task_cutoff_behavior_of_yojson : Yojson.Safe.t -> maintenance_window_task_cutoff_behavior = function
+  | `String "CONTINUE_TASK" -> `ContinueTask
+  | `String "CANCEL_TASK" -> `CancelTask
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "maintenance_window_task_cutoff_behavior: string expected" json
+
+type maintenance_window_task_type = [ `RunCommand | `Automation | `StepFunctions | `Lambda | `Unknown_value of string ]
+
+let yojson_of_maintenance_window_task_type : maintenance_window_task_type -> Yojson.Safe.t = function
+  | `RunCommand -> `String "RUN_COMMAND"
+  | `Automation -> `String "AUTOMATION"
+  | `StepFunctions -> `String "STEP_FUNCTIONS"
+  | `Lambda -> `String "LAMBDA"
+  | `Unknown_value s -> `String s
+
+let maintenance_window_task_type_of_yojson : Yojson.Safe.t -> maintenance_window_task_type = function
+  | `String "RUN_COMMAND" -> `RunCommand
+  | `String "AUTOMATION" -> `Automation
+  | `String "STEP_FUNCTIONS" -> `StepFunctions
+  | `String "LAMBDA" -> `Lambda
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "maintenance_window_task_type: string expected" json
+
+type managed_status = [ `ALL | `MANAGED | `UNMANAGED | `Unknown_value of string ]
+
+let yojson_of_managed_status : managed_status -> Yojson.Safe.t = function
+  | `ALL -> `String "All"
+  | `MANAGED -> `String "Managed"
+  | `UNMANAGED -> `String "Unmanaged"
+  | `Unknown_value s -> `String s
+
+let managed_status_of_yojson : Yojson.Safe.t -> managed_status = function
+  | `String "All" -> `ALL
+  | `String "Managed" -> `MANAGED
+  | `String "Unmanaged" -> `UNMANAGED
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "managed_status: string expected" json
+
+type node_aggregator_type = [ `COUNT | `Unknown_value of string ]
+
+let yojson_of_node_aggregator_type : node_aggregator_type -> Yojson.Safe.t = function
+  | `COUNT -> `String "Count"
+  | `Unknown_value s -> `String s
+
+let node_aggregator_type_of_yojson : Yojson.Safe.t -> node_aggregator_type = function
+  | `String "Count" -> `COUNT
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "node_aggregator_type: string expected" json
+
+type node_attribute_name = [ `AGENT_VERSION | `PLATFORM_NAME | `PLATFORM_TYPE | `PLATFORM_VERSION | `REGION | `RESOURCE_TYPE | `SOURCE_TYPE | `AVAILABILITY_ZONE | `Unknown_value of string ]
+
+let yojson_of_node_attribute_name : node_attribute_name -> Yojson.Safe.t = function
+  | `AGENT_VERSION -> `String "AgentVersion"
+  | `PLATFORM_NAME -> `String "PlatformName"
+  | `PLATFORM_TYPE -> `String "PlatformType"
+  | `PLATFORM_VERSION -> `String "PlatformVersion"
+  | `REGION -> `String "Region"
+  | `RESOURCE_TYPE -> `String "ResourceType"
+  | `SOURCE_TYPE -> `String "SourceType"
+  | `AVAILABILITY_ZONE -> `String "AvailabilityZone"
+  | `Unknown_value s -> `String s
+
+let node_attribute_name_of_yojson : Yojson.Safe.t -> node_attribute_name = function
+  | `String "AgentVersion" -> `AGENT_VERSION
+  | `String "PlatformName" -> `PLATFORM_NAME
+  | `String "PlatformType" -> `PLATFORM_TYPE
+  | `String "PlatformVersion" -> `PLATFORM_VERSION
+  | `String "Region" -> `REGION
+  | `String "ResourceType" -> `RESOURCE_TYPE
+  | `String "SourceType" -> `SOURCE_TYPE
+  | `String "AvailabilityZone" -> `AVAILABILITY_ZONE
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "node_attribute_name: string expected" json
+
+type node_filter_key = [ `AGENT_TYPE | `AGENT_VERSION | `COMPUTER_NAME | `INSTANCE_ID | `INSTANCE_STATUS | `IP_ADDRESS | `MANAGED_STATUS | `PLATFORM_NAME | `PLATFORM_TYPE | `PLATFORM_VERSION | `RESOURCE_TYPE | `ORGANIZATIONAL_UNIT_ID | `ORGANIZATIONAL_UNIT_PATH | `REGION | `ACCOUNT_ID | `SOURCE_TYPE | `SOURCE_ID | `SOURCE_LOCATION | `AVAILABILITY_ZONE | `AVAILABILITY_ZONE_ID | `Unknown_value of string ]
+
+let yojson_of_node_filter_key : node_filter_key -> Yojson.Safe.t = function
+  | `AGENT_TYPE -> `String "AgentType"
+  | `AGENT_VERSION -> `String "AgentVersion"
+  | `COMPUTER_NAME -> `String "ComputerName"
+  | `INSTANCE_ID -> `String "InstanceId"
+  | `INSTANCE_STATUS -> `String "InstanceStatus"
+  | `IP_ADDRESS -> `String "IpAddress"
+  | `MANAGED_STATUS -> `String "ManagedStatus"
+  | `PLATFORM_NAME -> `String "PlatformName"
+  | `PLATFORM_TYPE -> `String "PlatformType"
+  | `PLATFORM_VERSION -> `String "PlatformVersion"
+  | `RESOURCE_TYPE -> `String "ResourceType"
+  | `ORGANIZATIONAL_UNIT_ID -> `String "OrganizationalUnitId"
+  | `ORGANIZATIONAL_UNIT_PATH -> `String "OrganizationalUnitPath"
+  | `REGION -> `String "Region"
+  | `ACCOUNT_ID -> `String "AccountId"
+  | `SOURCE_TYPE -> `String "SourceType"
+  | `SOURCE_ID -> `String "SourceId"
+  | `SOURCE_LOCATION -> `String "SourceLocation"
+  | `AVAILABILITY_ZONE -> `String "AvailabilityZone"
+  | `AVAILABILITY_ZONE_ID -> `String "AvailabilityZoneId"
+  | `Unknown_value s -> `String s
+
+let node_filter_key_of_yojson : Yojson.Safe.t -> node_filter_key = function
+  | `String "AgentType" -> `AGENT_TYPE
+  | `String "AgentVersion" -> `AGENT_VERSION
+  | `String "ComputerName" -> `COMPUTER_NAME
+  | `String "InstanceId" -> `INSTANCE_ID
+  | `String "InstanceStatus" -> `INSTANCE_STATUS
+  | `String "IpAddress" -> `IP_ADDRESS
+  | `String "ManagedStatus" -> `MANAGED_STATUS
+  | `String "PlatformName" -> `PLATFORM_NAME
+  | `String "PlatformType" -> `PLATFORM_TYPE
+  | `String "PlatformVersion" -> `PLATFORM_VERSION
+  | `String "ResourceType" -> `RESOURCE_TYPE
+  | `String "OrganizationalUnitId" -> `ORGANIZATIONAL_UNIT_ID
+  | `String "OrganizationalUnitPath" -> `ORGANIZATIONAL_UNIT_PATH
+  | `String "Region" -> `REGION
+  | `String "AccountId" -> `ACCOUNT_ID
+  | `String "SourceType" -> `SOURCE_TYPE
+  | `String "SourceId" -> `SOURCE_ID
+  | `String "SourceLocation" -> `SOURCE_LOCATION
+  | `String "AvailabilityZone" -> `AVAILABILITY_ZONE
+  | `String "AvailabilityZoneId" -> `AVAILABILITY_ZONE_ID
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "node_filter_key: string expected" json
+
+type node_filter_operator_type = [ `EQUAL | `NOT_EQUAL | `BEGIN_WITH | `Unknown_value of string ]
+
+let yojson_of_node_filter_operator_type : node_filter_operator_type -> Yojson.Safe.t = function
+  | `EQUAL -> `String "Equal"
+  | `NOT_EQUAL -> `String "NotEqual"
+  | `BEGIN_WITH -> `String "BeginWith"
+  | `Unknown_value s -> `String s
+
+let node_filter_operator_type_of_yojson : Yojson.Safe.t -> node_filter_operator_type = function
+  | `String "Equal" -> `EQUAL
+  | `String "NotEqual" -> `NOT_EQUAL
+  | `String "BeginWith" -> `BEGIN_WITH
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "node_filter_operator_type: string expected" json
+
+type node_type_name = [ `INSTANCE | `Unknown_value of string ]
+
+let yojson_of_node_type_name : node_type_name -> Yojson.Safe.t = function
+  | `INSTANCE -> `String "Instance"
+  | `Unknown_value s -> `String s
+
+let node_type_name_of_yojson : Yojson.Safe.t -> node_type_name = function
+  | `String "Instance" -> `INSTANCE
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "node_type_name: string expected" json
+
+type notification_event = [ `ALL | `IN_PROGRESS | `SUCCESS | `TIMED_OUT | `CANCELLED | `FAILED | `Unknown_value of string ]
+
+let yojson_of_notification_event : notification_event -> Yojson.Safe.t = function
+  | `ALL -> `String "All"
+  | `IN_PROGRESS -> `String "InProgress"
+  | `SUCCESS -> `String "Success"
+  | `TIMED_OUT -> `String "TimedOut"
+  | `CANCELLED -> `String "Cancelled"
+  | `FAILED -> `String "Failed"
+  | `Unknown_value s -> `String s
+
+let notification_event_of_yojson : Yojson.Safe.t -> notification_event = function
+  | `String "All" -> `ALL
+  | `String "InProgress" -> `IN_PROGRESS
+  | `String "Success" -> `SUCCESS
+  | `String "TimedOut" -> `TIMED_OUT
+  | `String "Cancelled" -> `CANCELLED
+  | `String "Failed" -> `FAILED
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "notification_event: string expected" json
+
+type notification_type = [ `Command | `Invocation | `Unknown_value of string ]
+
+let yojson_of_notification_type : notification_type -> Yojson.Safe.t = function
+  | `Command -> `String "Command"
+  | `Invocation -> `String "Invocation"
+  | `Unknown_value s -> `String s
+
+let notification_type_of_yojson : Yojson.Safe.t -> notification_type = function
+  | `String "Command" -> `Command
+  | `String "Invocation" -> `Invocation
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "notification_type: string expected" json
+
+type operating_system = [ `Windows | `AmazonLinux | `AmazonLinux2 | `AmazonLinux2022 | `Ubuntu | `RedhatEnterpriseLinux | `Suse | `CentOS | `OracleLinux | `Debian | `MacOS | `Raspbian | `Rocky_Linux | `AlmaLinux | `AmazonLinux2023 | `Unknown_value of string ]
+
+let yojson_of_operating_system : operating_system -> Yojson.Safe.t = function
+  | `Windows -> `String "WINDOWS"
+  | `AmazonLinux -> `String "AMAZON_LINUX"
+  | `AmazonLinux2 -> `String "AMAZON_LINUX_2"
+  | `AmazonLinux2022 -> `String "AMAZON_LINUX_2022"
+  | `Ubuntu -> `String "UBUNTU"
+  | `RedhatEnterpriseLinux -> `String "REDHAT_ENTERPRISE_LINUX"
+  | `Suse -> `String "SUSE"
+  | `CentOS -> `String "CENTOS"
+  | `OracleLinux -> `String "ORACLE_LINUX"
+  | `Debian -> `String "DEBIAN"
+  | `MacOS -> `String "MACOS"
+  | `Raspbian -> `String "RASPBIAN"
+  | `Rocky_Linux -> `String "ROCKY_LINUX"
+  | `AlmaLinux -> `String "ALMA_LINUX"
+  | `AmazonLinux2023 -> `String "AMAZON_LINUX_2023"
+  | `Unknown_value s -> `String s
+
+let operating_system_of_yojson : Yojson.Safe.t -> operating_system = function
+  | `String "WINDOWS" -> `Windows
+  | `String "AMAZON_LINUX" -> `AmazonLinux
+  | `String "AMAZON_LINUX_2" -> `AmazonLinux2
+  | `String "AMAZON_LINUX_2022" -> `AmazonLinux2022
+  | `String "UBUNTU" -> `Ubuntu
+  | `String "REDHAT_ENTERPRISE_LINUX" -> `RedhatEnterpriseLinux
+  | `String "SUSE" -> `Suse
+  | `String "CENTOS" -> `CentOS
+  | `String "ORACLE_LINUX" -> `OracleLinux
+  | `String "DEBIAN" -> `Debian
+  | `String "MACOS" -> `MacOS
+  | `String "RASPBIAN" -> `Raspbian
+  | `String "ROCKY_LINUX" -> `Rocky_Linux
+  | `String "ALMA_LINUX" -> `AlmaLinux
+  | `String "AMAZON_LINUX_2023" -> `AmazonLinux2023
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "operating_system: string expected" json
+
+type ops_filter_operator_type = [ `EQUAL | `NOT_EQUAL | `BEGIN_WITH | `LESS_THAN | `GREATER_THAN | `EXISTS | `Unknown_value of string ]
+
+let yojson_of_ops_filter_operator_type : ops_filter_operator_type -> Yojson.Safe.t = function
+  | `EQUAL -> `String "Equal"
+  | `NOT_EQUAL -> `String "NotEqual"
+  | `BEGIN_WITH -> `String "BeginWith"
+  | `LESS_THAN -> `String "LessThan"
+  | `GREATER_THAN -> `String "GreaterThan"
+  | `EXISTS -> `String "Exists"
+  | `Unknown_value s -> `String s
+
+let ops_filter_operator_type_of_yojson : Yojson.Safe.t -> ops_filter_operator_type = function
+  | `String "Equal" -> `EQUAL
+  | `String "NotEqual" -> `NOT_EQUAL
+  | `String "BeginWith" -> `BEGIN_WITH
+  | `String "LessThan" -> `LESS_THAN
+  | `String "GreaterThan" -> `GREATER_THAN
+  | `String "Exists" -> `EXISTS
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "ops_filter_operator_type: string expected" json
+
+type ops_item_data_type = [ `SEARCHABLE_STRING | `STRING | `Unknown_value of string ]
+
+let yojson_of_ops_item_data_type : ops_item_data_type -> Yojson.Safe.t = function
+  | `SEARCHABLE_STRING -> `String "SearchableString"
+  | `STRING -> `String "String"
+  | `Unknown_value s -> `String s
+
+let ops_item_data_type_of_yojson : Yojson.Safe.t -> ops_item_data_type = function
+  | `String "SearchableString" -> `SEARCHABLE_STRING
+  | `String "String" -> `STRING
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "ops_item_data_type: string expected" json
+
+type ops_item_event_filter_key = [ `OPSITEM_ID | `Unknown_value of string ]
+
+let yojson_of_ops_item_event_filter_key : ops_item_event_filter_key -> Yojson.Safe.t = function
+  | `OPSITEM_ID -> `String "OpsItemId"
+  | `Unknown_value s -> `String s
+
+let ops_item_event_filter_key_of_yojson : Yojson.Safe.t -> ops_item_event_filter_key = function
+  | `String "OpsItemId" -> `OPSITEM_ID
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "ops_item_event_filter_key: string expected" json
+
+type ops_item_event_filter_operator = [ `EQUAL | `Unknown_value of string ]
+
+let yojson_of_ops_item_event_filter_operator : ops_item_event_filter_operator -> Yojson.Safe.t = function
+  | `EQUAL -> `String "Equal"
+  | `Unknown_value s -> `String s
+
+let ops_item_event_filter_operator_of_yojson : Yojson.Safe.t -> ops_item_event_filter_operator = function
+  | `String "Equal" -> `EQUAL
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "ops_item_event_filter_operator: string expected" json
+
+type ops_item_filter_key = [ `STATUS | `CREATED_BY | `SOURCE | `PRIORITY | `TITLE | `OPSITEM_ID | `CREATED_TIME | `LAST_MODIFIED_TIME | `ACTUAL_START_TIME | `ACTUAL_END_TIME | `PLANNED_START_TIME | `PLANNED_END_TIME | `OPERATIONAL_DATA | `OPERATIONAL_DATA_KEY | `OPERATIONAL_DATA_VALUE | `RESOURCE_ID | `AUTOMATION_ID | `CATEGORY | `SEVERITY | `OPSITEM_TYPE | `ACCESS_REQUEST_REQUESTER_ARN | `ACCESS_REQUEST_REQUESTER_ID | `ACCESS_REQUEST_APPROVER_ARN | `ACCESS_REQUEST_APPROVER_ID | `ACCESS_REQUEST_SOURCE_ACCOUNT_ID | `ACCESS_REQUEST_SOURCE_OPS_ITEM_ID | `ACCESS_REQUEST_SOURCE_REGION | `ACCESS_REQUEST_IS_REPLICA | `ACCESS_REQUEST_TARGET_RESOURCE_ID | `CHANGE_REQUEST_REQUESTER_ARN | `CHANGE_REQUEST_REQUESTER_NAME | `CHANGE_REQUEST_APPROVER_ARN | `CHANGE_REQUEST_APPROVER_NAME | `CHANGE_REQUEST_TEMPLATE | `CHANGE_REQUEST_TARGETS_RESOURCE_GROUP | `INSIGHT_TYPE | `ACCOUNT_ID | `Unknown_value of string ]
+
+let yojson_of_ops_item_filter_key : ops_item_filter_key -> Yojson.Safe.t = function
+  | `STATUS -> `String "Status"
+  | `CREATED_BY -> `String "CreatedBy"
+  | `SOURCE -> `String "Source"
+  | `PRIORITY -> `String "Priority"
+  | `TITLE -> `String "Title"
+  | `OPSITEM_ID -> `String "OpsItemId"
+  | `CREATED_TIME -> `String "CreatedTime"
+  | `LAST_MODIFIED_TIME -> `String "LastModifiedTime"
+  | `ACTUAL_START_TIME -> `String "ActualStartTime"
+  | `ACTUAL_END_TIME -> `String "ActualEndTime"
+  | `PLANNED_START_TIME -> `String "PlannedStartTime"
+  | `PLANNED_END_TIME -> `String "PlannedEndTime"
+  | `OPERATIONAL_DATA -> `String "OperationalData"
+  | `OPERATIONAL_DATA_KEY -> `String "OperationalDataKey"
+  | `OPERATIONAL_DATA_VALUE -> `String "OperationalDataValue"
+  | `RESOURCE_ID -> `String "ResourceId"
+  | `AUTOMATION_ID -> `String "AutomationId"
+  | `CATEGORY -> `String "Category"
+  | `SEVERITY -> `String "Severity"
+  | `OPSITEM_TYPE -> `String "OpsItemType"
+  | `ACCESS_REQUEST_REQUESTER_ARN -> `String "AccessRequestByRequesterArn"
+  | `ACCESS_REQUEST_REQUESTER_ID -> `String "AccessRequestByRequesterId"
+  | `ACCESS_REQUEST_APPROVER_ARN -> `String "AccessRequestByApproverArn"
+  | `ACCESS_REQUEST_APPROVER_ID -> `String "AccessRequestByApproverId"
+  | `ACCESS_REQUEST_SOURCE_ACCOUNT_ID -> `String "AccessRequestBySourceAccountId"
+  | `ACCESS_REQUEST_SOURCE_OPS_ITEM_ID -> `String "AccessRequestBySourceOpsItemId"
+  | `ACCESS_REQUEST_SOURCE_REGION -> `String "AccessRequestBySourceRegion"
+  | `ACCESS_REQUEST_IS_REPLICA -> `String "AccessRequestByIsReplica"
+  | `ACCESS_REQUEST_TARGET_RESOURCE_ID -> `String "AccessRequestByTargetResourceId"
+  | `CHANGE_REQUEST_REQUESTER_ARN -> `String "ChangeRequestByRequesterArn"
+  | `CHANGE_REQUEST_REQUESTER_NAME -> `String "ChangeRequestByRequesterName"
+  | `CHANGE_REQUEST_APPROVER_ARN -> `String "ChangeRequestByApproverArn"
+  | `CHANGE_REQUEST_APPROVER_NAME -> `String "ChangeRequestByApproverName"
+  | `CHANGE_REQUEST_TEMPLATE -> `String "ChangeRequestByTemplate"
+  | `CHANGE_REQUEST_TARGETS_RESOURCE_GROUP -> `String "ChangeRequestByTargetsResourceGroup"
+  | `INSIGHT_TYPE -> `String "InsightByType"
+  | `ACCOUNT_ID -> `String "AccountId"
+  | `Unknown_value s -> `String s
+
+let ops_item_filter_key_of_yojson : Yojson.Safe.t -> ops_item_filter_key = function
+  | `String "Status" -> `STATUS
+  | `String "CreatedBy" -> `CREATED_BY
+  | `String "Source" -> `SOURCE
+  | `String "Priority" -> `PRIORITY
+  | `String "Title" -> `TITLE
+  | `String "OpsItemId" -> `OPSITEM_ID
+  | `String "CreatedTime" -> `CREATED_TIME
+  | `String "LastModifiedTime" -> `LAST_MODIFIED_TIME
+  | `String "ActualStartTime" -> `ACTUAL_START_TIME
+  | `String "ActualEndTime" -> `ACTUAL_END_TIME
+  | `String "PlannedStartTime" -> `PLANNED_START_TIME
+  | `String "PlannedEndTime" -> `PLANNED_END_TIME
+  | `String "OperationalData" -> `OPERATIONAL_DATA
+  | `String "OperationalDataKey" -> `OPERATIONAL_DATA_KEY
+  | `String "OperationalDataValue" -> `OPERATIONAL_DATA_VALUE
+  | `String "ResourceId" -> `RESOURCE_ID
+  | `String "AutomationId" -> `AUTOMATION_ID
+  | `String "Category" -> `CATEGORY
+  | `String "Severity" -> `SEVERITY
+  | `String "OpsItemType" -> `OPSITEM_TYPE
+  | `String "AccessRequestByRequesterArn" -> `ACCESS_REQUEST_REQUESTER_ARN
+  | `String "AccessRequestByRequesterId" -> `ACCESS_REQUEST_REQUESTER_ID
+  | `String "AccessRequestByApproverArn" -> `ACCESS_REQUEST_APPROVER_ARN
+  | `String "AccessRequestByApproverId" -> `ACCESS_REQUEST_APPROVER_ID
+  | `String "AccessRequestBySourceAccountId" -> `ACCESS_REQUEST_SOURCE_ACCOUNT_ID
+  | `String "AccessRequestBySourceOpsItemId" -> `ACCESS_REQUEST_SOURCE_OPS_ITEM_ID
+  | `String "AccessRequestBySourceRegion" -> `ACCESS_REQUEST_SOURCE_REGION
+  | `String "AccessRequestByIsReplica" -> `ACCESS_REQUEST_IS_REPLICA
+  | `String "AccessRequestByTargetResourceId" -> `ACCESS_REQUEST_TARGET_RESOURCE_ID
+  | `String "ChangeRequestByRequesterArn" -> `CHANGE_REQUEST_REQUESTER_ARN
+  | `String "ChangeRequestByRequesterName" -> `CHANGE_REQUEST_REQUESTER_NAME
+  | `String "ChangeRequestByApproverArn" -> `CHANGE_REQUEST_APPROVER_ARN
+  | `String "ChangeRequestByApproverName" -> `CHANGE_REQUEST_APPROVER_NAME
+  | `String "ChangeRequestByTemplate" -> `CHANGE_REQUEST_TEMPLATE
+  | `String "ChangeRequestByTargetsResourceGroup" -> `CHANGE_REQUEST_TARGETS_RESOURCE_GROUP
+  | `String "InsightByType" -> `INSIGHT_TYPE
+  | `String "AccountId" -> `ACCOUNT_ID
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "ops_item_filter_key: string expected" json
+
+type ops_item_filter_operator = [ `EQUAL | `CONTAINS | `GREATER_THAN | `LESS_THAN | `Unknown_value of string ]
+
+let yojson_of_ops_item_filter_operator : ops_item_filter_operator -> Yojson.Safe.t = function
+  | `EQUAL -> `String "Equal"
+  | `CONTAINS -> `String "Contains"
+  | `GREATER_THAN -> `String "GreaterThan"
+  | `LESS_THAN -> `String "LessThan"
+  | `Unknown_value s -> `String s
+
+let ops_item_filter_operator_of_yojson : Yojson.Safe.t -> ops_item_filter_operator = function
+  | `String "Equal" -> `EQUAL
+  | `String "Contains" -> `CONTAINS
+  | `String "GreaterThan" -> `GREATER_THAN
+  | `String "LessThan" -> `LESS_THAN
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "ops_item_filter_operator: string expected" json
+
+type ops_item_related_items_filter_key = [ `RESOURCE_TYPE | `ASSOCIATION_ID | `RESOURCE_URI | `Unknown_value of string ]
+
+let yojson_of_ops_item_related_items_filter_key : ops_item_related_items_filter_key -> Yojson.Safe.t = function
+  | `RESOURCE_TYPE -> `String "ResourceType"
+  | `ASSOCIATION_ID -> `String "AssociationId"
+  | `RESOURCE_URI -> `String "ResourceUri"
+  | `Unknown_value s -> `String s
+
+let ops_item_related_items_filter_key_of_yojson : Yojson.Safe.t -> ops_item_related_items_filter_key = function
+  | `String "ResourceType" -> `RESOURCE_TYPE
+  | `String "AssociationId" -> `ASSOCIATION_ID
+  | `String "ResourceUri" -> `RESOURCE_URI
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "ops_item_related_items_filter_key: string expected" json
+
+type ops_item_related_items_filter_operator = [ `EQUAL | `Unknown_value of string ]
+
+let yojson_of_ops_item_related_items_filter_operator : ops_item_related_items_filter_operator -> Yojson.Safe.t = function
+  | `EQUAL -> `String "Equal"
+  | `Unknown_value s -> `String s
+
+let ops_item_related_items_filter_operator_of_yojson : Yojson.Safe.t -> ops_item_related_items_filter_operator = function
+  | `String "Equal" -> `EQUAL
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "ops_item_related_items_filter_operator: string expected" json
+
+type ops_item_status = [ `OPEN | `IN_PROGRESS | `RESOLVED | `PENDING | `TIMED_OUT | `CANCELLING | `CANCELLED | `FAILED | `COMPLETED_WITH_SUCCESS | `COMPLETED_WITH_FAILURE | `SCHEDULED | `RUNBOOK_IN_PROGRESS | `PENDING_CHANGE_CALENDAR_OVERRIDE | `CHANGE_CALENDAR_OVERRIDE_APPROVED | `CHANGE_CALENDAR_OVERRIDE_REJECTED | `PENDING_APPROVAL | `APPROVED | `REVOKED | `REJECTED | `CLOSED | `Unknown_value of string ]
+
+let yojson_of_ops_item_status : ops_item_status -> Yojson.Safe.t = function
+  | `OPEN -> `String "Open"
+  | `IN_PROGRESS -> `String "InProgress"
+  | `RESOLVED -> `String "Resolved"
+  | `PENDING -> `String "Pending"
+  | `TIMED_OUT -> `String "TimedOut"
+  | `CANCELLING -> `String "Cancelling"
+  | `CANCELLED -> `String "Cancelled"
+  | `FAILED -> `String "Failed"
+  | `COMPLETED_WITH_SUCCESS -> `String "CompletedWithSuccess"
+  | `COMPLETED_WITH_FAILURE -> `String "CompletedWithFailure"
+  | `SCHEDULED -> `String "Scheduled"
+  | `RUNBOOK_IN_PROGRESS -> `String "RunbookInProgress"
+  | `PENDING_CHANGE_CALENDAR_OVERRIDE -> `String "PendingChangeCalendarOverride"
+  | `CHANGE_CALENDAR_OVERRIDE_APPROVED -> `String "ChangeCalendarOverrideApproved"
+  | `CHANGE_CALENDAR_OVERRIDE_REJECTED -> `String "ChangeCalendarOverrideRejected"
+  | `PENDING_APPROVAL -> `String "PendingApproval"
+  | `APPROVED -> `String "Approved"
+  | `REVOKED -> `String "Revoked"
+  | `REJECTED -> `String "Rejected"
+  | `CLOSED -> `String "Closed"
+  | `Unknown_value s -> `String s
+
+let ops_item_status_of_yojson : Yojson.Safe.t -> ops_item_status = function
+  | `String "Open" -> `OPEN
+  | `String "InProgress" -> `IN_PROGRESS
+  | `String "Resolved" -> `RESOLVED
+  | `String "Pending" -> `PENDING
+  | `String "TimedOut" -> `TIMED_OUT
+  | `String "Cancelling" -> `CANCELLING
+  | `String "Cancelled" -> `CANCELLED
+  | `String "Failed" -> `FAILED
+  | `String "CompletedWithSuccess" -> `COMPLETED_WITH_SUCCESS
+  | `String "CompletedWithFailure" -> `COMPLETED_WITH_FAILURE
+  | `String "Scheduled" -> `SCHEDULED
+  | `String "RunbookInProgress" -> `RUNBOOK_IN_PROGRESS
+  | `String "PendingChangeCalendarOverride" -> `PENDING_CHANGE_CALENDAR_OVERRIDE
+  | `String "ChangeCalendarOverrideApproved" -> `CHANGE_CALENDAR_OVERRIDE_APPROVED
+  | `String "ChangeCalendarOverrideRejected" -> `CHANGE_CALENDAR_OVERRIDE_REJECTED
+  | `String "PendingApproval" -> `PENDING_APPROVAL
+  | `String "Approved" -> `APPROVED
+  | `String "Revoked" -> `REVOKED
+  | `String "Rejected" -> `REJECTED
+  | `String "Closed" -> `CLOSED
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "ops_item_status: string expected" json
+
+type parameter_tier = [ `STANDARD | `ADVANCED | `INTELLIGENT_TIERING | `Unknown_value of string ]
+
+let yojson_of_parameter_tier : parameter_tier -> Yojson.Safe.t = function
+  | `STANDARD -> `String "Standard"
+  | `ADVANCED -> `String "Advanced"
+  | `INTELLIGENT_TIERING -> `String "Intelligent-Tiering"
+  | `Unknown_value s -> `String s
+
+let parameter_tier_of_yojson : Yojson.Safe.t -> parameter_tier = function
+  | `String "Standard" -> `STANDARD
+  | `String "Advanced" -> `ADVANCED
+  | `String "Intelligent-Tiering" -> `INTELLIGENT_TIERING
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "parameter_tier: string expected" json
+
+type parameter_type = [ `STRING | `STRING_LIST | `SECURE_STRING | `Unknown_value of string ]
+
+let yojson_of_parameter_type : parameter_type -> Yojson.Safe.t = function
+  | `STRING -> `String "String"
+  | `STRING_LIST -> `String "StringList"
+  | `SECURE_STRING -> `String "SecureString"
+  | `Unknown_value s -> `String s
+
+let parameter_type_of_yojson : Yojson.Safe.t -> parameter_type = function
+  | `String "String" -> `STRING
+  | `String "StringList" -> `STRING_LIST
+  | `String "SecureString" -> `SECURE_STRING
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "parameter_type: string expected" json
+
+type parameters_filter_key = [ `NAME | `TYPE | `KEY_ID | `Unknown_value of string ]
+
+let yojson_of_parameters_filter_key : parameters_filter_key -> Yojson.Safe.t = function
+  | `NAME -> `String "Name"
+  | `TYPE -> `String "Type"
+  | `KEY_ID -> `String "KeyId"
+  | `Unknown_value s -> `String s
+
+let parameters_filter_key_of_yojson : Yojson.Safe.t -> parameters_filter_key = function
+  | `String "Name" -> `NAME
+  | `String "Type" -> `TYPE
+  | `String "KeyId" -> `KEY_ID
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "parameters_filter_key: string expected" json
+
+type patch_action = [ `AllowAsDependency | `Block | `Unknown_value of string ]
+
+let yojson_of_patch_action : patch_action -> Yojson.Safe.t = function
+  | `AllowAsDependency -> `String "ALLOW_AS_DEPENDENCY"
+  | `Block -> `String "BLOCK"
+  | `Unknown_value s -> `String s
+
+let patch_action_of_yojson : Yojson.Safe.t -> patch_action = function
+  | `String "ALLOW_AS_DEPENDENCY" -> `AllowAsDependency
+  | `String "BLOCK" -> `Block
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "patch_action: string expected" json
+
+type patch_compliance_data_state = [ `Installed | `InstalledOther | `InstalledPendingReboot | `InstalledRejected | `Missing | `NotApplicable | `Failed | `AvailableSecurityUpdate | `Unknown_value of string ]
+
+let yojson_of_patch_compliance_data_state : patch_compliance_data_state -> Yojson.Safe.t = function
+  | `Installed -> `String "INSTALLED"
+  | `InstalledOther -> `String "INSTALLED_OTHER"
+  | `InstalledPendingReboot -> `String "INSTALLED_PENDING_REBOOT"
+  | `InstalledRejected -> `String "INSTALLED_REJECTED"
+  | `Missing -> `String "MISSING"
+  | `NotApplicable -> `String "NOT_APPLICABLE"
+  | `Failed -> `String "FAILED"
+  | `AvailableSecurityUpdate -> `String "AVAILABLE_SECURITY_UPDATE"
+  | `Unknown_value s -> `String s
+
+let patch_compliance_data_state_of_yojson : Yojson.Safe.t -> patch_compliance_data_state = function
+  | `String "INSTALLED" -> `Installed
+  | `String "INSTALLED_OTHER" -> `InstalledOther
+  | `String "INSTALLED_PENDING_REBOOT" -> `InstalledPendingReboot
+  | `String "INSTALLED_REJECTED" -> `InstalledRejected
+  | `String "MISSING" -> `Missing
+  | `String "NOT_APPLICABLE" -> `NotApplicable
+  | `String "FAILED" -> `Failed
+  | `String "AVAILABLE_SECURITY_UPDATE" -> `AvailableSecurityUpdate
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "patch_compliance_data_state: string expected" json
+
+type patch_compliance_level = [ `Critical | `High | `Medium | `Low | `Informational | `Unspecified | `Unknown_value of string ]
+
+let yojson_of_patch_compliance_level : patch_compliance_level -> Yojson.Safe.t = function
+  | `Critical -> `String "CRITICAL"
+  | `High -> `String "HIGH"
+  | `Medium -> `String "MEDIUM"
+  | `Low -> `String "LOW"
+  | `Informational -> `String "INFORMATIONAL"
+  | `Unspecified -> `String "UNSPECIFIED"
+  | `Unknown_value s -> `String s
+
+let patch_compliance_level_of_yojson : Yojson.Safe.t -> patch_compliance_level = function
+  | `String "CRITICAL" -> `Critical
+  | `String "HIGH" -> `High
+  | `String "MEDIUM" -> `Medium
+  | `String "LOW" -> `Low
+  | `String "INFORMATIONAL" -> `Informational
+  | `String "UNSPECIFIED" -> `Unspecified
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "patch_compliance_level: string expected" json
+
+type patch_compliance_status = [ `Compliant | `NonCompliant | `Unknown_value of string ]
+
+let yojson_of_patch_compliance_status : patch_compliance_status -> Yojson.Safe.t = function
+  | `Compliant -> `String "COMPLIANT"
+  | `NonCompliant -> `String "NON_COMPLIANT"
+  | `Unknown_value s -> `String s
+
+let patch_compliance_status_of_yojson : Yojson.Safe.t -> patch_compliance_status = function
+  | `String "COMPLIANT" -> `Compliant
+  | `String "NON_COMPLIANT" -> `NonCompliant
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "patch_compliance_status: string expected" json
+
+type patch_deployment_status = [ `Approved | `PendingApproval | `ExplicitApproved | `ExplicitRejected | `Unknown_value of string ]
+
+let yojson_of_patch_deployment_status : patch_deployment_status -> Yojson.Safe.t = function
+  | `Approved -> `String "APPROVED"
+  | `PendingApproval -> `String "PENDING_APPROVAL"
+  | `ExplicitApproved -> `String "EXPLICIT_APPROVED"
+  | `ExplicitRejected -> `String "EXPLICIT_REJECTED"
+  | `Unknown_value s -> `String s
+
+let patch_deployment_status_of_yojson : Yojson.Safe.t -> patch_deployment_status = function
+  | `String "APPROVED" -> `Approved
+  | `String "PENDING_APPROVAL" -> `PendingApproval
+  | `String "EXPLICIT_APPROVED" -> `ExplicitApproved
+  | `String "EXPLICIT_REJECTED" -> `ExplicitRejected
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "patch_deployment_status: string expected" json
+
+type patch_filter_key = [ `Arch | `AdvisoryId | `BugzillaId | `PatchSet | `Product | `ProductFamily | `Classification | `CVEId | `Epoch | `MsrcSeverity | `Name | `PatchId | `Section | `Priority | `Repository | `Release | `Severity | `Security | `Version | `Unknown_value of string ]
+
+let yojson_of_patch_filter_key : patch_filter_key -> Yojson.Safe.t = function
+  | `Arch -> `String "ARCH"
+  | `AdvisoryId -> `String "ADVISORY_ID"
+  | `BugzillaId -> `String "BUGZILLA_ID"
+  | `PatchSet -> `String "PATCH_SET"
+  | `Product -> `String "PRODUCT"
+  | `ProductFamily -> `String "PRODUCT_FAMILY"
+  | `Classification -> `String "CLASSIFICATION"
+  | `CVEId -> `String "CVE_ID"
+  | `Epoch -> `String "EPOCH"
+  | `MsrcSeverity -> `String "MSRC_SEVERITY"
+  | `Name -> `String "NAME"
+  | `PatchId -> `String "PATCH_ID"
+  | `Section -> `String "SECTION"
+  | `Priority -> `String "PRIORITY"
+  | `Repository -> `String "REPOSITORY"
+  | `Release -> `String "RELEASE"
+  | `Severity -> `String "SEVERITY"
+  | `Security -> `String "SECURITY"
+  | `Version -> `String "VERSION"
+  | `Unknown_value s -> `String s
+
+let patch_filter_key_of_yojson : Yojson.Safe.t -> patch_filter_key = function
+  | `String "ARCH" -> `Arch
+  | `String "ADVISORY_ID" -> `AdvisoryId
+  | `String "BUGZILLA_ID" -> `BugzillaId
+  | `String "PATCH_SET" -> `PatchSet
+  | `String "PRODUCT" -> `Product
+  | `String "PRODUCT_FAMILY" -> `ProductFamily
+  | `String "CLASSIFICATION" -> `Classification
+  | `String "CVE_ID" -> `CVEId
+  | `String "EPOCH" -> `Epoch
+  | `String "MSRC_SEVERITY" -> `MsrcSeverity
+  | `String "NAME" -> `Name
+  | `String "PATCH_ID" -> `PatchId
+  | `String "SECTION" -> `Section
+  | `String "PRIORITY" -> `Priority
+  | `String "REPOSITORY" -> `Repository
+  | `String "RELEASE" -> `Release
+  | `String "SEVERITY" -> `Severity
+  | `String "SECURITY" -> `Security
+  | `String "VERSION" -> `Version
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "patch_filter_key: string expected" json
+
+type patch_operation_type = [ `SCAN | `INSTALL | `Unknown_value of string ]
+
+let yojson_of_patch_operation_type : patch_operation_type -> Yojson.Safe.t = function
+  | `SCAN -> `String "Scan"
+  | `INSTALL -> `String "Install"
+  | `Unknown_value s -> `String s
+
+let patch_operation_type_of_yojson : Yojson.Safe.t -> patch_operation_type = function
+  | `String "Scan" -> `SCAN
+  | `String "Install" -> `INSTALL
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "patch_operation_type: string expected" json
+
+type patch_property = [ `Product | `PatchProductFamily | `PatchClassification | `PatchMsrcSeverity | `PatchPriority | `PatchSeverity | `Unknown_value of string ]
+
+let yojson_of_patch_property : patch_property -> Yojson.Safe.t = function
+  | `Product -> `String "PRODUCT"
+  | `PatchProductFamily -> `String "PRODUCT_FAMILY"
+  | `PatchClassification -> `String "CLASSIFICATION"
+  | `PatchMsrcSeverity -> `String "MSRC_SEVERITY"
+  | `PatchPriority -> `String "PRIORITY"
+  | `PatchSeverity -> `String "SEVERITY"
+  | `Unknown_value s -> `String s
+
+let patch_property_of_yojson : Yojson.Safe.t -> patch_property = function
+  | `String "PRODUCT" -> `Product
+  | `String "PRODUCT_FAMILY" -> `PatchProductFamily
+  | `String "CLASSIFICATION" -> `PatchClassification
+  | `String "MSRC_SEVERITY" -> `PatchMsrcSeverity
+  | `String "PRIORITY" -> `PatchPriority
+  | `String "SEVERITY" -> `PatchSeverity
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "patch_property: string expected" json
+
+type patch_set = [ `Os | `Application | `Unknown_value of string ]
+
+let yojson_of_patch_set : patch_set -> Yojson.Safe.t = function
+  | `Os -> `String "OS"
+  | `Application -> `String "APPLICATION"
+  | `Unknown_value s -> `String s
+
+let patch_set_of_yojson : Yojson.Safe.t -> patch_set = function
+  | `String "OS" -> `Os
+  | `String "APPLICATION" -> `Application
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "patch_set: string expected" json
+
+type ping_status = [ `ONLINE | `CONNECTION_LOST | `INACTIVE | `Unknown_value of string ]
+
+let yojson_of_ping_status : ping_status -> Yojson.Safe.t = function
+  | `ONLINE -> `String "Online"
+  | `CONNECTION_LOST -> `String "ConnectionLost"
+  | `INACTIVE -> `String "Inactive"
+  | `Unknown_value s -> `String s
+
+let ping_status_of_yojson : Yojson.Safe.t -> ping_status = function
+  | `String "Online" -> `ONLINE
+  | `String "ConnectionLost" -> `CONNECTION_LOST
+  | `String "Inactive" -> `INACTIVE
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "ping_status: string expected" json
+
+type platform_type = [ `WINDOWS | `LINUX | `MACOS | `Unknown_value of string ]
+
+let yojson_of_platform_type : platform_type -> Yojson.Safe.t = function
+  | `WINDOWS -> `String "Windows"
+  | `LINUX -> `String "Linux"
+  | `MACOS -> `String "MacOS"
+  | `Unknown_value s -> `String s
+
+let platform_type_of_yojson : Yojson.Safe.t -> platform_type = function
+  | `String "Windows" -> `WINDOWS
+  | `String "Linux" -> `LINUX
+  | `String "MacOS" -> `MACOS
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "platform_type: string expected" json
+
+type reboot_option = [ `REBOOT_IF_NEEDED | `NO_REBOOT | `Unknown_value of string ]
+
+let yojson_of_reboot_option : reboot_option -> Yojson.Safe.t = function
+  | `REBOOT_IF_NEEDED -> `String "RebootIfNeeded"
+  | `NO_REBOOT -> `String "NoReboot"
+  | `Unknown_value s -> `String s
+
+let reboot_option_of_yojson : Yojson.Safe.t -> reboot_option = function
+  | `String "RebootIfNeeded" -> `REBOOT_IF_NEEDED
+  | `String "NoReboot" -> `NO_REBOOT
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "reboot_option: string expected" json
+
+type resource_data_sync_s3_format = [ `JSON_SERDE | `Unknown_value of string ]
+
+let yojson_of_resource_data_sync_s3_format : resource_data_sync_s3_format -> Yojson.Safe.t = function
+  | `JSON_SERDE -> `String "JsonSerDe"
+  | `Unknown_value s -> `String s
+
+let resource_data_sync_s3_format_of_yojson : Yojson.Safe.t -> resource_data_sync_s3_format = function
+  | `String "JsonSerDe" -> `JSON_SERDE
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "resource_data_sync_s3_format: string expected" json
+
+type resource_type = [ `MANAGED_INSTANCE | `EC2_INSTANCE | `Unknown_value of string ]
+
+let yojson_of_resource_type : resource_type -> Yojson.Safe.t = function
+  | `MANAGED_INSTANCE -> `String "ManagedInstance"
+  | `EC2_INSTANCE -> `String "EC2Instance"
+  | `Unknown_value s -> `String s
+
+let resource_type_of_yojson : Yojson.Safe.t -> resource_type = function
+  | `String "ManagedInstance" -> `MANAGED_INSTANCE
+  | `String "EC2Instance" -> `EC2_INSTANCE
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "resource_type: string expected" json
+
+type resource_type_for_tagging = [ `DOCUMENT | `MANAGED_INSTANCE | `MAINTENANCE_WINDOW | `PARAMETER | `PATCH_BASELINE | `OPS_ITEM | `OPSMETADATA | `AUTOMATION | `ASSOCIATION | `CLOUD_CONNECTOR | `Unknown_value of string ]
+
+let yojson_of_resource_type_for_tagging : resource_type_for_tagging -> Yojson.Safe.t = function
+  | `DOCUMENT -> `String "Document"
+  | `MANAGED_INSTANCE -> `String "ManagedInstance"
+  | `MAINTENANCE_WINDOW -> `String "MaintenanceWindow"
+  | `PARAMETER -> `String "Parameter"
+  | `PATCH_BASELINE -> `String "PatchBaseline"
+  | `OPS_ITEM -> `String "OpsItem"
+  | `OPSMETADATA -> `String "OpsMetadata"
+  | `AUTOMATION -> `String "Automation"
+  | `ASSOCIATION -> `String "Association"
+  | `CLOUD_CONNECTOR -> `String "CloudConnector"
+  | `Unknown_value s -> `String s
+
+let resource_type_for_tagging_of_yojson : Yojson.Safe.t -> resource_type_for_tagging = function
+  | `String "Document" -> `DOCUMENT
+  | `String "ManagedInstance" -> `MANAGED_INSTANCE
+  | `String "MaintenanceWindow" -> `MAINTENANCE_WINDOW
+  | `String "Parameter" -> `PARAMETER
+  | `String "PatchBaseline" -> `PATCH_BASELINE
+  | `String "OpsItem" -> `OPS_ITEM
+  | `String "OpsMetadata" -> `OPSMETADATA
+  | `String "Automation" -> `AUTOMATION
+  | `String "Association" -> `ASSOCIATION
+  | `String "CloudConnector" -> `CLOUD_CONNECTOR
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "resource_type_for_tagging: string expected" json
+
+type review_status = [ `APPROVED | `NOT_REVIEWED | `PENDING | `REJECTED | `Unknown_value of string ]
+
+let yojson_of_review_status : review_status -> Yojson.Safe.t = function
+  | `APPROVED -> `String "APPROVED"
+  | `NOT_REVIEWED -> `String "NOT_REVIEWED"
+  | `PENDING -> `String "PENDING"
+  | `REJECTED -> `String "REJECTED"
+  | `Unknown_value s -> `String s
+
+let review_status_of_yojson : Yojson.Safe.t -> review_status = function
+  | `String "APPROVED" -> `APPROVED
+  | `String "NOT_REVIEWED" -> `NOT_REVIEWED
+  | `String "PENDING" -> `PENDING
+  | `String "REJECTED" -> `REJECTED
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "review_status: string expected" json
+
+type session_filter_key = [ `INVOKED_AFTER | `INVOKED_BEFORE | `TARGET_ID | `OWNER | `STATUS | `SESSION_ID | `ACCESS_TYPE | `Unknown_value of string ]
+
+let yojson_of_session_filter_key : session_filter_key -> Yojson.Safe.t = function
+  | `INVOKED_AFTER -> `String "InvokedAfter"
+  | `INVOKED_BEFORE -> `String "InvokedBefore"
+  | `TARGET_ID -> `String "Target"
+  | `OWNER -> `String "Owner"
+  | `STATUS -> `String "Status"
+  | `SESSION_ID -> `String "SessionId"
+  | `ACCESS_TYPE -> `String "AccessType"
+  | `Unknown_value s -> `String s
+
+let session_filter_key_of_yojson : Yojson.Safe.t -> session_filter_key = function
+  | `String "InvokedAfter" -> `INVOKED_AFTER
+  | `String "InvokedBefore" -> `INVOKED_BEFORE
+  | `String "Target" -> `TARGET_ID
+  | `String "Owner" -> `OWNER
+  | `String "Status" -> `STATUS
+  | `String "SessionId" -> `SESSION_ID
+  | `String "AccessType" -> `ACCESS_TYPE
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "session_filter_key: string expected" json
+
+type session_state = [ `ACTIVE | `HISTORY | `Unknown_value of string ]
+
+let yojson_of_session_state : session_state -> Yojson.Safe.t = function
+  | `ACTIVE -> `String "Active"
+  | `HISTORY -> `String "History"
+  | `Unknown_value s -> `String s
+
+let session_state_of_yojson : Yojson.Safe.t -> session_state = function
+  | `String "Active" -> `ACTIVE
+  | `String "History" -> `HISTORY
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "session_state: string expected" json
+
+type session_status = [ `CONNECTED | `CONNECTING | `DISCONNECTED | `TERMINATED | `TERMINATING | `FAILED | `Unknown_value of string ]
+
+let yojson_of_session_status : session_status -> Yojson.Safe.t = function
+  | `CONNECTED -> `String "Connected"
+  | `CONNECTING -> `String "Connecting"
+  | `DISCONNECTED -> `String "Disconnected"
+  | `TERMINATED -> `String "Terminated"
+  | `TERMINATING -> `String "Terminating"
+  | `FAILED -> `String "Failed"
+  | `Unknown_value s -> `String s
+
+let session_status_of_yojson : Yojson.Safe.t -> session_status = function
+  | `String "Connected" -> `CONNECTED
+  | `String "Connecting" -> `CONNECTING
+  | `String "Disconnected" -> `DISCONNECTED
+  | `String "Terminated" -> `TERMINATED
+  | `String "Terminating" -> `TERMINATING
+  | `String "Failed" -> `FAILED
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "session_status: string expected" json
+
+type signal_type = [ `APPROVE | `REJECT | `START_STEP | `STOP_STEP | `RESUME | `REVOKE | `Unknown_value of string ]
+
+let yojson_of_signal_type : signal_type -> Yojson.Safe.t = function
+  | `APPROVE -> `String "Approve"
+  | `REJECT -> `String "Reject"
+  | `START_STEP -> `String "StartStep"
+  | `STOP_STEP -> `String "StopStep"
+  | `RESUME -> `String "Resume"
+  | `REVOKE -> `String "Revoke"
+  | `Unknown_value s -> `String s
+
+let signal_type_of_yojson : Yojson.Safe.t -> signal_type = function
+  | `String "Approve" -> `APPROVE
+  | `String "Reject" -> `REJECT
+  | `String "StartStep" -> `START_STEP
+  | `String "StopStep" -> `STOP_STEP
+  | `String "Resume" -> `RESUME
+  | `String "Revoke" -> `REVOKE
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "signal_type: string expected" json
+
+type source_type = [ `AWS_EC2_INSTANCE | `AWS_IOT_THING | `AWS_SSM_MANAGEDINSTANCE | `AZURE_INSTANCE | `Unknown_value of string ]
+
+let yojson_of_source_type : source_type -> Yojson.Safe.t = function
+  | `AWS_EC2_INSTANCE -> `String "AWS::EC2::Instance"
+  | `AWS_IOT_THING -> `String "AWS::IoT::Thing"
+  | `AWS_SSM_MANAGEDINSTANCE -> `String "AWS::SSM::ManagedInstance"
+  | `AZURE_INSTANCE -> `String "Microsoft.Compute/virtualMachines"
+  | `Unknown_value s -> `String s
+
+let source_type_of_yojson : Yojson.Safe.t -> source_type = function
+  | `String "AWS::EC2::Instance" -> `AWS_EC2_INSTANCE
+  | `String "AWS::IoT::Thing" -> `AWS_IOT_THING
+  | `String "AWS::SSM::ManagedInstance" -> `AWS_SSM_MANAGEDINSTANCE
+  | `String "Microsoft.Compute/virtualMachines" -> `AZURE_INSTANCE
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "source_type: string expected" json
+
+type step_execution_filter_key = [ `START_TIME_BEFORE | `START_TIME_AFTER | `STEP_EXECUTION_STATUS | `STEP_EXECUTION_ID | `STEP_NAME | `ACTION | `PARENT_STEP_EXECUTION_ID | `PARENT_STEP_ITERATION | `PARENT_STEP_ITERATOR_VALUE | `Unknown_value of string ]
+
+let yojson_of_step_execution_filter_key : step_execution_filter_key -> Yojson.Safe.t = function
+  | `START_TIME_BEFORE -> `String "StartTimeBefore"
+  | `START_TIME_AFTER -> `String "StartTimeAfter"
+  | `STEP_EXECUTION_STATUS -> `String "StepExecutionStatus"
+  | `STEP_EXECUTION_ID -> `String "StepExecutionId"
+  | `STEP_NAME -> `String "StepName"
+  | `ACTION -> `String "Action"
+  | `PARENT_STEP_EXECUTION_ID -> `String "ParentStepExecutionId"
+  | `PARENT_STEP_ITERATION -> `String "ParentStepIteration"
+  | `PARENT_STEP_ITERATOR_VALUE -> `String "ParentStepIteratorValue"
+  | `Unknown_value s -> `String s
+
+let step_execution_filter_key_of_yojson : Yojson.Safe.t -> step_execution_filter_key = function
+  | `String "StartTimeBefore" -> `START_TIME_BEFORE
+  | `String "StartTimeAfter" -> `START_TIME_AFTER
+  | `String "StepExecutionStatus" -> `STEP_EXECUTION_STATUS
+  | `String "StepExecutionId" -> `STEP_EXECUTION_ID
+  | `String "StepName" -> `STEP_NAME
+  | `String "Action" -> `ACTION
+  | `String "ParentStepExecutionId" -> `PARENT_STEP_EXECUTION_ID
+  | `String "ParentStepIteration" -> `PARENT_STEP_ITERATION
+  | `String "ParentStepIteratorValue" -> `PARENT_STEP_ITERATOR_VALUE
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "step_execution_filter_key: string expected" json
+
+type stop_type = [ `COMPLETE | `CANCEL | `Unknown_value of string ]
+
+let yojson_of_stop_type : stop_type -> Yojson.Safe.t = function
+  | `COMPLETE -> `String "Complete"
+  | `CANCEL -> `String "Cancel"
+  | `Unknown_value s -> `String s
+
+let stop_type_of_yojson : Yojson.Safe.t -> stop_type = function
+  | `String "Complete" -> `COMPLETE
+  | `String "Cancel" -> `CANCEL
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "stop_type: string expected" json
+
+type validation_finding_code = [ `TARGET_INACCESSIBLE | `TARGET_UNUSABLE | `TARGET_STATE_WARNING | `AWS_ROLE_ASSUMPTION_FAILED | `WEB_IDENTITY_TOKEN_FAILED | `OUTBOUND_WEB_IDENTITY_FEDERATION_DISABLED | `PROVIDER_CREDENTIAL_CREATION_FAILED | `TENANT_SUMMARY | `SUBSCRIPTION_ACCESSIBLE | `Unknown_value of string ]
+
+let yojson_of_validation_finding_code : validation_finding_code -> Yojson.Safe.t = function
+  | `TARGET_INACCESSIBLE -> `String "TargetInaccessible"
+  | `TARGET_UNUSABLE -> `String "TargetUnusable"
+  | `TARGET_STATE_WARNING -> `String "TargetStateWarning"
+  | `AWS_ROLE_ASSUMPTION_FAILED -> `String "AwsRoleAssumptionFailed"
+  | `WEB_IDENTITY_TOKEN_FAILED -> `String "WebIdentityTokenFailed"
+  | `OUTBOUND_WEB_IDENTITY_FEDERATION_DISABLED -> `String "OutboundWebIdentityFederationDisabled"
+  | `PROVIDER_CREDENTIAL_CREATION_FAILED -> `String "ProviderCredentialCreationFailed"
+  | `TENANT_SUMMARY -> `String "TenantSummary"
+  | `SUBSCRIPTION_ACCESSIBLE -> `String "SubscriptionAccessible"
+  | `Unknown_value s -> `String s
+
+let validation_finding_code_of_yojson : Yojson.Safe.t -> validation_finding_code = function
+  | `String "TargetInaccessible" -> `TARGET_INACCESSIBLE
+  | `String "TargetUnusable" -> `TARGET_UNUSABLE
+  | `String "TargetStateWarning" -> `TARGET_STATE_WARNING
+  | `String "AwsRoleAssumptionFailed" -> `AWS_ROLE_ASSUMPTION_FAILED
+  | `String "WebIdentityTokenFailed" -> `WEB_IDENTITY_TOKEN_FAILED
+  | `String "OutboundWebIdentityFederationDisabled" -> `OUTBOUND_WEB_IDENTITY_FEDERATION_DISABLED
+  | `String "ProviderCredentialCreationFailed" -> `PROVIDER_CREDENTIAL_CREATION_FAILED
+  | `String "TenantSummary" -> `TENANT_SUMMARY
+  | `String "SubscriptionAccessible" -> `SUBSCRIPTION_ACCESSIBLE
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "validation_finding_code: string expected" json
+
+type validation_finding_scope_type = [ `AZURE_TENANT | `AZURE_SUBSCRIPTION | `Unknown_value of string ]
+
+let yojson_of_validation_finding_scope_type : validation_finding_scope_type -> Yojson.Safe.t = function
+  | `AZURE_TENANT -> `String "azure:tenant"
+  | `AZURE_SUBSCRIPTION -> `String "azure:subscription"
+  | `Unknown_value s -> `String s
+
+let validation_finding_scope_type_of_yojson : Yojson.Safe.t -> validation_finding_scope_type = function
+  | `String "azure:tenant" -> `AZURE_TENANT
+  | `String "azure:subscription" -> `AZURE_SUBSCRIPTION
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "validation_finding_scope_type: string expected" json
+
+type validation_finding_type = [ `INFO | `WARN | `ERROR | `Unknown_value of string ]
+
+let yojson_of_validation_finding_type : validation_finding_type -> Yojson.Safe.t = function
+  | `INFO -> `String "INFO"
+  | `WARN -> `String "WARN"
+  | `ERROR -> `String "ERROR"
+  | `Unknown_value s -> `String s
+
+let validation_finding_type_of_yojson : Yojson.Safe.t -> validation_finding_type = function
+  | `String "INFO" -> `INFO
+  | `String "WARN" -> `WARN
+  | `String "ERROR" -> `ERROR
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "validation_finding_type: string expected" json
+
 type account_sharing_info = {
   account_id : string option; [@key "AccountId"] [@yojson.option]
   shared_document_version : string option; [@key "SharedDocumentVersion"] [@yojson.option]
@@ -34,7 +1973,7 @@ and activation = {
 [@@yojson.allow_extra_fields]
 
 and add_tags_to_resource_request = {
-  resource_type : string; [@key "ResourceType"]
+  resource_type : resource_type_for_tagging; [@key "ResourceType"]
   resource_id : string; [@key "ResourceId"]
   tags : tag list; [@key "Tags"]
 }
@@ -55,7 +1994,7 @@ and alarm_configuration = {
 
 and alarm_state_information = {
   name : string; [@key "Name"]
-  state : string; [@key "State"]
+  state : external_alarm_state; [@key "State"]
 }
 [@@yojson.allow_extra_fields]
 
@@ -109,8 +2048,8 @@ and association_description = {
   association_name : string option; [@key "AssociationName"] [@yojson.option]
   max_errors : string option; [@key "MaxErrors"] [@yojson.option]
   max_concurrency : string option; [@key "MaxConcurrency"] [@yojson.option]
-  compliance_severity : string option; [@key "ComplianceSeverity"] [@yojson.option]
-  sync_compliance : string option; [@key "SyncCompliance"] [@yojson.option]
+  compliance_severity : association_compliance_severity option; [@key "ComplianceSeverity"] [@yojson.option]
+  sync_compliance : association_sync_compliance option; [@key "SyncCompliance"] [@yojson.option]
   apply_only_at_cron_interval : bool option; [@key "ApplyOnlyAtCronInterval"] [@yojson.option]
   calendar_names : string list option; [@key "CalendarNames"] [@yojson.option]
   target_locations : target_location list option; [@key "TargetLocations"] [@yojson.option]
@@ -138,9 +2077,9 @@ and association_execution = {
 [@@yojson.allow_extra_fields]
 
 and association_execution_filter = {
-  key : string; [@key "Key"]
+  key : association_execution_filter_key; [@key "Key"]
   value : string; [@key "Value"]
-  type_ : string; [@key "Type"]
+  type_ : association_filter_operator_type; [@key "Type"]
 }
 [@@yojson.allow_extra_fields]
 
@@ -158,13 +2097,13 @@ and association_execution_target = {
 [@@yojson.allow_extra_fields]
 
 and association_execution_targets_filter = {
-  key : string; [@key "Key"]
+  key : association_execution_targets_filter_key; [@key "Key"]
   value : string; [@key "Value"]
 }
 [@@yojson.allow_extra_fields]
 
 and association_filter = {
-  key : string; [@key "key"]
+  key : association_filter_key; [@key "key"]
   value : string; [@key "value"]
 }
 [@@yojson.allow_extra_fields]
@@ -178,7 +2117,7 @@ and association_overview = {
 
 and association_status = {
   date : Aws_json_wire.timestamp; [@key "Date"]
-  name : string; [@key "Name"]
+  name : association_status_name; [@key "Name"]
   message : string; [@key "Message"]
   additional_info : string option; [@key "AdditionalInfo"] [@yojson.option]
 }
@@ -197,8 +2136,8 @@ and association_version_info = {
   association_name : string option; [@key "AssociationName"] [@yojson.option]
   max_errors : string option; [@key "MaxErrors"] [@yojson.option]
   max_concurrency : string option; [@key "MaxConcurrency"] [@yojson.option]
-  compliance_severity : string option; [@key "ComplianceSeverity"] [@yojson.option]
-  sync_compliance : string option; [@key "SyncCompliance"] [@yojson.option]
+  compliance_severity : association_compliance_severity option; [@key "ComplianceSeverity"] [@yojson.option]
+  sync_compliance : association_sync_compliance option; [@key "SyncCompliance"] [@yojson.option]
   apply_only_at_cron_interval : bool option; [@key "ApplyOnlyAtCronInterval"] [@yojson.option]
   calendar_names : string list option; [@key "CalendarNames"] [@yojson.option]
   target_locations : target_location list option; [@key "TargetLocations"] [@yojson.option]
@@ -213,7 +2152,7 @@ and attachment_content = {
   name : string option; [@key "Name"] [@yojson.option]
   size : int option; [@key "Size"] [@yojson.option]
   hash : string option; [@key "Hash"] [@yojson.option]
-  hash_type : string option; [@key "HashType"] [@yojson.option]
+  hash_type : attachment_hash_type option; [@key "HashType"] [@yojson.option]
   url : string option; [@key "Url"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -224,7 +2163,7 @@ and attachment_information = {
 [@@yojson.allow_extra_fields]
 
 and attachments_source = {
-  key : string option; [@key "Key"] [@yojson.option]
+  key : attachments_source_key option; [@key "Key"] [@yojson.option]
   values : string list option; [@key "Values"] [@yojson.option]
   name : string option; [@key "Name"] [@yojson.option]
 }
@@ -236,14 +2175,14 @@ and automation_execution = {
   document_version : string option; [@key "DocumentVersion"] [@yojson.option]
   execution_start_time : Aws_json_wire.timestamp option; [@key "ExecutionStartTime"] [@yojson.option]
   execution_end_time : Aws_json_wire.timestamp option; [@key "ExecutionEndTime"] [@yojson.option]
-  automation_execution_status : string option; [@key "AutomationExecutionStatus"] [@yojson.option]
+  automation_execution_status : automation_execution_status option; [@key "AutomationExecutionStatus"] [@yojson.option]
   step_executions : step_execution list option; [@key "StepExecutions"] [@yojson.option]
   step_executions_truncated : bool option; [@key "StepExecutionsTruncated"] [@yojson.option]
   parameters : string list Aws_json_wire.map option; [@key "Parameters"] [@yojson.option]
   outputs : string list Aws_json_wire.map option; [@key "Outputs"] [@yojson.option]
   failure_message : string option; [@key "FailureMessage"] [@yojson.option]
   warning_message : string option; [@key "WarningMessage"] [@yojson.option]
-  mode : string option; [@key "Mode"] [@yojson.option]
+  mode : execution_mode option; [@key "Mode"] [@yojson.option]
   parent_automation_execution_id : string option; [@key "ParentAutomationExecutionId"] [@yojson.option]
   executed_by : string option; [@key "ExecutedBy"] [@yojson.option]
   current_step_name : string option; [@key "CurrentStepName"] [@yojson.option]
@@ -260,7 +2199,7 @@ and automation_execution = {
   alarm_configuration : alarm_configuration option; [@key "AlarmConfiguration"] [@yojson.option]
   triggered_alarms : alarm_state_information list option; [@key "TriggeredAlarms"] [@yojson.option]
   target_locations_url : string option; [@key "TargetLocationsURL"] [@yojson.option]
-  automation_subtype : string option; [@key "AutomationSubtype"] [@yojson.option]
+  automation_subtype : automation_subtype option; [@key "AutomationSubtype"] [@yojson.option]
   scheduled_time : Aws_json_wire.timestamp option; [@key "ScheduledTime"] [@yojson.option]
   runbooks : runbook list option; [@key "Runbooks"] [@yojson.option]
   ops_item_id : string option; [@key "OpsItemId"] [@yojson.option]
@@ -271,7 +2210,7 @@ and automation_execution = {
 [@@yojson.allow_extra_fields]
 
 and automation_execution_filter = {
-  key : string; [@key "Key"]
+  key : automation_execution_filter_key; [@key "Key"]
   values : string list; [@key "Values"]
 }
 [@@yojson.allow_extra_fields]
@@ -290,13 +2229,13 @@ and automation_execution_metadata = {
   automation_execution_id : string option; [@key "AutomationExecutionId"] [@yojson.option]
   document_name : string option; [@key "DocumentName"] [@yojson.option]
   document_version : string option; [@key "DocumentVersion"] [@yojson.option]
-  automation_execution_status : string option; [@key "AutomationExecutionStatus"] [@yojson.option]
+  automation_execution_status : automation_execution_status option; [@key "AutomationExecutionStatus"] [@yojson.option]
   execution_start_time : Aws_json_wire.timestamp option; [@key "ExecutionStartTime"] [@yojson.option]
   execution_end_time : Aws_json_wire.timestamp option; [@key "ExecutionEndTime"] [@yojson.option]
   executed_by : string option; [@key "ExecutedBy"] [@yojson.option]
   log_file : string option; [@key "LogFile"] [@yojson.option]
   outputs : string list Aws_json_wire.map option; [@key "Outputs"] [@yojson.option]
-  mode : string option; [@key "Mode"] [@yojson.option]
+  mode : execution_mode option; [@key "Mode"] [@yojson.option]
   parent_automation_execution_id : string option; [@key "ParentAutomationExecutionId"] [@yojson.option]
   current_step_name : string option; [@key "CurrentStepName"] [@yojson.option]
   current_action : string option; [@key "CurrentAction"] [@yojson.option]
@@ -309,11 +2248,11 @@ and automation_execution_metadata = {
   max_concurrency : string option; [@key "MaxConcurrency"] [@yojson.option]
   max_errors : string option; [@key "MaxErrors"] [@yojson.option]
   target : string option; [@key "Target"] [@yojson.option]
-  automation_type : string option; [@key "AutomationType"] [@yojson.option]
+  automation_type : automation_type option; [@key "AutomationType"] [@yojson.option]
   alarm_configuration : alarm_configuration option; [@key "AlarmConfiguration"] [@yojson.option]
   triggered_alarms : alarm_state_information list option; [@key "TriggeredAlarms"] [@yojson.option]
   target_locations_url : string option; [@key "TargetLocationsURL"] [@yojson.option]
-  automation_subtype : string option; [@key "AutomationSubtype"] [@yojson.option]
+  automation_subtype : automation_subtype option; [@key "AutomationSubtype"] [@yojson.option]
   scheduled_time : Aws_json_wire.timestamp option; [@key "ScheduledTime"] [@yojson.option]
   runbooks : runbook list option; [@key "Runbooks"] [@yojson.option]
   ops_item_id : string option; [@key "OpsItemId"] [@yojson.option]
@@ -346,16 +2285,16 @@ and azure_subscription = {
 [@@yojson.allow_extra_fields]
 
 and baseline_override = {
-  operating_system : string option; [@key "OperatingSystem"] [@yojson.option]
+  operating_system : operating_system option; [@key "OperatingSystem"] [@yojson.option]
   global_filters : patch_filter_group option; [@key "GlobalFilters"] [@yojson.option]
   approval_rules : patch_rule_group option; [@key "ApprovalRules"] [@yojson.option]
   approved_patches : string list option; [@key "ApprovedPatches"] [@yojson.option]
-  approved_patches_compliance_level : string option; [@key "ApprovedPatchesComplianceLevel"] [@yojson.option]
+  approved_patches_compliance_level : patch_compliance_level option; [@key "ApprovedPatchesComplianceLevel"] [@yojson.option]
   rejected_patches : string list option; [@key "RejectedPatches"] [@yojson.option]
-  rejected_patches_action : string option; [@key "RejectedPatchesAction"] [@yojson.option]
+  rejected_patches_action : patch_action option; [@key "RejectedPatchesAction"] [@yojson.option]
   approved_patches_enable_non_security : bool option; [@key "ApprovedPatchesEnableNonSecurity"] [@yojson.option]
   sources : patch_source list option; [@key "Sources"] [@yojson.option]
-  available_security_updates_compliance_status : string option; [@key "AvailableSecurityUpdatesComplianceStatus"] [@yojson.option]
+  available_security_updates_compliance_status : patch_compliance_status option; [@key "AvailableSecurityUpdatesComplianceStatus"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -383,7 +2322,7 @@ and cloud_connector_configuration = {
 [@@yojson.allow_extra_fields]
 
 and cloud_connector_filter = {
-  filter_key : string option; [@key "FilterKey"] [@yojson.option]
+  filter_key : cloud_connector_filter_key option; [@key "FilterKey"] [@yojson.option]
   filter_values : string list option; [@key "FilterValues"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -414,7 +2353,7 @@ and command = {
   instance_ids : string list option; [@key "InstanceIds"] [@yojson.option]
   targets : target list option; [@key "Targets"] [@yojson.option]
   requested_date_time : Aws_json_wire.timestamp option; [@key "RequestedDateTime"] [@yojson.option]
-  status : string option; [@key "Status"] [@yojson.option]
+  status : command_status option; [@key "Status"] [@yojson.option]
   status_details : string option; [@key "StatusDetails"] [@yojson.option]
   output_s3_region : string option; [@key "OutputS3Region"] [@yojson.option]
   output_s3_bucket_name : string option; [@key "OutputS3BucketName"] [@yojson.option]
@@ -435,7 +2374,7 @@ and command = {
 [@@yojson.allow_extra_fields]
 
 and command_filter = {
-  key : string; [@key "key"]
+  key : command_filter_key; [@key "key"]
   value : string; [@key "value"]
 }
 [@@yojson.allow_extra_fields]
@@ -448,7 +2387,7 @@ and command_invocation = {
   document_name : string option; [@key "DocumentName"] [@yojson.option]
   document_version : string option; [@key "DocumentVersion"] [@yojson.option]
   requested_date_time : Aws_json_wire.timestamp option; [@key "RequestedDateTime"] [@yojson.option]
-  status : string option; [@key "Status"] [@yojson.option]
+  status : command_invocation_status option; [@key "Status"] [@yojson.option]
   status_details : string option; [@key "StatusDetails"] [@yojson.option]
   trace_output : string option; [@key "TraceOutput"] [@yojson.option]
   standard_output_url : string option; [@key "StandardOutputUrl"] [@yojson.option]
@@ -462,7 +2401,7 @@ and command_invocation = {
 
 and command_plugin = {
   name : string option; [@key "Name"] [@yojson.option]
-  status : string option; [@key "Status"] [@yojson.option]
+  status : command_plugin_status option; [@key "Status"] [@yojson.option]
   status_details : string option; [@key "StatusDetails"] [@yojson.option]
   response_code : int option; [@key "ResponseCode"] [@yojson.option]
   response_start_date_time : Aws_json_wire.timestamp option; [@key "ResponseStartDateTime"] [@yojson.option]
@@ -489,8 +2428,8 @@ and compliance_item = {
   resource_id : string option; [@key "ResourceId"] [@yojson.option]
   id : string option; [@key "Id"] [@yojson.option]
   title : string option; [@key "Title"] [@yojson.option]
-  status : string option; [@key "Status"] [@yojson.option]
-  severity : string option; [@key "Severity"] [@yojson.option]
+  status : compliance_status option; [@key "Status"] [@yojson.option]
+  severity : compliance_severity option; [@key "Severity"] [@yojson.option]
   execution_summary : compliance_execution_summary option; [@key "ExecutionSummary"] [@yojson.option]
   details : string Aws_json_wire.map option; [@key "Details"] [@yojson.option]
 }
@@ -499,8 +2438,8 @@ and compliance_item = {
 and compliance_item_entry = {
   id : string option; [@key "Id"] [@yojson.option]
   title : string option; [@key "Title"] [@yojson.option]
-  severity : string; [@key "Severity"]
-  status : string; [@key "Status"]
+  severity : compliance_severity; [@key "Severity"]
+  status : compliance_status; [@key "Status"]
   details : string Aws_json_wire.map option; [@key "Details"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -508,7 +2447,7 @@ and compliance_item_entry = {
 and compliance_string_filter = {
   key : string option; [@key "Key"] [@yojson.option]
   values : string list option; [@key "Values"] [@yojson.option]
-  type_ : string option; [@key "Type"] [@yojson.option]
+  type_ : compliance_query_operator_type option; [@key "Type"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -565,8 +2504,8 @@ and create_association_batch_request_entry = {
   association_name : string option; [@key "AssociationName"] [@yojson.option]
   max_errors : string option; [@key "MaxErrors"] [@yojson.option]
   max_concurrency : string option; [@key "MaxConcurrency"] [@yojson.option]
-  compliance_severity : string option; [@key "ComplianceSeverity"] [@yojson.option]
-  sync_compliance : string option; [@key "SyncCompliance"] [@yojson.option]
+  compliance_severity : association_compliance_severity option; [@key "ComplianceSeverity"] [@yojson.option]
+  sync_compliance : association_sync_compliance option; [@key "SyncCompliance"] [@yojson.option]
   apply_only_at_cron_interval : bool option; [@key "ApplyOnlyAtCronInterval"] [@yojson.option]
   calendar_names : string list option; [@key "CalendarNames"] [@yojson.option]
   target_locations : target_location list option; [@key "TargetLocations"] [@yojson.option]
@@ -595,8 +2534,8 @@ and create_association_request = {
   automation_target_parameter_name : string option; [@key "AutomationTargetParameterName"] [@yojson.option]
   max_errors : string option; [@key "MaxErrors"] [@yojson.option]
   max_concurrency : string option; [@key "MaxConcurrency"] [@yojson.option]
-  compliance_severity : string option; [@key "ComplianceSeverity"] [@yojson.option]
-  sync_compliance : string option; [@key "SyncCompliance"] [@yojson.option]
+  compliance_severity : association_compliance_severity option; [@key "ComplianceSeverity"] [@yojson.option]
+  sync_compliance : association_sync_compliance option; [@key "SyncCompliance"] [@yojson.option]
   apply_only_at_cron_interval : bool option; [@key "ApplyOnlyAtCronInterval"] [@yojson.option]
   calendar_names : string list option; [@key "CalendarNames"] [@yojson.option]
   target_locations : target_location list option; [@key "TargetLocations"] [@yojson.option]
@@ -636,8 +2575,8 @@ and create_document_request = {
   name : string; [@key "Name"]
   display_name : string option; [@key "DisplayName"] [@yojson.option]
   version_name : string option; [@key "VersionName"] [@yojson.option]
-  document_type : string option; [@key "DocumentType"] [@yojson.option]
-  document_format : string option; [@key "DocumentFormat"] [@yojson.option]
+  document_type : document_type option; [@key "DocumentType"] [@yojson.option]
+  document_format : document_format option; [@key "DocumentFormat"] [@yojson.option]
   target_type : string option; [@key "TargetType"] [@yojson.option]
   tags : tag list option; [@key "Tags"] [@yojson.option]
 }
@@ -708,18 +2647,18 @@ and create_ops_metadata_result = {
 [@@yojson.allow_extra_fields]
 
 and create_patch_baseline_request = {
-  operating_system : string option; [@key "OperatingSystem"] [@yojson.option]
+  operating_system : operating_system option; [@key "OperatingSystem"] [@yojson.option]
   name : string; [@key "Name"]
   global_filters : patch_filter_group option; [@key "GlobalFilters"] [@yojson.option]
   approval_rules : patch_rule_group option; [@key "ApprovalRules"] [@yojson.option]
   approved_patches : string list option; [@key "ApprovedPatches"] [@yojson.option]
-  approved_patches_compliance_level : string option; [@key "ApprovedPatchesComplianceLevel"] [@yojson.option]
+  approved_patches_compliance_level : patch_compliance_level option; [@key "ApprovedPatchesComplianceLevel"] [@yojson.option]
   approved_patches_enable_non_security : bool option; [@key "ApprovedPatchesEnableNonSecurity"] [@yojson.option]
   rejected_patches : string list option; [@key "RejectedPatches"] [@yojson.option]
-  rejected_patches_action : string option; [@key "RejectedPatchesAction"] [@yojson.option]
+  rejected_patches_action : patch_action option; [@key "RejectedPatchesAction"] [@yojson.option]
   description : string option; [@key "Description"] [@yojson.option]
   sources : patch_source list option; [@key "Sources"] [@yojson.option]
-  available_security_updates_compliance_status : string option; [@key "AvailableSecurityUpdatesComplianceStatus"] [@yojson.option]
+  available_security_updates_compliance_status : patch_compliance_status option; [@key "AvailableSecurityUpdatesComplianceStatus"] [@yojson.option]
   client_token : string option; [@key "ClientToken"] [@yojson.option]
   tags : tag list option; [@key "Tags"] [@yojson.option]
 }
@@ -786,7 +2725,7 @@ and delete_document_result = Aws_json_wire.empty
 
 and delete_inventory_request = {
   type_name : string; [@key "TypeName"]
-  schema_delete_option : string option; [@key "SchemaDeleteOption"] [@yojson.option]
+  schema_delete_option : inventory_schema_delete_option option; [@key "SchemaDeleteOption"] [@yojson.option]
   dry_run : bool option; [@key "DryRun"] [@yojson.option]
   client_token : string option; [@key "ClientToken"] [@yojson.option]
 }
@@ -863,7 +2802,7 @@ and delete_resource_policy_request = {
   resource_arn : string; [@key "ResourceArn"]
   policy_id : string; [@key "PolicyId"]
   policy_hash : string; [@key "PolicyHash"]
-  deletion_mode : string option; [@key "DeletionMode"] [@yojson.option]
+  deletion_mode : deletion_mode option; [@key "DeletionMode"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -914,7 +2853,7 @@ and deregister_task_from_maintenance_window_result = {
 [@@yojson.allow_extra_fields]
 
 and describe_activations_filter = {
-  filter_key : string option; [@key "FilterKey"] [@yojson.option]
+  filter_key : describe_activations_filter_keys option; [@key "FilterKey"] [@yojson.option]
   filter_values : string list option; [@key "FilterValues"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -1017,7 +2956,7 @@ and describe_available_patches_result = {
 
 and describe_document_permission_request = {
   name : string; [@key "Name"]
-  permission_type : string; [@key "PermissionType"]
+  permission_type : document_permission_type; [@key "PermissionType"]
   max_results : int option; [@key "MaxResults"] [@yojson.option]
   next_token : string option; [@key "NextToken"] [@yojson.option]
 }
@@ -1209,7 +3148,7 @@ and describe_maintenance_window_executions_result = {
 and describe_maintenance_window_schedule_request = {
   window_id : string option; [@key "WindowId"] [@yojson.option]
   targets : target list option; [@key "Targets"] [@yojson.option]
-  resource_type : string option; [@key "ResourceType"] [@yojson.option]
+  resource_type : maintenance_window_resource_type option; [@key "ResourceType"] [@yojson.option]
   filters : patch_orchestrator_filter list option; [@key "Filters"] [@yojson.option]
   max_results : int option; [@key "MaxResults"] [@yojson.option]
   next_token : string option; [@key "NextToken"] [@yojson.option]
@@ -1252,7 +3191,7 @@ and describe_maintenance_window_tasks_result = {
 
 and describe_maintenance_windows_for_target_request = {
   targets : target list; [@key "Targets"]
-  resource_type : string; [@key "ResourceType"]
+  resource_type : maintenance_window_resource_type; [@key "ResourceType"]
   max_results : int option; [@key "MaxResults"] [@yojson.option]
   next_token : string option; [@key "NextToken"] [@yojson.option]
 }
@@ -1354,9 +3293,9 @@ and describe_patch_groups_result = {
 [@@yojson.allow_extra_fields]
 
 and describe_patch_properties_request = {
-  operating_system : string; [@key "OperatingSystem"]
-  property : string; [@key "Property"]
-  patch_set : string option; [@key "PatchSet"] [@yojson.option]
+  operating_system : operating_system; [@key "OperatingSystem"]
+  property : patch_property; [@key "Property"]
+  patch_set : patch_set option; [@key "PatchSet"] [@yojson.option]
   max_results : int option; [@key "MaxResults"] [@yojson.option]
   next_token : string option; [@key "NextToken"] [@yojson.option]
 }
@@ -1369,7 +3308,7 @@ and describe_patch_properties_result = {
 [@@yojson.allow_extra_fields]
 
 and describe_sessions_request = {
-  state : string; [@key "State"]
+  state : session_state; [@key "State"]
   max_results : int option; [@key "MaxResults"] [@yojson.option]
   next_token : string option; [@key "NextToken"] [@yojson.option]
   filters : session_filter list option; [@key "Filters"] [@yojson.option]
@@ -1400,23 +3339,23 @@ and document_default_version_description = {
 and document_description = {
   sha1 : string option; [@key "Sha1"] [@yojson.option]
   hash : string option; [@key "Hash"] [@yojson.option]
-  hash_type : string option; [@key "HashType"] [@yojson.option]
+  hash_type : document_hash_type option; [@key "HashType"] [@yojson.option]
   name : string option; [@key "Name"] [@yojson.option]
   display_name : string option; [@key "DisplayName"] [@yojson.option]
   version_name : string option; [@key "VersionName"] [@yojson.option]
   owner : string option; [@key "Owner"] [@yojson.option]
   created_date : Aws_json_wire.timestamp option; [@key "CreatedDate"] [@yojson.option]
-  status : string option; [@key "Status"] [@yojson.option]
+  status : document_status option; [@key "Status"] [@yojson.option]
   status_information : string option; [@key "StatusInformation"] [@yojson.option]
   document_version : string option; [@key "DocumentVersion"] [@yojson.option]
   description : string option; [@key "Description"] [@yojson.option]
   parameters : document_parameter list option; [@key "Parameters"] [@yojson.option]
-  platform_types : string list option; [@key "PlatformTypes"] [@yojson.option]
-  document_type : string option; [@key "DocumentType"] [@yojson.option]
+  platform_types : platform_type list option; [@key "PlatformTypes"] [@yojson.option]
+  document_type : document_type option; [@key "DocumentType"] [@yojson.option]
   schema_version : string option; [@key "SchemaVersion"] [@yojson.option]
   latest_version : string option; [@key "LatestVersion"] [@yojson.option]
   default_version : string option; [@key "DefaultVersion"] [@yojson.option]
-  document_format : string option; [@key "DocumentFormat"] [@yojson.option]
+  document_format : document_format option; [@key "DocumentFormat"] [@yojson.option]
   target_type : string option; [@key "TargetType"] [@yojson.option]
   tags : tag list option; [@key "Tags"] [@yojson.option]
   attachments_information : attachment_information list option; [@key "AttachmentsInformation"] [@yojson.option]
@@ -1425,14 +3364,14 @@ and document_description = {
   review_information : review_information list option; [@key "ReviewInformation"] [@yojson.option]
   approved_version : string option; [@key "ApprovedVersion"] [@yojson.option]
   pending_review_version : string option; [@key "PendingReviewVersion"] [@yojson.option]
-  review_status : string option; [@key "ReviewStatus"] [@yojson.option]
+  review_status : review_status option; [@key "ReviewStatus"] [@yojson.option]
   category : string list option; [@key "Category"] [@yojson.option]
   category_enum : string list option; [@key "CategoryEnum"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
 and document_filter = {
-  key : string; [@key "key"]
+  key : document_filter_key; [@key "key"]
   value : string; [@key "value"]
 }
 [@@yojson.allow_extra_fields]
@@ -1443,15 +3382,15 @@ and document_identifier = {
   display_name : string option; [@key "DisplayName"] [@yojson.option]
   owner : string option; [@key "Owner"] [@yojson.option]
   version_name : string option; [@key "VersionName"] [@yojson.option]
-  platform_types : string list option; [@key "PlatformTypes"] [@yojson.option]
+  platform_types : platform_type list option; [@key "PlatformTypes"] [@yojson.option]
   document_version : string option; [@key "DocumentVersion"] [@yojson.option]
-  document_type : string option; [@key "DocumentType"] [@yojson.option]
+  document_type : document_type option; [@key "DocumentType"] [@yojson.option]
   schema_version : string option; [@key "SchemaVersion"] [@yojson.option]
-  document_format : string option; [@key "DocumentFormat"] [@yojson.option]
+  document_format : document_format option; [@key "DocumentFormat"] [@yojson.option]
   target_type : string option; [@key "TargetType"] [@yojson.option]
   tags : tag list option; [@key "Tags"] [@yojson.option]
   requires : document_requires list option; [@key "Requires"] [@yojson.option]
-  review_status : string option; [@key "ReviewStatus"] [@yojson.option]
+  review_status : review_status option; [@key "ReviewStatus"] [@yojson.option]
   author : string option; [@key "Author"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -1469,7 +3408,7 @@ and document_metadata_response_info = {
 
 and document_parameter = {
   name : string option; [@key "Name"] [@yojson.option]
-  type_ : string option; [@key "Type"] [@yojson.option]
+  type_ : document_parameter_type option; [@key "Type"] [@yojson.option]
   description : string option; [@key "Description"] [@yojson.option]
   default_value : string option; [@key "DefaultValue"] [@yojson.option]
 }
@@ -1484,7 +3423,7 @@ and document_requires = {
 [@@yojson.allow_extra_fields]
 
 and document_review_comment_source = {
-  type_ : string option; [@key "Type"] [@yojson.option]
+  type_ : document_review_comment_type option; [@key "Type"] [@yojson.option]
   content : string option; [@key "Content"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -1492,14 +3431,14 @@ and document_review_comment_source = {
 and document_reviewer_response_source = {
   create_time : Aws_json_wire.timestamp option; [@key "CreateTime"] [@yojson.option]
   updated_time : Aws_json_wire.timestamp option; [@key "UpdatedTime"] [@yojson.option]
-  review_status : string option; [@key "ReviewStatus"] [@yojson.option]
+  review_status : review_status option; [@key "ReviewStatus"] [@yojson.option]
   comment : document_review_comment_source list option; [@key "Comment"] [@yojson.option]
   reviewer : string option; [@key "Reviewer"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
 and document_reviews = {
-  action : string; [@key "Action"]
+  action : document_review_action; [@key "Action"]
   comment : document_review_comment_source list option; [@key "Comment"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -1511,10 +3450,10 @@ and document_version_info = {
   version_name : string option; [@key "VersionName"] [@yojson.option]
   created_date : Aws_json_wire.timestamp option; [@key "CreatedDate"] [@yojson.option]
   is_default_version : bool option; [@key "IsDefaultVersion"] [@yojson.option]
-  document_format : string option; [@key "DocumentFormat"] [@yojson.option]
-  status : string option; [@key "Status"] [@yojson.option]
+  document_format : document_format option; [@key "DocumentFormat"] [@yojson.option]
+  status : document_status option; [@key "Status"] [@yojson.option]
   status_information : string option; [@key "StatusInformation"] [@yojson.option]
-  review_status : string option; [@key "ReviewStatus"] [@yojson.option]
+  review_status : review_status option; [@key "ReviewStatus"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -1537,7 +3476,7 @@ and execution_preview = {
 and failed_create_association = {
   entry : create_association_batch_request_entry option; [@key "Entry"] [@yojson.option]
   message : string option; [@key "Message"] [@yojson.option]
-  fault : string option; [@key "Fault"] [@yojson.option]
+  fault : fault option; [@key "Fault"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -1555,7 +3494,7 @@ and get_access_token_request = {
 
 and get_access_token_response = {
   credentials : credentials option; [@key "Credentials"] [@yojson.option]
-  access_request_status : string option; [@key "AccessRequestStatus"] [@yojson.option]
+  access_request_status : access_request_status option; [@key "AccessRequestStatus"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -1576,7 +3515,7 @@ and get_calendar_state_request = {
 [@@yojson.allow_extra_fields]
 
 and get_calendar_state_response = {
-  state : string option; [@key "State"] [@yojson.option]
+  state : calendar_state option; [@key "State"] [@yojson.option]
   at_time : string option; [@key "AtTime"] [@yojson.option]
   next_transition_time : string option; [@key "NextTransitionTime"] [@yojson.option]
 }
@@ -1617,7 +3556,7 @@ and get_command_invocation_result = {
   execution_start_date_time : string option; [@key "ExecutionStartDateTime"] [@yojson.option]
   execution_elapsed_time : string option; [@key "ExecutionElapsedTime"] [@yojson.option]
   execution_end_date_time : string option; [@key "ExecutionEndDateTime"] [@yojson.option]
-  status : string option; [@key "Status"] [@yojson.option]
+  status : command_invocation_status option; [@key "Status"] [@yojson.option]
   status_details : string option; [@key "StatusDetails"] [@yojson.option]
   standard_output_content : string option; [@key "StandardOutputContent"] [@yojson.option]
   standard_output_url : string option; [@key "StandardOutputUrl"] [@yojson.option]
@@ -1634,18 +3573,18 @@ and get_connection_status_request = {
 
 and get_connection_status_response = {
   target : string option; [@key "Target"] [@yojson.option]
-  status : string option; [@key "Status"] [@yojson.option]
+  status : connection_status option; [@key "Status"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
 and get_default_patch_baseline_request = {
-  operating_system : string option; [@key "OperatingSystem"] [@yojson.option]
+  operating_system : operating_system option; [@key "OperatingSystem"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
 and get_default_patch_baseline_result = {
   baseline_id : string option; [@key "BaselineId"] [@yojson.option]
-  operating_system : string option; [@key "OperatingSystem"] [@yojson.option]
+  operating_system : operating_system option; [@key "OperatingSystem"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -1669,7 +3608,7 @@ and get_document_request = {
   name : string; [@key "Name"]
   version_name : string option; [@key "VersionName"] [@yojson.option]
   document_version : string option; [@key "DocumentVersion"] [@yojson.option]
-  document_format : string option; [@key "DocumentFormat"] [@yojson.option]
+  document_format : document_format option; [@key "DocumentFormat"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -1679,14 +3618,14 @@ and get_document_result = {
   display_name : string option; [@key "DisplayName"] [@yojson.option]
   version_name : string option; [@key "VersionName"] [@yojson.option]
   document_version : string option; [@key "DocumentVersion"] [@yojson.option]
-  status : string option; [@key "Status"] [@yojson.option]
+  status : document_status option; [@key "Status"] [@yojson.option]
   status_information : string option; [@key "StatusInformation"] [@yojson.option]
   content : string option; [@key "Content"] [@yojson.option]
-  document_type : string option; [@key "DocumentType"] [@yojson.option]
-  document_format : string option; [@key "DocumentFormat"] [@yojson.option]
+  document_type : document_type option; [@key "DocumentType"] [@yojson.option]
+  document_format : document_format option; [@key "DocumentFormat"] [@yojson.option]
   requires : document_requires list option; [@key "Requires"] [@yojson.option]
   attachments_content : attachment_content list option; [@key "AttachmentsContent"] [@yojson.option]
-  review_status : string option; [@key "ReviewStatus"] [@yojson.option]
+  review_status : review_status option; [@key "ReviewStatus"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -1698,7 +3637,7 @@ and get_execution_preview_request = {
 and get_execution_preview_response = {
   execution_preview_id : string option; [@key "ExecutionPreviewId"] [@yojson.option]
   ended_at : Aws_json_wire.timestamp option; [@key "EndedAt"] [@yojson.option]
-  status : string option; [@key "Status"] [@yojson.option]
+  status : execution_preview_status option; [@key "Status"] [@yojson.option]
   status_message : string option; [@key "StatusMessage"] [@yojson.option]
   execution_preview : execution_preview option; [@key "ExecutionPreview"] [@yojson.option]
 }
@@ -1742,7 +3681,7 @@ and get_maintenance_window_execution_request = {
 and get_maintenance_window_execution_result = {
   window_execution_id : string option; [@key "WindowExecutionId"] [@yojson.option]
   task_ids : string list option; [@key "TaskIds"] [@yojson.option]
-  status : string option; [@key "Status"] [@yojson.option]
+  status : maintenance_window_execution_status option; [@key "Status"] [@yojson.option]
   status_details : string option; [@key "StatusDetails"] [@yojson.option]
   start_time : Aws_json_wire.timestamp option; [@key "StartTime"] [@yojson.option]
   end_time : Aws_json_wire.timestamp option; [@key "EndTime"] [@yojson.option]
@@ -1761,9 +3700,9 @@ and get_maintenance_window_execution_task_invocation_result = {
   task_execution_id : string option; [@key "TaskExecutionId"] [@yojson.option]
   invocation_id : string option; [@key "InvocationId"] [@yojson.option]
   execution_id : string option; [@key "ExecutionId"] [@yojson.option]
-  task_type : string option; [@key "TaskType"] [@yojson.option]
+  task_type : maintenance_window_task_type option; [@key "TaskType"] [@yojson.option]
   parameters : string option; [@key "Parameters"] [@yojson.option]
-  status : string option; [@key "Status"] [@yojson.option]
+  status : maintenance_window_execution_status option; [@key "Status"] [@yojson.option]
   status_details : string option; [@key "StatusDetails"] [@yojson.option]
   start_time : Aws_json_wire.timestamp option; [@key "StartTime"] [@yojson.option]
   end_time : Aws_json_wire.timestamp option; [@key "EndTime"] [@yojson.option]
@@ -1783,12 +3722,12 @@ and get_maintenance_window_execution_task_result = {
   task_execution_id : string option; [@key "TaskExecutionId"] [@yojson.option]
   task_arn : string option; [@key "TaskArn"] [@yojson.option]
   service_role : string option; [@key "ServiceRole"] [@yojson.option]
-  type_ : string option; [@key "Type"] [@yojson.option]
+  type_ : maintenance_window_task_type option; [@key "Type"] [@yojson.option]
   task_parameters : maintenance_window_task_parameter_value_expression Aws_json_wire.map list option; [@key "TaskParameters"] [@yojson.option]
   priority : int option; [@key "Priority"] [@yojson.option]
   max_concurrency : string option; [@key "MaxConcurrency"] [@yojson.option]
   max_errors : string option; [@key "MaxErrors"] [@yojson.option]
-  status : string option; [@key "Status"] [@yojson.option]
+  status : maintenance_window_execution_status option; [@key "Status"] [@yojson.option]
   status_details : string option; [@key "StatusDetails"] [@yojson.option]
   start_time : Aws_json_wire.timestamp option; [@key "StartTime"] [@yojson.option]
   end_time : Aws_json_wire.timestamp option; [@key "EndTime"] [@yojson.option]
@@ -1833,7 +3772,7 @@ and get_maintenance_window_task_result = {
   targets : target list option; [@key "Targets"] [@yojson.option]
   task_arn : string option; [@key "TaskArn"] [@yojson.option]
   service_role_arn : string option; [@key "ServiceRoleArn"] [@yojson.option]
-  task_type : string option; [@key "TaskType"] [@yojson.option]
+  task_type : maintenance_window_task_type option; [@key "TaskType"] [@yojson.option]
   task_parameters : maintenance_window_task_parameter_value_expression Aws_json_wire.map option; [@key "TaskParameters"] [@yojson.option]
   task_invocation_parameters : maintenance_window_task_invocation_parameters option; [@key "TaskInvocationParameters"] [@yojson.option]
   priority : int option; [@key "Priority"] [@yojson.option]
@@ -1842,7 +3781,7 @@ and get_maintenance_window_task_result = {
   logging_info : logging_info option; [@key "LoggingInfo"] [@yojson.option]
   name : string option; [@key "Name"] [@yojson.option]
   description : string option; [@key "Description"] [@yojson.option]
-  cutoff_behavior : string option; [@key "CutoffBehavior"] [@yojson.option]
+  cutoff_behavior : maintenance_window_task_cutoff_behavior option; [@key "CutoffBehavior"] [@yojson.option]
   alarm_configuration : alarm_configuration option; [@key "AlarmConfiguration"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -1943,14 +3882,14 @@ and get_parameters_result = {
 
 and get_patch_baseline_for_patch_group_request = {
   patch_group : string; [@key "PatchGroup"]
-  operating_system : string option; [@key "OperatingSystem"] [@yojson.option]
+  operating_system : operating_system option; [@key "OperatingSystem"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
 and get_patch_baseline_for_patch_group_result = {
   baseline_id : string option; [@key "BaselineId"] [@yojson.option]
   patch_group : string option; [@key "PatchGroup"] [@yojson.option]
-  operating_system : string option; [@key "OperatingSystem"] [@yojson.option]
+  operating_system : operating_system option; [@key "OperatingSystem"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -1962,20 +3901,20 @@ and get_patch_baseline_request = {
 and get_patch_baseline_result = {
   baseline_id : string option; [@key "BaselineId"] [@yojson.option]
   name : string option; [@key "Name"] [@yojson.option]
-  operating_system : string option; [@key "OperatingSystem"] [@yojson.option]
+  operating_system : operating_system option; [@key "OperatingSystem"] [@yojson.option]
   global_filters : patch_filter_group option; [@key "GlobalFilters"] [@yojson.option]
   approval_rules : patch_rule_group option; [@key "ApprovalRules"] [@yojson.option]
   approved_patches : string list option; [@key "ApprovedPatches"] [@yojson.option]
-  approved_patches_compliance_level : string option; [@key "ApprovedPatchesComplianceLevel"] [@yojson.option]
+  approved_patches_compliance_level : patch_compliance_level option; [@key "ApprovedPatchesComplianceLevel"] [@yojson.option]
   approved_patches_enable_non_security : bool option; [@key "ApprovedPatchesEnableNonSecurity"] [@yojson.option]
   rejected_patches : string list option; [@key "RejectedPatches"] [@yojson.option]
-  rejected_patches_action : string option; [@key "RejectedPatchesAction"] [@yojson.option]
+  rejected_patches_action : patch_action option; [@key "RejectedPatchesAction"] [@yojson.option]
   patch_groups : string list option; [@key "PatchGroups"] [@yojson.option]
   created_date : Aws_json_wire.timestamp option; [@key "CreatedDate"] [@yojson.option]
   modified_date : Aws_json_wire.timestamp option; [@key "ModifiedDate"] [@yojson.option]
   description : string option; [@key "Description"] [@yojson.option]
   sources : patch_source list option; [@key "Sources"] [@yojson.option]
-  available_security_updates_compliance_status : string option; [@key "AvailableSecurityUpdatesComplianceStatus"] [@yojson.option]
+  available_security_updates_compliance_status : patch_compliance_status option; [@key "AvailableSecurityUpdatesComplianceStatus"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -2055,13 +3994,13 @@ and instance_info = {
   computer_name : string option; [@key "ComputerName"] [@yojson.option]
   instance_status : string option; [@key "InstanceStatus"] [@yojson.option]
   ip_address : string option; [@key "IpAddress"] [@yojson.option]
-  managed_status : string option; [@key "ManagedStatus"] [@yojson.option]
+  managed_status : managed_status option; [@key "ManagedStatus"] [@yojson.option]
   name : string option; [@key "Name"] [@yojson.option]
-  platform_type : string option; [@key "PlatformType"] [@yojson.option]
+  platform_type : platform_type option; [@key "PlatformType"] [@yojson.option]
   platform_name : string option; [@key "PlatformName"] [@yojson.option]
   platform_version : string option; [@key "PlatformVersion"] [@yojson.option]
-  resource_type : string option; [@key "ResourceType"] [@yojson.option]
-  source_type : string option; [@key "SourceType"] [@yojson.option]
+  resource_type : resource_type option; [@key "ResourceType"] [@yojson.option]
+  source_type : source_type option; [@key "SourceType"] [@yojson.option]
   source_id : string option; [@key "SourceId"] [@yojson.option]
   source_location : string option; [@key "SourceLocation"] [@yojson.option]
   availability_zone : string option; [@key "AvailabilityZone"] [@yojson.option]
@@ -2071,17 +4010,17 @@ and instance_info = {
 
 and instance_information = {
   instance_id : string option; [@key "InstanceId"] [@yojson.option]
-  ping_status : string option; [@key "PingStatus"] [@yojson.option]
+  ping_status : ping_status option; [@key "PingStatus"] [@yojson.option]
   last_ping_date_time : Aws_json_wire.timestamp option; [@key "LastPingDateTime"] [@yojson.option]
   agent_version : string option; [@key "AgentVersion"] [@yojson.option]
   is_latest_version : bool option; [@key "IsLatestVersion"] [@yojson.option]
-  platform_type : string option; [@key "PlatformType"] [@yojson.option]
+  platform_type : platform_type option; [@key "PlatformType"] [@yojson.option]
   platform_name : string option; [@key "PlatformName"] [@yojson.option]
   platform_version : string option; [@key "PlatformVersion"] [@yojson.option]
   activation_id : string option; [@key "ActivationId"] [@yojson.option]
   iam_role : string option; [@key "IamRole"] [@yojson.option]
   registration_date : Aws_json_wire.timestamp option; [@key "RegistrationDate"] [@yojson.option]
-  resource_type : string option; [@key "ResourceType"] [@yojson.option]
+  resource_type : resource_type option; [@key "ResourceType"] [@yojson.option]
   name : string option; [@key "Name"] [@yojson.option]
   ip_address : string option; [@key "IPAddress"] [@yojson.option]
   computer_name : string option; [@key "ComputerName"] [@yojson.option]
@@ -2090,13 +4029,13 @@ and instance_information = {
   last_successful_association_execution_date : Aws_json_wire.timestamp option; [@key "LastSuccessfulAssociationExecutionDate"] [@yojson.option]
   association_overview : instance_aggregated_association_overview option; [@key "AssociationOverview"] [@yojson.option]
   source_id : string option; [@key "SourceId"] [@yojson.option]
-  source_type : string option; [@key "SourceType"] [@yojson.option]
+  source_type : source_type option; [@key "SourceType"] [@yojson.option]
   source_location : string option; [@key "SourceLocation"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
 and instance_information_filter = {
-  key : string; [@key "key"]
+  key : instance_information_filter_key; [@key "key"]
   value_set : string list; [@key "valueSet"]
 }
 [@@yojson.allow_extra_fields]
@@ -2125,9 +4064,9 @@ and instance_patch_state = {
   available_security_update_count : int option; [@key "AvailableSecurityUpdateCount"] [@yojson.option]
   operation_start_time : Aws_json_wire.timestamp; [@key "OperationStartTime"]
   operation_end_time : Aws_json_wire.timestamp; [@key "OperationEndTime"]
-  operation : string; [@key "Operation"]
+  operation : patch_operation_type; [@key "Operation"]
   last_no_reboot_install_operation_time : Aws_json_wire.timestamp option; [@key "LastNoRebootInstallOperationTime"] [@yojson.option]
-  reboot_option : string option; [@key "RebootOption"] [@yojson.option]
+  reboot_option : reboot_option option; [@key "RebootOption"] [@yojson.option]
   critical_non_compliant_count : int option; [@key "CriticalNonCompliantCount"] [@yojson.option]
   security_non_compliant_count : int option; [@key "SecurityNonCompliantCount"] [@yojson.option]
   other_non_compliant_count : int option; [@key "OtherNonCompliantCount"] [@yojson.option]
@@ -2137,7 +4076,7 @@ and instance_patch_state = {
 and instance_patch_state_filter = {
   key : string; [@key "Key"]
   values : string list; [@key "Values"]
-  type_ : string; [@key "Type"]
+  type_ : instance_patch_state_operator_type; [@key "Type"]
 }
 [@@yojson.allow_extra_fields]
 
@@ -2151,10 +4090,10 @@ and instance_property = {
   architecture : string option; [@key "Architecture"] [@yojson.option]
   ip_address : string option; [@key "IPAddress"] [@yojson.option]
   launch_time : Aws_json_wire.timestamp option; [@key "LaunchTime"] [@yojson.option]
-  ping_status : string option; [@key "PingStatus"] [@yojson.option]
+  ping_status : ping_status option; [@key "PingStatus"] [@yojson.option]
   last_ping_date_time : Aws_json_wire.timestamp option; [@key "LastPingDateTime"] [@yojson.option]
   agent_version : string option; [@key "AgentVersion"] [@yojson.option]
-  platform_type : string option; [@key "PlatformType"] [@yojson.option]
+  platform_type : platform_type option; [@key "PlatformType"] [@yojson.option]
   platform_name : string option; [@key "PlatformName"] [@yojson.option]
   platform_version : string option; [@key "PlatformVersion"] [@yojson.option]
   activation_id : string option; [@key "ActivationId"] [@yojson.option]
@@ -2167,14 +4106,14 @@ and instance_property = {
   last_successful_association_execution_date : Aws_json_wire.timestamp option; [@key "LastSuccessfulAssociationExecutionDate"] [@yojson.option]
   association_overview : instance_aggregated_association_overview option; [@key "AssociationOverview"] [@yojson.option]
   source_id : string option; [@key "SourceId"] [@yojson.option]
-  source_type : string option; [@key "SourceType"] [@yojson.option]
+  source_type : source_type option; [@key "SourceType"] [@yojson.option]
   source_location : string option; [@key "SourceLocation"] [@yojson.option]
   availability_zone : string option; [@key "AvailabilityZone"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
 and instance_property_filter = {
-  key : string; [@key "key"]
+  key : instance_property_filter_key; [@key "key"]
   value_set : string list; [@key "valueSet"]
 }
 [@@yojson.allow_extra_fields]
@@ -2182,7 +4121,7 @@ and instance_property_filter = {
 and instance_property_string_filter = {
   key : string; [@key "Key"]
   values : string list; [@key "Values"]
-  operator : string option; [@key "Operator"] [@yojson.option]
+  operator : instance_property_filter_operator option; [@key "Operator"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -2197,7 +4136,7 @@ and inventory_deletion_status_item = {
   deletion_id : string option; [@key "DeletionId"] [@yojson.option]
   type_name : string option; [@key "TypeName"] [@yojson.option]
   deletion_start_time : Aws_json_wire.timestamp option; [@key "DeletionStartTime"] [@yojson.option]
-  last_status : string option; [@key "LastStatus"] [@yojson.option]
+  last_status : inventory_deletion_status option; [@key "LastStatus"] [@yojson.option]
   last_status_message : string option; [@key "LastStatusMessage"] [@yojson.option]
   deletion_summary : inventory_deletion_summary option; [@key "DeletionSummary"] [@yojson.option]
   last_status_update_time : Aws_json_wire.timestamp option; [@key "LastStatusUpdateTime"] [@yojson.option]
@@ -2221,7 +4160,7 @@ and inventory_deletion_summary_item = {
 and inventory_filter = {
   key : string; [@key "Key"]
   values : string list; [@key "Values"]
-  type_ : string option; [@key "Type"] [@yojson.option]
+  type_ : inventory_query_operator_type option; [@key "Type"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -2243,7 +4182,7 @@ and inventory_item = {
 
 and inventory_item_attribute = {
   name : string; [@key "Name"]
-  data_type : string; [@key "DataType"]
+  data_type : inventory_attribute_data_type; [@key "DataType"]
 }
 [@@yojson.allow_extra_fields]
 
@@ -2384,7 +4323,7 @@ and list_compliance_summaries_result = {
 and list_document_metadata_history_request = {
   name : string; [@key "Name"]
   document_version : string option; [@key "DocumentVersion"] [@yojson.option]
-  metadata : string; [@key "Metadata"]
+  metadata : document_metadata_enum; [@key "Metadata"]
   next_token : string option; [@key "NextToken"] [@yojson.option]
   max_results : int option; [@key "MaxResults"] [@yojson.option]
 }
@@ -2541,7 +4480,7 @@ and list_resource_data_sync_result = {
 [@@yojson.allow_extra_fields]
 
 and list_tags_for_resource_request = {
-  resource_type : string; [@key "ResourceType"]
+  resource_type : resource_type_for_tagging; [@key "ResourceType"]
   resource_id : string; [@key "ResourceId"]
 }
 [@@yojson.allow_extra_fields]
@@ -2567,7 +4506,7 @@ and maintenance_window_automation_parameters = {
 and maintenance_window_execution = {
   window_id : string option; [@key "WindowId"] [@yojson.option]
   window_execution_id : string option; [@key "WindowExecutionId"] [@yojson.option]
-  status : string option; [@key "Status"] [@yojson.option]
+  status : maintenance_window_execution_status option; [@key "Status"] [@yojson.option]
   status_details : string option; [@key "StatusDetails"] [@yojson.option]
   start_time : Aws_json_wire.timestamp option; [@key "StartTime"] [@yojson.option]
   end_time : Aws_json_wire.timestamp option; [@key "EndTime"] [@yojson.option]
@@ -2577,12 +4516,12 @@ and maintenance_window_execution = {
 and maintenance_window_execution_task_identity = {
   window_execution_id : string option; [@key "WindowExecutionId"] [@yojson.option]
   task_execution_id : string option; [@key "TaskExecutionId"] [@yojson.option]
-  status : string option; [@key "Status"] [@yojson.option]
+  status : maintenance_window_execution_status option; [@key "Status"] [@yojson.option]
   status_details : string option; [@key "StatusDetails"] [@yojson.option]
   start_time : Aws_json_wire.timestamp option; [@key "StartTime"] [@yojson.option]
   end_time : Aws_json_wire.timestamp option; [@key "EndTime"] [@yojson.option]
   task_arn : string option; [@key "TaskArn"] [@yojson.option]
-  task_type : string option; [@key "TaskType"] [@yojson.option]
+  task_type : maintenance_window_task_type option; [@key "TaskType"] [@yojson.option]
   alarm_configuration : alarm_configuration option; [@key "AlarmConfiguration"] [@yojson.option]
   triggered_alarms : alarm_state_information list option; [@key "TriggeredAlarms"] [@yojson.option]
 }
@@ -2593,9 +4532,9 @@ and maintenance_window_execution_task_invocation_identity = {
   task_execution_id : string option; [@key "TaskExecutionId"] [@yojson.option]
   invocation_id : string option; [@key "InvocationId"] [@yojson.option]
   execution_id : string option; [@key "ExecutionId"] [@yojson.option]
-  task_type : string option; [@key "TaskType"] [@yojson.option]
+  task_type : maintenance_window_task_type option; [@key "TaskType"] [@yojson.option]
   parameters : string option; [@key "Parameters"] [@yojson.option]
-  status : string option; [@key "Status"] [@yojson.option]
+  status : maintenance_window_execution_status option; [@key "Status"] [@yojson.option]
   status_details : string option; [@key "StatusDetails"] [@yojson.option]
   start_time : Aws_json_wire.timestamp option; [@key "StartTime"] [@yojson.option]
   end_time : Aws_json_wire.timestamp option; [@key "EndTime"] [@yojson.option]
@@ -2643,7 +4582,7 @@ and maintenance_window_run_command_parameters = {
   comment : string option; [@key "Comment"] [@yojson.option]
   cloud_watch_output_config : cloud_watch_output_config option; [@key "CloudWatchOutputConfig"] [@yojson.option]
   document_hash : string option; [@key "DocumentHash"] [@yojson.option]
-  document_hash_type : string option; [@key "DocumentHashType"] [@yojson.option]
+  document_hash_type : document_hash_type option; [@key "DocumentHashType"] [@yojson.option]
   document_version : string option; [@key "DocumentVersion"] [@yojson.option]
   notification_config : notification_config option; [@key "NotificationConfig"] [@yojson.option]
   output_s3_bucket_name : string option; [@key "OutputS3BucketName"] [@yojson.option]
@@ -2663,7 +4602,7 @@ and maintenance_window_step_functions_parameters = {
 and maintenance_window_target = {
   window_id : string option; [@key "WindowId"] [@yojson.option]
   window_target_id : string option; [@key "WindowTargetId"] [@yojson.option]
-  resource_type : string option; [@key "ResourceType"] [@yojson.option]
+  resource_type : maintenance_window_resource_type option; [@key "ResourceType"] [@yojson.option]
   targets : target list option; [@key "Targets"] [@yojson.option]
   owner_information : string option; [@key "OwnerInformation"] [@yojson.option]
   name : string option; [@key "Name"] [@yojson.option]
@@ -2675,7 +4614,7 @@ and maintenance_window_task = {
   window_id : string option; [@key "WindowId"] [@yojson.option]
   window_task_id : string option; [@key "WindowTaskId"] [@yojson.option]
   task_arn : string option; [@key "TaskArn"] [@yojson.option]
-  type_ : string option; [@key "Type"] [@yojson.option]
+  type_ : maintenance_window_task_type option; [@key "Type"] [@yojson.option]
   targets : target list option; [@key "Targets"] [@yojson.option]
   task_parameters : maintenance_window_task_parameter_value_expression Aws_json_wire.map option; [@key "TaskParameters"] [@yojson.option]
   priority : int option; [@key "Priority"] [@yojson.option]
@@ -2685,7 +4624,7 @@ and maintenance_window_task = {
   max_errors : string option; [@key "MaxErrors"] [@yojson.option]
   name : string option; [@key "Name"] [@yojson.option]
   description : string option; [@key "Description"] [@yojson.option]
-  cutoff_behavior : string option; [@key "CutoffBehavior"] [@yojson.option]
+  cutoff_behavior : maintenance_window_task_cutoff_behavior option; [@key "CutoffBehavior"] [@yojson.option]
   alarm_configuration : alarm_configuration option; [@key "AlarmConfiguration"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -2710,7 +4649,7 @@ and metadata_value = {
 
 and modify_document_permission_request = {
   name : string; [@key "Name"]
-  permission_type : string; [@key "PermissionType"]
+  permission_type : document_permission_type; [@key "PermissionType"]
   account_ids_to_add : string list option; [@key "AccountIdsToAdd"] [@yojson.option]
   account_ids_to_remove : string list option; [@key "AccountIdsToRemove"] [@yojson.option]
   shared_document_version : string option; [@key "SharedDocumentVersion"] [@yojson.option]
@@ -2729,17 +4668,17 @@ and node = {
 [@@yojson.allow_extra_fields]
 
 and node_aggregator = {
-  aggregator_type : string; [@key "AggregatorType"]
-  type_name : string; [@key "TypeName"]
-  attribute_name : string; [@key "AttributeName"]
+  aggregator_type : node_aggregator_type; [@key "AggregatorType"]
+  type_name : node_type_name; [@key "TypeName"]
+  attribute_name : node_attribute_name; [@key "AttributeName"]
   aggregators : node_aggregator list option; [@key "Aggregators"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
 and node_filter = {
-  key : string; [@key "Key"]
+  key : node_filter_key; [@key "Key"]
   values : string list; [@key "Values"]
-  type_ : string option; [@key "Type"] [@yojson.option]
+  type_ : node_filter_operator_type option; [@key "Type"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -2763,8 +4702,8 @@ and non_compliant_summary = {
 
 and notification_config = {
   notification_arn : string option; [@key "NotificationArn"] [@yojson.option]
-  notification_events : string list option; [@key "NotificationEvents"] [@yojson.option]
-  notification_type : string option; [@key "NotificationType"] [@yojson.option]
+  notification_events : notification_event list option; [@key "NotificationEvents"] [@yojson.option]
+  notification_type : notification_type option; [@key "NotificationType"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -2793,7 +4732,7 @@ and ops_entity_item = {
 and ops_filter = {
   key : string; [@key "Key"]
   values : string list; [@key "Values"]
-  type_ : string option; [@key "Type"] [@yojson.option]
+  type_ : ops_filter_operator_type option; [@key "Type"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -2807,7 +4746,7 @@ and ops_item = {
   notifications : ops_item_notification list option; [@key "Notifications"] [@yojson.option]
   priority : int option; [@key "Priority"] [@yojson.option]
   related_ops_items : related_ops_item list option; [@key "RelatedOpsItems"] [@yojson.option]
-  status : string option; [@key "Status"] [@yojson.option]
+  status : ops_item_status option; [@key "Status"] [@yojson.option]
   ops_item_id : string option; [@key "OpsItemId"] [@yojson.option]
   version : string option; [@key "Version"] [@yojson.option]
   title : string option; [@key "Title"] [@yojson.option]
@@ -2825,14 +4764,14 @@ and ops_item = {
 
 and ops_item_data_value = {
   value : string option; [@key "Value"] [@yojson.option]
-  type_ : string option; [@key "Type"] [@yojson.option]
+  type_ : ops_item_data_type option; [@key "Type"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
 and ops_item_event_filter = {
-  key : string; [@key "Key"]
+  key : ops_item_event_filter_key; [@key "Key"]
   values : string list; [@key "Values"]
-  operator : string; [@key "Operator"]
+  operator : ops_item_event_filter_operator; [@key "Operator"]
 }
 [@@yojson.allow_extra_fields]
 
@@ -2848,9 +4787,9 @@ and ops_item_event_summary = {
 [@@yojson.allow_extra_fields]
 
 and ops_item_filter = {
-  key : string; [@key "Key"]
+  key : ops_item_filter_key; [@key "Key"]
   values : string list; [@key "Values"]
-  operator : string; [@key "Operator"]
+  operator : ops_item_filter_operator; [@key "Operator"]
 }
 [@@yojson.allow_extra_fields]
 
@@ -2878,9 +4817,9 @@ and ops_item_related_item_summary = {
 [@@yojson.allow_extra_fields]
 
 and ops_item_related_items_filter = {
-  key : string; [@key "Key"]
+  key : ops_item_related_items_filter_key; [@key "Key"]
   values : string list; [@key "Values"]
-  operator : string; [@key "Operator"]
+  operator : ops_item_related_items_filter_operator; [@key "Operator"]
 }
 [@@yojson.allow_extra_fields]
 
@@ -2891,7 +4830,7 @@ and ops_item_summary = {
   last_modified_time : Aws_json_wire.timestamp option; [@key "LastModifiedTime"] [@yojson.option]
   priority : int option; [@key "Priority"] [@yojson.option]
   source : string option; [@key "Source"] [@yojson.option]
-  status : string option; [@key "Status"] [@yojson.option]
+  status : ops_item_status option; [@key "Status"] [@yojson.option]
   ops_item_id : string option; [@key "OpsItemId"] [@yojson.option]
   title : string option; [@key "Title"] [@yojson.option]
   operational_data : ops_item_data_value Aws_json_wire.map option; [@key "OperationalData"] [@yojson.option]
@@ -2933,7 +4872,7 @@ and output_source = {
 
 and parameter = {
   name : string option; [@key "Name"] [@yojson.option]
-  type_ : string option; [@key "Type"] [@yojson.option]
+  type_ : parameter_type option; [@key "Type"] [@yojson.option]
   value : string option; [@key "Value"] [@yojson.option]
   version : int option; [@key "Version"] [@yojson.option]
   selector : string option; [@key "Selector"] [@yojson.option]
@@ -2946,7 +4885,7 @@ and parameter = {
 
 and parameter_history = {
   name : string option; [@key "Name"] [@yojson.option]
-  type_ : string option; [@key "Type"] [@yojson.option]
+  type_ : parameter_type option; [@key "Type"] [@yojson.option]
   key_id : string option; [@key "KeyId"] [@yojson.option]
   last_modified_date : Aws_json_wire.timestamp option; [@key "LastModifiedDate"] [@yojson.option]
   last_modified_user : string option; [@key "LastModifiedUser"] [@yojson.option]
@@ -2955,7 +4894,7 @@ and parameter_history = {
   allowed_pattern : string option; [@key "AllowedPattern"] [@yojson.option]
   version : int option; [@key "Version"] [@yojson.option]
   labels : string list option; [@key "Labels"] [@yojson.option]
-  tier : string option; [@key "Tier"] [@yojson.option]
+  tier : parameter_tier option; [@key "Tier"] [@yojson.option]
   policies : parameter_inline_policy list option; [@key "Policies"] [@yojson.option]
   data_type : string option; [@key "DataType"] [@yojson.option]
 }
@@ -2971,14 +4910,14 @@ and parameter_inline_policy = {
 and parameter_metadata = {
   name : string option; [@key "Name"] [@yojson.option]
   arn : string option; [@key "ARN"] [@yojson.option]
-  type_ : string option; [@key "Type"] [@yojson.option]
+  type_ : parameter_type option; [@key "Type"] [@yojson.option]
   key_id : string option; [@key "KeyId"] [@yojson.option]
   last_modified_date : Aws_json_wire.timestamp option; [@key "LastModifiedDate"] [@yojson.option]
   last_modified_user : string option; [@key "LastModifiedUser"] [@yojson.option]
   description : string option; [@key "Description"] [@yojson.option]
   allowed_pattern : string option; [@key "AllowedPattern"] [@yojson.option]
   version : int option; [@key "Version"] [@yojson.option]
-  tier : string option; [@key "Tier"] [@yojson.option]
+  tier : parameter_tier option; [@key "Tier"] [@yojson.option]
   policies : parameter_inline_policy list option; [@key "Policies"] [@yojson.option]
   data_type : string option; [@key "DataType"] [@yojson.option]
 }
@@ -2992,7 +4931,7 @@ and parameter_string_filter = {
 [@@yojson.allow_extra_fields]
 
 and parameters_filter = {
-  key : string; [@key "Key"]
+  key : parameters_filter_key; [@key "Key"]
   values : string list; [@key "Values"]
 }
 [@@yojson.allow_extra_fields]
@@ -3036,7 +4975,7 @@ and patch = {
 and patch_baseline_identity = {
   baseline_id : string option; [@key "BaselineId"] [@yojson.option]
   baseline_name : string option; [@key "BaselineName"] [@yojson.option]
-  operating_system : string option; [@key "OperatingSystem"] [@yojson.option]
+  operating_system : operating_system option; [@key "OperatingSystem"] [@yojson.option]
   baseline_description : string option; [@key "BaselineDescription"] [@yojson.option]
   default_baseline : bool option; [@key "DefaultBaseline"] [@yojson.option]
 }
@@ -3047,14 +4986,14 @@ and patch_compliance_data = {
   kb_id : string; [@key "KBId"]
   classification : string; [@key "Classification"]
   severity : string; [@key "Severity"]
-  state : string; [@key "State"]
+  state : patch_compliance_data_state; [@key "State"]
   installed_time : Aws_json_wire.timestamp; [@key "InstalledTime"]
   cve_ids : string option; [@key "CVEIds"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
 and patch_filter = {
-  key : string; [@key "Key"]
+  key : patch_filter_key; [@key "Key"]
   values : string list; [@key "Values"]
 }
 [@@yojson.allow_extra_fields]
@@ -3078,7 +5017,7 @@ and patch_orchestrator_filter = {
 
 and patch_rule = {
   patch_filter_group : patch_filter_group; [@key "PatchFilterGroup"]
-  compliance_level : string option; [@key "ComplianceLevel"] [@yojson.option]
+  compliance_level : patch_compliance_level option; [@key "ComplianceLevel"] [@yojson.option]
   approve_after_days : int option; [@key "ApproveAfterDays"] [@yojson.option]
   approve_until_date : string option; [@key "ApproveUntilDate"] [@yojson.option]
   enable_non_security : bool option; [@key "EnableNonSecurity"] [@yojson.option]
@@ -3098,8 +5037,8 @@ and patch_source = {
 [@@yojson.allow_extra_fields]
 
 and patch_status = {
-  deployment_status : string option; [@key "DeploymentStatus"] [@yojson.option]
-  compliance_level : string option; [@key "ComplianceLevel"] [@yojson.option]
+  deployment_status : patch_deployment_status option; [@key "DeploymentStatus"] [@yojson.option]
+  compliance_level : patch_compliance_level option; [@key "ComplianceLevel"] [@yojson.option]
   approval_date : Aws_json_wire.timestamp option; [@key "ApprovalDate"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -3120,7 +5059,7 @@ and put_compliance_items_request = {
   execution_summary : compliance_execution_summary; [@key "ExecutionSummary"]
   items : compliance_item_entry list; [@key "Items"]
   item_content_hash : string option; [@key "ItemContentHash"] [@yojson.option]
-  upload_type : string option; [@key "UploadType"] [@yojson.option]
+  upload_type : compliance_upload_type option; [@key "UploadType"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -3141,12 +5080,12 @@ and put_parameter_request = {
   name : string; [@key "Name"]
   description : string option; [@key "Description"] [@yojson.option]
   value : string; [@key "Value"]
-  type_ : string option; [@key "Type"] [@yojson.option]
+  type_ : parameter_type option; [@key "Type"] [@yojson.option]
   key_id : string option; [@key "KeyId"] [@yojson.option]
   overwrite : bool option; [@key "Overwrite"] [@yojson.option]
   allowed_pattern : string option; [@key "AllowedPattern"] [@yojson.option]
   tags : tag list option; [@key "Tags"] [@yojson.option]
-  tier : string option; [@key "Tier"] [@yojson.option]
+  tier : parameter_tier option; [@key "Tier"] [@yojson.option]
   policies : string option; [@key "Policies"] [@yojson.option]
   data_type : string option; [@key "DataType"] [@yojson.option]
 }
@@ -3154,7 +5093,7 @@ and put_parameter_request = {
 
 and put_parameter_result = {
   version : int option; [@key "Version"] [@yojson.option]
-  tier : string option; [@key "Tier"] [@yojson.option]
+  tier : parameter_tier option; [@key "Tier"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -3196,7 +5135,7 @@ and register_patch_baseline_for_patch_group_result = {
 
 and register_target_with_maintenance_window_request = {
   window_id : string; [@key "WindowId"]
-  resource_type : string; [@key "ResourceType"]
+  resource_type : maintenance_window_resource_type; [@key "ResourceType"]
   targets : target list; [@key "Targets"]
   owner_information : string option; [@key "OwnerInformation"] [@yojson.option]
   name : string option; [@key "Name"] [@yojson.option]
@@ -3215,7 +5154,7 @@ and register_task_with_maintenance_window_request = {
   targets : target list option; [@key "Targets"] [@yojson.option]
   task_arn : string; [@key "TaskArn"]
   service_role_arn : string option; [@key "ServiceRoleArn"] [@yojson.option]
-  task_type : string; [@key "TaskType"]
+  task_type : maintenance_window_task_type; [@key "TaskType"]
   task_parameters : maintenance_window_task_parameter_value_expression Aws_json_wire.map option; [@key "TaskParameters"] [@yojson.option]
   task_invocation_parameters : maintenance_window_task_invocation_parameters option; [@key "TaskInvocationParameters"] [@yojson.option]
   priority : int option; [@key "Priority"] [@yojson.option]
@@ -3225,7 +5164,7 @@ and register_task_with_maintenance_window_request = {
   name : string option; [@key "Name"] [@yojson.option]
   description : string option; [@key "Description"] [@yojson.option]
   client_token : string option; [@key "ClientToken"] [@yojson.option]
-  cutoff_behavior : string option; [@key "CutoffBehavior"] [@yojson.option]
+  cutoff_behavior : maintenance_window_task_cutoff_behavior option; [@key "CutoffBehavior"] [@yojson.option]
   alarm_configuration : alarm_configuration option; [@key "AlarmConfiguration"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -3247,7 +5186,7 @@ and related_ops_item = {
 [@@yojson.allow_extra_fields]
 
 and remove_tags_from_resource_request = {
-  resource_type : string; [@key "ResourceType"]
+  resource_type : resource_type_for_tagging; [@key "ResourceType"]
   resource_id : string; [@key "ResourceId"]
   tag_keys : string list; [@key "TagKeys"]
 }
@@ -3275,8 +5214,8 @@ and resource_compliance_summary_item = {
   compliance_type : string option; [@key "ComplianceType"] [@yojson.option]
   resource_type : string option; [@key "ResourceType"] [@yojson.option]
   resource_id : string option; [@key "ResourceId"] [@yojson.option]
-  status : string option; [@key "Status"] [@yojson.option]
-  overall_severity : string option; [@key "OverallSeverity"] [@yojson.option]
+  status : compliance_status option; [@key "Status"] [@yojson.option]
+  overall_severity : compliance_severity option; [@key "OverallSeverity"] [@yojson.option]
   execution_summary : compliance_execution_summary option; [@key "ExecutionSummary"] [@yojson.option]
   compliant_summary : compliant_summary option; [@key "CompliantSummary"] [@yojson.option]
   non_compliant_summary : non_compliant_summary option; [@key "NonCompliantSummary"] [@yojson.option]
@@ -3302,7 +5241,7 @@ and resource_data_sync_item = {
   last_sync_time : Aws_json_wire.timestamp option; [@key "LastSyncTime"] [@yojson.option]
   last_successful_sync_time : Aws_json_wire.timestamp option; [@key "LastSuccessfulSyncTime"] [@yojson.option]
   sync_last_modified_time : Aws_json_wire.timestamp option; [@key "SyncLastModifiedTime"] [@yojson.option]
-  last_status : string option; [@key "LastStatus"] [@yojson.option]
+  last_status : last_resource_data_sync_status option; [@key "LastStatus"] [@yojson.option]
   sync_created_time : Aws_json_wire.timestamp option; [@key "SyncCreatedTime"] [@yojson.option]
   last_sync_status_message : string option; [@key "LastSyncStatusMessage"] [@yojson.option]
 }
@@ -3316,7 +5255,7 @@ and resource_data_sync_organizational_unit = {
 and resource_data_sync_s3_destination = {
   bucket_name : string; [@key "BucketName"]
   prefix : string option; [@key "Prefix"] [@yojson.option]
-  sync_format : string; [@key "SyncFormat"]
+  sync_format : resource_data_sync_s3_format; [@key "SyncFormat"]
   region : string; [@key "Region"]
   awskms_key_arn : string option; [@key "AWSKMSKeyARN"] [@yojson.option]
   destination_data_sharing : resource_data_sync_destination_data_sharing option; [@key "DestinationDataSharing"] [@yojson.option]
@@ -3361,7 +5300,7 @@ and resume_session_response = {
 
 and review_information = {
   reviewed_time : Aws_json_wire.timestamp option; [@key "ReviewedTime"] [@yojson.option]
-  status : string option; [@key "Status"] [@yojson.option]
+  status : review_status option; [@key "Status"] [@yojson.option]
   reviewer : string option; [@key "Reviewer"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -3400,7 +5339,7 @@ and scheduled_window_execution = {
 
 and send_automation_signal_request = {
   automation_execution_id : string; [@key "AutomationExecutionId"]
-  signal_type : string; [@key "SignalType"]
+  signal_type : signal_type; [@key "SignalType"]
   payload : string list Aws_json_wire.map option; [@key "Payload"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -3413,7 +5352,7 @@ and send_command_request = {
   document_name : string; [@key "DocumentName"]
   document_version : string option; [@key "DocumentVersion"] [@yojson.option]
   document_hash : string option; [@key "DocumentHash"] [@yojson.option]
-  document_hash_type : string option; [@key "DocumentHashType"] [@yojson.option]
+  document_hash_type : document_hash_type option; [@key "DocumentHashType"] [@yojson.option]
   timeout_seconds : int option; [@key "TimeoutSeconds"] [@yojson.option]
   comment : string option; [@key "Comment"] [@yojson.option]
   parameters : string list Aws_json_wire.map option; [@key "Parameters"] [@yojson.option]
@@ -3447,7 +5386,7 @@ and service_setting = {
 and session = {
   session_id : string option; [@key "SessionId"] [@yojson.option]
   target : string option; [@key "Target"] [@yojson.option]
-  status : string option; [@key "Status"] [@yojson.option]
+  status : session_status option; [@key "Status"] [@yojson.option]
   start_date : Aws_json_wire.timestamp option; [@key "StartDate"] [@yojson.option]
   end_date : Aws_json_wire.timestamp option; [@key "EndDate"] [@yojson.option]
   document_name : string option; [@key "DocumentName"] [@yojson.option]
@@ -3456,12 +5395,12 @@ and session = {
   details : string option; [@key "Details"] [@yojson.option]
   output_url : session_manager_output_url option; [@key "OutputUrl"] [@yojson.option]
   max_session_duration : string option; [@key "MaxSessionDuration"] [@yojson.option]
-  access_type : string option; [@key "AccessType"] [@yojson.option]
+  access_type : access_type option; [@key "AccessType"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
 and session_filter = {
-  key : string; [@key "key"]
+  key : session_filter_key; [@key "key"]
   value : string; [@key "value"]
 }
 [@@yojson.allow_extra_fields]
@@ -3506,7 +5445,7 @@ and start_automation_execution_request = {
   document_version : string option; [@key "DocumentVersion"] [@yojson.option]
   parameters : string list Aws_json_wire.map option; [@key "Parameters"] [@yojson.option]
   client_token : string option; [@key "ClientToken"] [@yojson.option]
-  mode : string option; [@key "Mode"] [@yojson.option]
+  mode : execution_mode option; [@key "Mode"] [@yojson.option]
   target_parameter_name : string option; [@key "TargetParameterName"] [@yojson.option]
   targets : target list option; [@key "Targets"] [@yojson.option]
   target_maps : string list Aws_json_wire.map list option; [@key "TargetMaps"] [@yojson.option]
@@ -3579,7 +5518,7 @@ and step_execution = {
   max_attempts : int option; [@key "MaxAttempts"] [@yojson.option]
   execution_start_time : Aws_json_wire.timestamp option; [@key "ExecutionStartTime"] [@yojson.option]
   execution_end_time : Aws_json_wire.timestamp option; [@key "ExecutionEndTime"] [@yojson.option]
-  step_status : string option; [@key "StepStatus"] [@yojson.option]
+  step_status : automation_execution_status option; [@key "StepStatus"] [@yojson.option]
   response_code : string option; [@key "ResponseCode"] [@yojson.option]
   inputs : string Aws_json_wire.map option; [@key "Inputs"] [@yojson.option]
   outputs : string list Aws_json_wire.map option; [@key "Outputs"] [@yojson.option]
@@ -3601,14 +5540,14 @@ and step_execution = {
 [@@yojson.allow_extra_fields]
 
 and step_execution_filter = {
-  key : string; [@key "Key"]
+  key : step_execution_filter_key; [@key "Key"]
   values : string list; [@key "Values"]
 }
 [@@yojson.allow_extra_fields]
 
 and stop_automation_execution_request = {
   automation_execution_id : string; [@key "AutomationExecutionId"]
-  type_ : string option; [@key "Type"] [@yojson.option]
+  type_ : stop_type option; [@key "Type"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -3683,8 +5622,8 @@ and update_association_request = {
   automation_target_parameter_name : string option; [@key "AutomationTargetParameterName"] [@yojson.option]
   max_errors : string option; [@key "MaxErrors"] [@yojson.option]
   max_concurrency : string option; [@key "MaxConcurrency"] [@yojson.option]
-  compliance_severity : string option; [@key "ComplianceSeverity"] [@yojson.option]
-  sync_compliance : string option; [@key "SyncCompliance"] [@yojson.option]
+  compliance_severity : association_compliance_severity option; [@key "ComplianceSeverity"] [@yojson.option]
+  sync_compliance : association_sync_compliance option; [@key "SyncCompliance"] [@yojson.option]
   apply_only_at_cron_interval : bool option; [@key "ApplyOnlyAtCronInterval"] [@yojson.option]
   calendar_names : string list option; [@key "CalendarNames"] [@yojson.option]
   target_locations : target_location list option; [@key "TargetLocations"] [@yojson.option]
@@ -3753,7 +5692,7 @@ and update_document_request = {
   display_name : string option; [@key "DisplayName"] [@yojson.option]
   version_name : string option; [@key "VersionName"] [@yojson.option]
   document_version : string option; [@key "DocumentVersion"] [@yojson.option]
-  document_format : string option; [@key "DocumentFormat"] [@yojson.option]
+  document_format : document_format option; [@key "DocumentFormat"] [@yojson.option]
   target_type : string option; [@key "TargetType"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -3832,7 +5771,7 @@ and update_maintenance_window_task_request = {
   name : string option; [@key "Name"] [@yojson.option]
   description : string option; [@key "Description"] [@yojson.option]
   replace : bool option; [@key "Replace"] [@yojson.option]
-  cutoff_behavior : string option; [@key "CutoffBehavior"] [@yojson.option]
+  cutoff_behavior : maintenance_window_task_cutoff_behavior option; [@key "CutoffBehavior"] [@yojson.option]
   alarm_configuration : alarm_configuration option; [@key "AlarmConfiguration"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -3851,7 +5790,7 @@ and update_maintenance_window_task_result = {
   logging_info : logging_info option; [@key "LoggingInfo"] [@yojson.option]
   name : string option; [@key "Name"] [@yojson.option]
   description : string option; [@key "Description"] [@yojson.option]
-  cutoff_behavior : string option; [@key "CutoffBehavior"] [@yojson.option]
+  cutoff_behavior : maintenance_window_task_cutoff_behavior option; [@key "CutoffBehavior"] [@yojson.option]
   alarm_configuration : alarm_configuration option; [@key "AlarmConfiguration"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -3871,7 +5810,7 @@ and update_ops_item_request = {
   notifications : ops_item_notification list option; [@key "Notifications"] [@yojson.option]
   priority : int option; [@key "Priority"] [@yojson.option]
   related_ops_items : related_ops_item list option; [@key "RelatedOpsItems"] [@yojson.option]
-  status : string option; [@key "Status"] [@yojson.option]
+  status : ops_item_status option; [@key "Status"] [@yojson.option]
   ops_item_id : string; [@key "OpsItemId"]
   title : string option; [@key "Title"] [@yojson.option]
   category : string option; [@key "Category"] [@yojson.option]
@@ -3904,13 +5843,13 @@ and update_patch_baseline_request = {
   global_filters : patch_filter_group option; [@key "GlobalFilters"] [@yojson.option]
   approval_rules : patch_rule_group option; [@key "ApprovalRules"] [@yojson.option]
   approved_patches : string list option; [@key "ApprovedPatches"] [@yojson.option]
-  approved_patches_compliance_level : string option; [@key "ApprovedPatchesComplianceLevel"] [@yojson.option]
+  approved_patches_compliance_level : patch_compliance_level option; [@key "ApprovedPatchesComplianceLevel"] [@yojson.option]
   approved_patches_enable_non_security : bool option; [@key "ApprovedPatchesEnableNonSecurity"] [@yojson.option]
   rejected_patches : string list option; [@key "RejectedPatches"] [@yojson.option]
-  rejected_patches_action : string option; [@key "RejectedPatchesAction"] [@yojson.option]
+  rejected_patches_action : patch_action option; [@key "RejectedPatchesAction"] [@yojson.option]
   description : string option; [@key "Description"] [@yojson.option]
   sources : patch_source list option; [@key "Sources"] [@yojson.option]
-  available_security_updates_compliance_status : string option; [@key "AvailableSecurityUpdatesComplianceStatus"] [@yojson.option]
+  available_security_updates_compliance_status : patch_compliance_status option; [@key "AvailableSecurityUpdatesComplianceStatus"] [@yojson.option]
   replace : bool option; [@key "Replace"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -3918,19 +5857,19 @@ and update_patch_baseline_request = {
 and update_patch_baseline_result = {
   baseline_id : string option; [@key "BaselineId"] [@yojson.option]
   name : string option; [@key "Name"] [@yojson.option]
-  operating_system : string option; [@key "OperatingSystem"] [@yojson.option]
+  operating_system : operating_system option; [@key "OperatingSystem"] [@yojson.option]
   global_filters : patch_filter_group option; [@key "GlobalFilters"] [@yojson.option]
   approval_rules : patch_rule_group option; [@key "ApprovalRules"] [@yojson.option]
   approved_patches : string list option; [@key "ApprovedPatches"] [@yojson.option]
-  approved_patches_compliance_level : string option; [@key "ApprovedPatchesComplianceLevel"] [@yojson.option]
+  approved_patches_compliance_level : patch_compliance_level option; [@key "ApprovedPatchesComplianceLevel"] [@yojson.option]
   approved_patches_enable_non_security : bool option; [@key "ApprovedPatchesEnableNonSecurity"] [@yojson.option]
   rejected_patches : string list option; [@key "RejectedPatches"] [@yojson.option]
-  rejected_patches_action : string option; [@key "RejectedPatchesAction"] [@yojson.option]
+  rejected_patches_action : patch_action option; [@key "RejectedPatchesAction"] [@yojson.option]
   created_date : Aws_json_wire.timestamp option; [@key "CreatedDate"] [@yojson.option]
   modified_date : Aws_json_wire.timestamp option; [@key "ModifiedDate"] [@yojson.option]
   description : string option; [@key "Description"] [@yojson.option]
   sources : patch_source list option; [@key "Sources"] [@yojson.option]
-  available_security_updates_compliance_status : string option; [@key "AvailableSecurityUpdatesComplianceStatus"] [@yojson.option]
+  available_security_updates_compliance_status : patch_compliance_status option; [@key "AvailableSecurityUpdatesComplianceStatus"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -3965,8 +5904,8 @@ and validate_cloud_connector_result = {
 [@@yojson.allow_extra_fields]
 
 and validation_finding = {
-  type_ : string option; [@key "Type"] [@yojson.option]
-  code : string option; [@key "Code"] [@yojson.option]
+  type_ : validation_finding_type option; [@key "Type"] [@yojson.option]
+  code : validation_finding_code option; [@key "Code"] [@yojson.option]
   message : string option; [@key "Message"] [@yojson.option]
   provider_message : string option; [@key "ProviderMessage"] [@yojson.option]
   scope : validation_finding_scope option; [@key "Scope"] [@yojson.option]
@@ -3974,7 +5913,7 @@ and validation_finding = {
 [@@yojson.allow_extra_fields]
 
 and validation_finding_scope = {
-  type_ : string option; [@key "Type"] [@yojson.option]
+  type_ : validation_finding_scope_type option; [@key "Type"] [@yojson.option]
   id : string option; [@key "Id"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]

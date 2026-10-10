@@ -82,7 +82,8 @@ let () =
     | _, id -> (
       let s = shape id in
       match s.kind with
-      | "string" | "enum" -> "string"
+      | "string" -> "string"
+      | "enum" -> snake (local id)
       | "integer" | "long" | "short" | "byte" | "intEnum" -> "int"
       | "float" | "double" | "bigInteger" | "bigDecimal" -> "float"
       | "boolean" -> "bool"
@@ -105,6 +106,47 @@ let () =
     | "Document" -> "Aws_json_wire.document"
     | "Unit" -> "Aws_json_wire.empty"
     | name -> failwith ("prelude: " ^ name)
+  in
+  let enums = List.filter (fun (_, s) -> s.kind = "enum") shapes in
+  (* [`STRING | `STRING_LIST | `Unknown_value of string]: tags are the member names, the wire
+     strings their enumValue. Smithy enums are open, so a value this model does not know decodes
+     to [`Unknown_value]; the caller decides whether that is an error. *)
+  let enum (id, s) =
+    let name = snake (local id) in
+    let members =
+      s.json |> member "members" |> to_assoc
+      |> List.map (fun (tag, m) ->
+        let ident i c =
+          (c >= 'A' && c <= 'Z')
+          || (c >= 'a' && c <= 'z')
+          || c = '_'
+          || (i > 0 && c >= '0' && c <= '9')
+        in
+        if tag = "" || not (List.for_all Fun.id (List.mapi ident (List.of_seq (String.to_seq tag))))
+        then
+          failwith (id ^ ": enum member " ^ tag ^ " is not a variant tag");
+        if tag = "Unknown_value" then failwith (id ^ ": enum member collides with `Unknown_value");
+        let value = match trait "smithy.api#enumValue" m with `String v -> v | _ -> tag in
+        tag, value)
+    in
+    Printf.sprintf
+      {|type %s = [ %s | `Unknown_value of string ]
+
+let yojson_of_%s : %s -> Yojson.Safe.t = function
+%s  | `Unknown_value s -> `String s
+
+let %s_of_yojson : Yojson.Safe.t -> %s = function
+%s  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "%s: string expected" json|}
+      name
+      (String.concat " | " (List.map (fun (tag, _) -> "`" ^ tag) members))
+      name name
+      (String.concat ""
+         (List.map (fun (tag, v) -> Printf.sprintf "  | `%s -> `String %S\n" tag v) members))
+      name name
+      (String.concat ""
+         (List.map (fun (tag, v) -> Printf.sprintf "  | `String %S -> `%s\n" v tag) members))
+      name
   in
   let records =
     List.filter
@@ -171,7 +213,8 @@ end|}
     service.json |> member "operations" |> to_list
     |> List.map (fun o -> o |> member "target" |> to_string)
   in
-  check_unique ~reserved:reserved_types "types" (List.map (fun (id, _) -> snake (local id)) records);
+  check_unique ~reserved:reserved_types "types"
+    (List.map (fun (id, _) -> snake (local id)) (enums @ records));
   check_unique ~reserved:reserved_modules "operations"
     (List.map (fun id -> snake (local id)) operations);
   List.iter
@@ -203,6 +246,8 @@ let protocol =
 
 let make ?endpoint ?provider ~region ~now () = Transport.make ?endpoint ?provider ~protocol ~region ~now ()
 
+%s
+
 type %s
 [@@deriving yojson]
 
@@ -213,6 +258,7 @@ type %s
     (Filename.basename path) version (local service.id)
     (trait "aws.auth#sigv4" service.json |> member "name" |> to_string |> host_label)
     (trait "aws.api#service" service.json |> member "endpointPrefix" |> to_string |> host_label)
+    (List.map enum enums |> String.concat "\n\n")
     (String.concat "\n\nand " (List.map record records))
     (List.filter_map constructor records |> String.concat "\n")
     (List.map operation operations |> String.concat "\n\n")

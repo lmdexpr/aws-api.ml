@@ -19,7 +19,9 @@ What is generated, and what is deliberately not:
   options. Empty structures and `smithy.api#Unit` are `Aws_json_wire.empty`.
 - Serialization is `[@@deriving yojson]`, not generated code. Timestamps, blobs, maps and documents
   map to the types in `runtime/aws_json_wire.ml`.
-- Enums are `string`. Error shapes are skipped: every operation fails with `Aws_json_error.t`.
+- Enums are closed polymorphic variants tagged by member name, plus `` `Unknown_value of string ``
+  for values the model does not know (Smithy enums are open; the caller decides whether that is an
+  error). Error shapes are skipped: every operation fails with `Aws_json_error.t`.
 - A constructor per record, `let get_item_input ~table_name ~key ?consistent_read ... ()`, with
   optional members as optional arguments.
 - One module per operation with `request`, `response` and `perform`, built by

@@ -13,6 +13,739 @@ let protocol =
 
 let make ?endpoint ?provider ~region ~now () = Transport.make ?endpoint ?provider ~protocol ~region ~now ()
 
+type approximate_creation_date_time_precision = [ `MILLISECOND | `MICROSECOND | `Unknown_value of string ]
+
+let yojson_of_approximate_creation_date_time_precision : approximate_creation_date_time_precision -> Yojson.Safe.t = function
+  | `MILLISECOND -> `String "MILLISECOND"
+  | `MICROSECOND -> `String "MICROSECOND"
+  | `Unknown_value s -> `String s
+
+let approximate_creation_date_time_precision_of_yojson : Yojson.Safe.t -> approximate_creation_date_time_precision = function
+  | `String "MILLISECOND" -> `MILLISECOND
+  | `String "MICROSECOND" -> `MICROSECOND
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "approximate_creation_date_time_precision: string expected" json
+
+type attribute_action = [ `ADD | `PUT | `DELETE | `Unknown_value of string ]
+
+let yojson_of_attribute_action : attribute_action -> Yojson.Safe.t = function
+  | `ADD -> `String "ADD"
+  | `PUT -> `String "PUT"
+  | `DELETE -> `String "DELETE"
+  | `Unknown_value s -> `String s
+
+let attribute_action_of_yojson : Yojson.Safe.t -> attribute_action = function
+  | `String "ADD" -> `ADD
+  | `String "PUT" -> `PUT
+  | `String "DELETE" -> `DELETE
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "attribute_action: string expected" json
+
+type backup_status = [ `CREATING | `DELETED | `AVAILABLE | `Unknown_value of string ]
+
+let yojson_of_backup_status : backup_status -> Yojson.Safe.t = function
+  | `CREATING -> `String "CREATING"
+  | `DELETED -> `String "DELETED"
+  | `AVAILABLE -> `String "AVAILABLE"
+  | `Unknown_value s -> `String s
+
+let backup_status_of_yojson : Yojson.Safe.t -> backup_status = function
+  | `String "CREATING" -> `CREATING
+  | `String "DELETED" -> `DELETED
+  | `String "AVAILABLE" -> `AVAILABLE
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "backup_status: string expected" json
+
+type backup_type = [ `USER | `SYSTEM | `AWS_BACKUP | `Unknown_value of string ]
+
+let yojson_of_backup_type : backup_type -> Yojson.Safe.t = function
+  | `USER -> `String "USER"
+  | `SYSTEM -> `String "SYSTEM"
+  | `AWS_BACKUP -> `String "AWS_BACKUP"
+  | `Unknown_value s -> `String s
+
+let backup_type_of_yojson : Yojson.Safe.t -> backup_type = function
+  | `String "USER" -> `USER
+  | `String "SYSTEM" -> `SYSTEM
+  | `String "AWS_BACKUP" -> `AWS_BACKUP
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "backup_type: string expected" json
+
+type backup_type_filter = [ `USER | `SYSTEM | `AWS_BACKUP | `ALL | `Unknown_value of string ]
+
+let yojson_of_backup_type_filter : backup_type_filter -> Yojson.Safe.t = function
+  | `USER -> `String "USER"
+  | `SYSTEM -> `String "SYSTEM"
+  | `AWS_BACKUP -> `String "AWS_BACKUP"
+  | `ALL -> `String "ALL"
+  | `Unknown_value s -> `String s
+
+let backup_type_filter_of_yojson : Yojson.Safe.t -> backup_type_filter = function
+  | `String "USER" -> `USER
+  | `String "SYSTEM" -> `SYSTEM
+  | `String "AWS_BACKUP" -> `AWS_BACKUP
+  | `String "ALL" -> `ALL
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "backup_type_filter: string expected" json
+
+type batch_statement_error_code_enum = [ `ConditionalCheckFailed | `ItemCollectionSizeLimitExceeded | `RequestLimitExceeded | `ValidationError | `ProvisionedThroughputExceeded | `TransactionConflict | `ThrottlingError | `InternalServerError | `ResourceNotFound | `AccessDenied | `DuplicateItem | `Unknown_value of string ]
+
+let yojson_of_batch_statement_error_code_enum : batch_statement_error_code_enum -> Yojson.Safe.t = function
+  | `ConditionalCheckFailed -> `String "ConditionalCheckFailed"
+  | `ItemCollectionSizeLimitExceeded -> `String "ItemCollectionSizeLimitExceeded"
+  | `RequestLimitExceeded -> `String "RequestLimitExceeded"
+  | `ValidationError -> `String "ValidationError"
+  | `ProvisionedThroughputExceeded -> `String "ProvisionedThroughputExceeded"
+  | `TransactionConflict -> `String "TransactionConflict"
+  | `ThrottlingError -> `String "ThrottlingError"
+  | `InternalServerError -> `String "InternalServerError"
+  | `ResourceNotFound -> `String "ResourceNotFound"
+  | `AccessDenied -> `String "AccessDenied"
+  | `DuplicateItem -> `String "DuplicateItem"
+  | `Unknown_value s -> `String s
+
+let batch_statement_error_code_enum_of_yojson : Yojson.Safe.t -> batch_statement_error_code_enum = function
+  | `String "ConditionalCheckFailed" -> `ConditionalCheckFailed
+  | `String "ItemCollectionSizeLimitExceeded" -> `ItemCollectionSizeLimitExceeded
+  | `String "RequestLimitExceeded" -> `RequestLimitExceeded
+  | `String "ValidationError" -> `ValidationError
+  | `String "ProvisionedThroughputExceeded" -> `ProvisionedThroughputExceeded
+  | `String "TransactionConflict" -> `TransactionConflict
+  | `String "ThrottlingError" -> `ThrottlingError
+  | `String "InternalServerError" -> `InternalServerError
+  | `String "ResourceNotFound" -> `ResourceNotFound
+  | `String "AccessDenied" -> `AccessDenied
+  | `String "DuplicateItem" -> `DuplicateItem
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "batch_statement_error_code_enum: string expected" json
+
+type billing_mode = [ `PROVISIONED | `PAY_PER_REQUEST | `Unknown_value of string ]
+
+let yojson_of_billing_mode : billing_mode -> Yojson.Safe.t = function
+  | `PROVISIONED -> `String "PROVISIONED"
+  | `PAY_PER_REQUEST -> `String "PAY_PER_REQUEST"
+  | `Unknown_value s -> `String s
+
+let billing_mode_of_yojson : Yojson.Safe.t -> billing_mode = function
+  | `String "PROVISIONED" -> `PROVISIONED
+  | `String "PAY_PER_REQUEST" -> `PAY_PER_REQUEST
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "billing_mode: string expected" json
+
+type comparison_operator = [ `EQ | `NE | `IN | `LE | `LT | `GE | `GT | `BETWEEN | `NOT_NULL | `NULL | `CONTAINS | `NOT_CONTAINS | `BEGINS_WITH | `Unknown_value of string ]
+
+let yojson_of_comparison_operator : comparison_operator -> Yojson.Safe.t = function
+  | `EQ -> `String "EQ"
+  | `NE -> `String "NE"
+  | `IN -> `String "IN"
+  | `LE -> `String "LE"
+  | `LT -> `String "LT"
+  | `GE -> `String "GE"
+  | `GT -> `String "GT"
+  | `BETWEEN -> `String "BETWEEN"
+  | `NOT_NULL -> `String "NOT_NULL"
+  | `NULL -> `String "NULL"
+  | `CONTAINS -> `String "CONTAINS"
+  | `NOT_CONTAINS -> `String "NOT_CONTAINS"
+  | `BEGINS_WITH -> `String "BEGINS_WITH"
+  | `Unknown_value s -> `String s
+
+let comparison_operator_of_yojson : Yojson.Safe.t -> comparison_operator = function
+  | `String "EQ" -> `EQ
+  | `String "NE" -> `NE
+  | `String "IN" -> `IN
+  | `String "LE" -> `LE
+  | `String "LT" -> `LT
+  | `String "GE" -> `GE
+  | `String "GT" -> `GT
+  | `String "BETWEEN" -> `BETWEEN
+  | `String "NOT_NULL" -> `NOT_NULL
+  | `String "NULL" -> `NULL
+  | `String "CONTAINS" -> `CONTAINS
+  | `String "NOT_CONTAINS" -> `NOT_CONTAINS
+  | `String "BEGINS_WITH" -> `BEGINS_WITH
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "comparison_operator: string expected" json
+
+type conditional_operator = [ `AND | `OR | `Unknown_value of string ]
+
+let yojson_of_conditional_operator : conditional_operator -> Yojson.Safe.t = function
+  | `AND -> `String "AND"
+  | `OR -> `String "OR"
+  | `Unknown_value s -> `String s
+
+let conditional_operator_of_yojson : Yojson.Safe.t -> conditional_operator = function
+  | `String "AND" -> `AND
+  | `String "OR" -> `OR
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "conditional_operator: string expected" json
+
+type continuous_backups_status = [ `ENABLED | `DISABLED | `Unknown_value of string ]
+
+let yojson_of_continuous_backups_status : continuous_backups_status -> Yojson.Safe.t = function
+  | `ENABLED -> `String "ENABLED"
+  | `DISABLED -> `String "DISABLED"
+  | `Unknown_value s -> `String s
+
+let continuous_backups_status_of_yojson : Yojson.Safe.t -> continuous_backups_status = function
+  | `String "ENABLED" -> `ENABLED
+  | `String "DISABLED" -> `DISABLED
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "continuous_backups_status: string expected" json
+
+type contributor_insights_action = [ `ENABLE | `DISABLE | `Unknown_value of string ]
+
+let yojson_of_contributor_insights_action : contributor_insights_action -> Yojson.Safe.t = function
+  | `ENABLE -> `String "ENABLE"
+  | `DISABLE -> `String "DISABLE"
+  | `Unknown_value s -> `String s
+
+let contributor_insights_action_of_yojson : Yojson.Safe.t -> contributor_insights_action = function
+  | `String "ENABLE" -> `ENABLE
+  | `String "DISABLE" -> `DISABLE
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "contributor_insights_action: string expected" json
+
+type contributor_insights_mode = [ `ACCESSED_AND_THROTTLED_KEYS | `THROTTLED_KEYS | `Unknown_value of string ]
+
+let yojson_of_contributor_insights_mode : contributor_insights_mode -> Yojson.Safe.t = function
+  | `ACCESSED_AND_THROTTLED_KEYS -> `String "ACCESSED_AND_THROTTLED_KEYS"
+  | `THROTTLED_KEYS -> `String "THROTTLED_KEYS"
+  | `Unknown_value s -> `String s
+
+let contributor_insights_mode_of_yojson : Yojson.Safe.t -> contributor_insights_mode = function
+  | `String "ACCESSED_AND_THROTTLED_KEYS" -> `ACCESSED_AND_THROTTLED_KEYS
+  | `String "THROTTLED_KEYS" -> `THROTTLED_KEYS
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "contributor_insights_mode: string expected" json
+
+type contributor_insights_status = [ `ENABLING | `ENABLED | `DISABLING | `DISABLED | `FAILED | `Unknown_value of string ]
+
+let yojson_of_contributor_insights_status : contributor_insights_status -> Yojson.Safe.t = function
+  | `ENABLING -> `String "ENABLING"
+  | `ENABLED -> `String "ENABLED"
+  | `DISABLING -> `String "DISABLING"
+  | `DISABLED -> `String "DISABLED"
+  | `FAILED -> `String "FAILED"
+  | `Unknown_value s -> `String s
+
+let contributor_insights_status_of_yojson : Yojson.Safe.t -> contributor_insights_status = function
+  | `String "ENABLING" -> `ENABLING
+  | `String "ENABLED" -> `ENABLED
+  | `String "DISABLING" -> `DISABLING
+  | `String "DISABLED" -> `DISABLED
+  | `String "FAILED" -> `FAILED
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "contributor_insights_status: string expected" json
+
+type destination_status = [ `ENABLING | `ACTIVE | `DISABLING | `DISABLED | `ENABLE_FAILED | `UPDATING | `Unknown_value of string ]
+
+let yojson_of_destination_status : destination_status -> Yojson.Safe.t = function
+  | `ENABLING -> `String "ENABLING"
+  | `ACTIVE -> `String "ACTIVE"
+  | `DISABLING -> `String "DISABLING"
+  | `DISABLED -> `String "DISABLED"
+  | `ENABLE_FAILED -> `String "ENABLE_FAILED"
+  | `UPDATING -> `String "UPDATING"
+  | `Unknown_value s -> `String s
+
+let destination_status_of_yojson : Yojson.Safe.t -> destination_status = function
+  | `String "ENABLING" -> `ENABLING
+  | `String "ACTIVE" -> `ACTIVE
+  | `String "DISABLING" -> `DISABLING
+  | `String "DISABLED" -> `DISABLED
+  | `String "ENABLE_FAILED" -> `ENABLE_FAILED
+  | `String "UPDATING" -> `UPDATING
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "destination_status: string expected" json
+
+type export_format = [ `DYNAMODB_JSON | `ION | `Unknown_value of string ]
+
+let yojson_of_export_format : export_format -> Yojson.Safe.t = function
+  | `DYNAMODB_JSON -> `String "DYNAMODB_JSON"
+  | `ION -> `String "ION"
+  | `Unknown_value s -> `String s
+
+let export_format_of_yojson : Yojson.Safe.t -> export_format = function
+  | `String "DYNAMODB_JSON" -> `DYNAMODB_JSON
+  | `String "ION" -> `ION
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "export_format: string expected" json
+
+type export_status = [ `IN_PROGRESS | `COMPLETED | `FAILED | `Unknown_value of string ]
+
+let yojson_of_export_status : export_status -> Yojson.Safe.t = function
+  | `IN_PROGRESS -> `String "IN_PROGRESS"
+  | `COMPLETED -> `String "COMPLETED"
+  | `FAILED -> `String "FAILED"
+  | `Unknown_value s -> `String s
+
+let export_status_of_yojson : Yojson.Safe.t -> export_status = function
+  | `String "IN_PROGRESS" -> `IN_PROGRESS
+  | `String "COMPLETED" -> `COMPLETED
+  | `String "FAILED" -> `FAILED
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "export_status: string expected" json
+
+type export_type = [ `FULL_EXPORT | `INCREMENTAL_EXPORT | `Unknown_value of string ]
+
+let yojson_of_export_type : export_type -> Yojson.Safe.t = function
+  | `FULL_EXPORT -> `String "FULL_EXPORT"
+  | `INCREMENTAL_EXPORT -> `String "INCREMENTAL_EXPORT"
+  | `Unknown_value s -> `String s
+
+let export_type_of_yojson : Yojson.Safe.t -> export_type = function
+  | `String "FULL_EXPORT" -> `FULL_EXPORT
+  | `String "INCREMENTAL_EXPORT" -> `INCREMENTAL_EXPORT
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "export_type: string expected" json
+
+type export_view_type = [ `NEW_IMAGE | `NEW_AND_OLD_IMAGES | `Unknown_value of string ]
+
+let yojson_of_export_view_type : export_view_type -> Yojson.Safe.t = function
+  | `NEW_IMAGE -> `String "NEW_IMAGE"
+  | `NEW_AND_OLD_IMAGES -> `String "NEW_AND_OLD_IMAGES"
+  | `Unknown_value s -> `String s
+
+let export_view_type_of_yojson : Yojson.Safe.t -> export_view_type = function
+  | `String "NEW_IMAGE" -> `NEW_IMAGE
+  | `String "NEW_AND_OLD_IMAGES" -> `NEW_AND_OLD_IMAGES
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "export_view_type: string expected" json
+
+type global_table_settings_replication_mode = [ `ENABLED | `DISABLED | `ENABLED_WITH_OVERRIDES | `Unknown_value of string ]
+
+let yojson_of_global_table_settings_replication_mode : global_table_settings_replication_mode -> Yojson.Safe.t = function
+  | `ENABLED -> `String "ENABLED"
+  | `DISABLED -> `String "DISABLED"
+  | `ENABLED_WITH_OVERRIDES -> `String "ENABLED_WITH_OVERRIDES"
+  | `Unknown_value s -> `String s
+
+let global_table_settings_replication_mode_of_yojson : Yojson.Safe.t -> global_table_settings_replication_mode = function
+  | `String "ENABLED" -> `ENABLED
+  | `String "DISABLED" -> `DISABLED
+  | `String "ENABLED_WITH_OVERRIDES" -> `ENABLED_WITH_OVERRIDES
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "global_table_settings_replication_mode: string expected" json
+
+type global_table_status = [ `CREATING | `ACTIVE | `DELETING | `UPDATING | `Unknown_value of string ]
+
+let yojson_of_global_table_status : global_table_status -> Yojson.Safe.t = function
+  | `CREATING -> `String "CREATING"
+  | `ACTIVE -> `String "ACTIVE"
+  | `DELETING -> `String "DELETING"
+  | `UPDATING -> `String "UPDATING"
+  | `Unknown_value s -> `String s
+
+let global_table_status_of_yojson : Yojson.Safe.t -> global_table_status = function
+  | `String "CREATING" -> `CREATING
+  | `String "ACTIVE" -> `ACTIVE
+  | `String "DELETING" -> `DELETING
+  | `String "UPDATING" -> `UPDATING
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "global_table_status: string expected" json
+
+type import_status = [ `IN_PROGRESS | `COMPLETED | `CANCELLING | `CANCELLED | `FAILED | `Unknown_value of string ]
+
+let yojson_of_import_status : import_status -> Yojson.Safe.t = function
+  | `IN_PROGRESS -> `String "IN_PROGRESS"
+  | `COMPLETED -> `String "COMPLETED"
+  | `CANCELLING -> `String "CANCELLING"
+  | `CANCELLED -> `String "CANCELLED"
+  | `FAILED -> `String "FAILED"
+  | `Unknown_value s -> `String s
+
+let import_status_of_yojson : Yojson.Safe.t -> import_status = function
+  | `String "IN_PROGRESS" -> `IN_PROGRESS
+  | `String "COMPLETED" -> `COMPLETED
+  | `String "CANCELLING" -> `CANCELLING
+  | `String "CANCELLED" -> `CANCELLED
+  | `String "FAILED" -> `FAILED
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "import_status: string expected" json
+
+type index_status = [ `CREATING | `UPDATING | `DELETING | `ACTIVE | `Unknown_value of string ]
+
+let yojson_of_index_status : index_status -> Yojson.Safe.t = function
+  | `CREATING -> `String "CREATING"
+  | `UPDATING -> `String "UPDATING"
+  | `DELETING -> `String "DELETING"
+  | `ACTIVE -> `String "ACTIVE"
+  | `Unknown_value s -> `String s
+
+let index_status_of_yojson : Yojson.Safe.t -> index_status = function
+  | `String "CREATING" -> `CREATING
+  | `String "UPDATING" -> `UPDATING
+  | `String "DELETING" -> `DELETING
+  | `String "ACTIVE" -> `ACTIVE
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "index_status: string expected" json
+
+type input_compression_type = [ `GZIP | `ZSTD | `NONE | `Unknown_value of string ]
+
+let yojson_of_input_compression_type : input_compression_type -> Yojson.Safe.t = function
+  | `GZIP -> `String "GZIP"
+  | `ZSTD -> `String "ZSTD"
+  | `NONE -> `String "NONE"
+  | `Unknown_value s -> `String s
+
+let input_compression_type_of_yojson : Yojson.Safe.t -> input_compression_type = function
+  | `String "GZIP" -> `GZIP
+  | `String "ZSTD" -> `ZSTD
+  | `String "NONE" -> `NONE
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "input_compression_type: string expected" json
+
+type input_format = [ `DYNAMODB_JSON | `ION | `CSV | `Unknown_value of string ]
+
+let yojson_of_input_format : input_format -> Yojson.Safe.t = function
+  | `DYNAMODB_JSON -> `String "DYNAMODB_JSON"
+  | `ION -> `String "ION"
+  | `CSV -> `String "CSV"
+  | `Unknown_value s -> `String s
+
+let input_format_of_yojson : Yojson.Safe.t -> input_format = function
+  | `String "DYNAMODB_JSON" -> `DYNAMODB_JSON
+  | `String "ION" -> `ION
+  | `String "CSV" -> `CSV
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "input_format: string expected" json
+
+type key_type = [ `HASH | `RANGE | `Unknown_value of string ]
+
+let yojson_of_key_type : key_type -> Yojson.Safe.t = function
+  | `HASH -> `String "HASH"
+  | `RANGE -> `String "RANGE"
+  | `Unknown_value s -> `String s
+
+let key_type_of_yojson : Yojson.Safe.t -> key_type = function
+  | `String "HASH" -> `HASH
+  | `String "RANGE" -> `RANGE
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "key_type: string expected" json
+
+type multi_region_consistency = [ `EVENTUAL | `STRONG | `Unknown_value of string ]
+
+let yojson_of_multi_region_consistency : multi_region_consistency -> Yojson.Safe.t = function
+  | `EVENTUAL -> `String "EVENTUAL"
+  | `STRONG -> `String "STRONG"
+  | `Unknown_value s -> `String s
+
+let multi_region_consistency_of_yojson : Yojson.Safe.t -> multi_region_consistency = function
+  | `String "EVENTUAL" -> `EVENTUAL
+  | `String "STRONG" -> `STRONG
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "multi_region_consistency: string expected" json
+
+type point_in_time_recovery_status = [ `ENABLED | `DISABLED | `Unknown_value of string ]
+
+let yojson_of_point_in_time_recovery_status : point_in_time_recovery_status -> Yojson.Safe.t = function
+  | `ENABLED -> `String "ENABLED"
+  | `DISABLED -> `String "DISABLED"
+  | `Unknown_value s -> `String s
+
+let point_in_time_recovery_status_of_yojson : Yojson.Safe.t -> point_in_time_recovery_status = function
+  | `String "ENABLED" -> `ENABLED
+  | `String "DISABLED" -> `DISABLED
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "point_in_time_recovery_status: string expected" json
+
+type projection_type = [ `ALL | `KEYS_ONLY | `INCLUDE | `Unknown_value of string ]
+
+let yojson_of_projection_type : projection_type -> Yojson.Safe.t = function
+  | `ALL -> `String "ALL"
+  | `KEYS_ONLY -> `String "KEYS_ONLY"
+  | `INCLUDE -> `String "INCLUDE"
+  | `Unknown_value s -> `String s
+
+let projection_type_of_yojson : Yojson.Safe.t -> projection_type = function
+  | `String "ALL" -> `ALL
+  | `String "KEYS_ONLY" -> `KEYS_ONLY
+  | `String "INCLUDE" -> `INCLUDE
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "projection_type: string expected" json
+
+type replica_status = [ `CREATING | `CREATION_FAILED | `UPDATING | `DELETING | `ACTIVE | `REGION_DISABLED | `INACCESSIBLE_ENCRYPTION_CREDENTIALS | `ARCHIVING | `ARCHIVED | `REPLICATION_NOT_AUTHORIZED | `Unknown_value of string ]
+
+let yojson_of_replica_status : replica_status -> Yojson.Safe.t = function
+  | `CREATING -> `String "CREATING"
+  | `CREATION_FAILED -> `String "CREATION_FAILED"
+  | `UPDATING -> `String "UPDATING"
+  | `DELETING -> `String "DELETING"
+  | `ACTIVE -> `String "ACTIVE"
+  | `REGION_DISABLED -> `String "REGION_DISABLED"
+  | `INACCESSIBLE_ENCRYPTION_CREDENTIALS -> `String "INACCESSIBLE_ENCRYPTION_CREDENTIALS"
+  | `ARCHIVING -> `String "ARCHIVING"
+  | `ARCHIVED -> `String "ARCHIVED"
+  | `REPLICATION_NOT_AUTHORIZED -> `String "REPLICATION_NOT_AUTHORIZED"
+  | `Unknown_value s -> `String s
+
+let replica_status_of_yojson : Yojson.Safe.t -> replica_status = function
+  | `String "CREATING" -> `CREATING
+  | `String "CREATION_FAILED" -> `CREATION_FAILED
+  | `String "UPDATING" -> `UPDATING
+  | `String "DELETING" -> `DELETING
+  | `String "ACTIVE" -> `ACTIVE
+  | `String "REGION_DISABLED" -> `REGION_DISABLED
+  | `String "INACCESSIBLE_ENCRYPTION_CREDENTIALS" -> `INACCESSIBLE_ENCRYPTION_CREDENTIALS
+  | `String "ARCHIVING" -> `ARCHIVING
+  | `String "ARCHIVED" -> `ARCHIVED
+  | `String "REPLICATION_NOT_AUTHORIZED" -> `REPLICATION_NOT_AUTHORIZED
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "replica_status: string expected" json
+
+type return_consumed_capacity = [ `INDEXES | `TOTAL | `NONE | `Unknown_value of string ]
+
+let yojson_of_return_consumed_capacity : return_consumed_capacity -> Yojson.Safe.t = function
+  | `INDEXES -> `String "INDEXES"
+  | `TOTAL -> `String "TOTAL"
+  | `NONE -> `String "NONE"
+  | `Unknown_value s -> `String s
+
+let return_consumed_capacity_of_yojson : Yojson.Safe.t -> return_consumed_capacity = function
+  | `String "INDEXES" -> `INDEXES
+  | `String "TOTAL" -> `TOTAL
+  | `String "NONE" -> `NONE
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "return_consumed_capacity: string expected" json
+
+type return_item_collection_metrics = [ `SIZE | `NONE | `Unknown_value of string ]
+
+let yojson_of_return_item_collection_metrics : return_item_collection_metrics -> Yojson.Safe.t = function
+  | `SIZE -> `String "SIZE"
+  | `NONE -> `String "NONE"
+  | `Unknown_value s -> `String s
+
+let return_item_collection_metrics_of_yojson : Yojson.Safe.t -> return_item_collection_metrics = function
+  | `String "SIZE" -> `SIZE
+  | `String "NONE" -> `NONE
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "return_item_collection_metrics: string expected" json
+
+type return_value = [ `NONE | `ALL_OLD | `UPDATED_OLD | `ALL_NEW | `UPDATED_NEW | `Unknown_value of string ]
+
+let yojson_of_return_value : return_value -> Yojson.Safe.t = function
+  | `NONE -> `String "NONE"
+  | `ALL_OLD -> `String "ALL_OLD"
+  | `UPDATED_OLD -> `String "UPDATED_OLD"
+  | `ALL_NEW -> `String "ALL_NEW"
+  | `UPDATED_NEW -> `String "UPDATED_NEW"
+  | `Unknown_value s -> `String s
+
+let return_value_of_yojson : Yojson.Safe.t -> return_value = function
+  | `String "NONE" -> `NONE
+  | `String "ALL_OLD" -> `ALL_OLD
+  | `String "UPDATED_OLD" -> `UPDATED_OLD
+  | `String "ALL_NEW" -> `ALL_NEW
+  | `String "UPDATED_NEW" -> `UPDATED_NEW
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "return_value: string expected" json
+
+type return_values_on_condition_check_failure = [ `ALL_OLD | `NONE | `Unknown_value of string ]
+
+let yojson_of_return_values_on_condition_check_failure : return_values_on_condition_check_failure -> Yojson.Safe.t = function
+  | `ALL_OLD -> `String "ALL_OLD"
+  | `NONE -> `String "NONE"
+  | `Unknown_value s -> `String s
+
+let return_values_on_condition_check_failure_of_yojson : Yojson.Safe.t -> return_values_on_condition_check_failure = function
+  | `String "ALL_OLD" -> `ALL_OLD
+  | `String "NONE" -> `NONE
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "return_values_on_condition_check_failure: string expected" json
+
+type s3_sse_algorithm = [ `AES256 | `KMS | `Unknown_value of string ]
+
+let yojson_of_s3_sse_algorithm : s3_sse_algorithm -> Yojson.Safe.t = function
+  | `AES256 -> `String "AES256"
+  | `KMS -> `String "KMS"
+  | `Unknown_value s -> `String s
+
+let s3_sse_algorithm_of_yojson : Yojson.Safe.t -> s3_sse_algorithm = function
+  | `String "AES256" -> `AES256
+  | `String "KMS" -> `KMS
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "s3_sse_algorithm: string expected" json
+
+type sse_status = [ `ENABLING | `ENABLED | `DISABLING | `DISABLED | `UPDATING | `Unknown_value of string ]
+
+let yojson_of_sse_status : sse_status -> Yojson.Safe.t = function
+  | `ENABLING -> `String "ENABLING"
+  | `ENABLED -> `String "ENABLED"
+  | `DISABLING -> `String "DISABLING"
+  | `DISABLED -> `String "DISABLED"
+  | `UPDATING -> `String "UPDATING"
+  | `Unknown_value s -> `String s
+
+let sse_status_of_yojson : Yojson.Safe.t -> sse_status = function
+  | `String "ENABLING" -> `ENABLING
+  | `String "ENABLED" -> `ENABLED
+  | `String "DISABLING" -> `DISABLING
+  | `String "DISABLED" -> `DISABLED
+  | `String "UPDATING" -> `UPDATING
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "sse_status: string expected" json
+
+type sse_type = [ `AES256 | `KMS | `Unknown_value of string ]
+
+let yojson_of_sse_type : sse_type -> Yojson.Safe.t = function
+  | `AES256 -> `String "AES256"
+  | `KMS -> `String "KMS"
+  | `Unknown_value s -> `String s
+
+let sse_type_of_yojson : Yojson.Safe.t -> sse_type = function
+  | `String "AES256" -> `AES256
+  | `String "KMS" -> `KMS
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "sse_type: string expected" json
+
+type scalar_attribute_type = [ `S | `N | `B | `Unknown_value of string ]
+
+let yojson_of_scalar_attribute_type : scalar_attribute_type -> Yojson.Safe.t = function
+  | `S -> `String "S"
+  | `N -> `String "N"
+  | `B -> `String "B"
+  | `Unknown_value s -> `String s
+
+let scalar_attribute_type_of_yojson : Yojson.Safe.t -> scalar_attribute_type = function
+  | `String "S" -> `S
+  | `String "N" -> `N
+  | `String "B" -> `B
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "scalar_attribute_type: string expected" json
+
+type search_schema_element_type = [ `HASH | `INLINE_FILTER | `Unknown_value of string ]
+
+let yojson_of_search_schema_element_type : search_schema_element_type -> Yojson.Safe.t = function
+  | `HASH -> `String "HASH"
+  | `INLINE_FILTER -> `String "INLINE_FILTER"
+  | `Unknown_value s -> `String s
+
+let search_schema_element_type_of_yojson : Yojson.Safe.t -> search_schema_element_type = function
+  | `String "HASH" -> `HASH
+  | `String "INLINE_FILTER" -> `INLINE_FILTER
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "search_schema_element_type: string expected" json
+
+type select = [ `ALL_ATTRIBUTES | `ALL_PROJECTED_ATTRIBUTES | `SPECIFIC_ATTRIBUTES | `COUNT | `Unknown_value of string ]
+
+let yojson_of_select : select -> Yojson.Safe.t = function
+  | `ALL_ATTRIBUTES -> `String "ALL_ATTRIBUTES"
+  | `ALL_PROJECTED_ATTRIBUTES -> `String "ALL_PROJECTED_ATTRIBUTES"
+  | `SPECIFIC_ATTRIBUTES -> `String "SPECIFIC_ATTRIBUTES"
+  | `COUNT -> `String "COUNT"
+  | `Unknown_value s -> `String s
+
+let select_of_yojson : Yojson.Safe.t -> select = function
+  | `String "ALL_ATTRIBUTES" -> `ALL_ATTRIBUTES
+  | `String "ALL_PROJECTED_ATTRIBUTES" -> `ALL_PROJECTED_ATTRIBUTES
+  | `String "SPECIFIC_ATTRIBUTES" -> `SPECIFIC_ATTRIBUTES
+  | `String "COUNT" -> `COUNT
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "select: string expected" json
+
+type stream_view_type = [ `NEW_IMAGE | `OLD_IMAGE | `NEW_AND_OLD_IMAGES | `KEYS_ONLY | `Unknown_value of string ]
+
+let yojson_of_stream_view_type : stream_view_type -> Yojson.Safe.t = function
+  | `NEW_IMAGE -> `String "NEW_IMAGE"
+  | `OLD_IMAGE -> `String "OLD_IMAGE"
+  | `NEW_AND_OLD_IMAGES -> `String "NEW_AND_OLD_IMAGES"
+  | `KEYS_ONLY -> `String "KEYS_ONLY"
+  | `Unknown_value s -> `String s
+
+let stream_view_type_of_yojson : Yojson.Safe.t -> stream_view_type = function
+  | `String "NEW_IMAGE" -> `NEW_IMAGE
+  | `String "OLD_IMAGE" -> `OLD_IMAGE
+  | `String "NEW_AND_OLD_IMAGES" -> `NEW_AND_OLD_IMAGES
+  | `String "KEYS_ONLY" -> `KEYS_ONLY
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "stream_view_type: string expected" json
+
+type table_class = [ `STANDARD | `STANDARD_INFREQUENT_ACCESS | `Unknown_value of string ]
+
+let yojson_of_table_class : table_class -> Yojson.Safe.t = function
+  | `STANDARD -> `String "STANDARD"
+  | `STANDARD_INFREQUENT_ACCESS -> `String "STANDARD_INFREQUENT_ACCESS"
+  | `Unknown_value s -> `String s
+
+let table_class_of_yojson : Yojson.Safe.t -> table_class = function
+  | `String "STANDARD" -> `STANDARD
+  | `String "STANDARD_INFREQUENT_ACCESS" -> `STANDARD_INFREQUENT_ACCESS
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "table_class: string expected" json
+
+type table_status = [ `CREATING | `UPDATING | `DELETING | `ACTIVE | `INACCESSIBLE_ENCRYPTION_CREDENTIALS | `ARCHIVING | `ARCHIVED | `REPLICATION_NOT_AUTHORIZED | `Unknown_value of string ]
+
+let yojson_of_table_status : table_status -> Yojson.Safe.t = function
+  | `CREATING -> `String "CREATING"
+  | `UPDATING -> `String "UPDATING"
+  | `DELETING -> `String "DELETING"
+  | `ACTIVE -> `String "ACTIVE"
+  | `INACCESSIBLE_ENCRYPTION_CREDENTIALS -> `String "INACCESSIBLE_ENCRYPTION_CREDENTIALS"
+  | `ARCHIVING -> `String "ARCHIVING"
+  | `ARCHIVED -> `String "ARCHIVED"
+  | `REPLICATION_NOT_AUTHORIZED -> `String "REPLICATION_NOT_AUTHORIZED"
+  | `Unknown_value s -> `String s
+
+let table_status_of_yojson : Yojson.Safe.t -> table_status = function
+  | `String "CREATING" -> `CREATING
+  | `String "UPDATING" -> `UPDATING
+  | `String "DELETING" -> `DELETING
+  | `String "ACTIVE" -> `ACTIVE
+  | `String "INACCESSIBLE_ENCRYPTION_CREDENTIALS" -> `INACCESSIBLE_ENCRYPTION_CREDENTIALS
+  | `String "ARCHIVING" -> `ARCHIVING
+  | `String "ARCHIVED" -> `ARCHIVED
+  | `String "REPLICATION_NOT_AUTHORIZED" -> `REPLICATION_NOT_AUTHORIZED
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "table_status: string expected" json
+
+type time_to_live_status = [ `ENABLING | `DISABLING | `ENABLED | `DISABLED | `Unknown_value of string ]
+
+let yojson_of_time_to_live_status : time_to_live_status -> Yojson.Safe.t = function
+  | `ENABLING -> `String "ENABLING"
+  | `DISABLING -> `String "DISABLING"
+  | `ENABLED -> `String "ENABLED"
+  | `DISABLED -> `String "DISABLED"
+  | `Unknown_value s -> `String s
+
+let time_to_live_status_of_yojson : Yojson.Safe.t -> time_to_live_status = function
+  | `String "ENABLING" -> `ENABLING
+  | `String "DISABLING" -> `DISABLING
+  | `String "ENABLED" -> `ENABLED
+  | `String "DISABLED" -> `DISABLED
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "time_to_live_status: string expected" json
+
+type vector_distance_function = [ `COSINE | `DOT_PRODUCT | `EUCLIDEAN | `Unknown_value of string ]
+
+let yojson_of_vector_distance_function : vector_distance_function -> Yojson.Safe.t = function
+  | `COSINE -> `String "COSINE"
+  | `DOT_PRODUCT -> `String "DOT_PRODUCT"
+  | `EUCLIDEAN -> `String "EUCLIDEAN"
+  | `Unknown_value s -> `String s
+
+let vector_distance_function_of_yojson : Yojson.Safe.t -> vector_distance_function = function
+  | `String "COSINE" -> `COSINE
+  | `String "DOT_PRODUCT" -> `DOT_PRODUCT
+  | `String "EUCLIDEAN" -> `EUCLIDEAN
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "vector_distance_function: string expected" json
+
+type witness_status = [ `CREATING | `DELETING | `ACTIVE | `Unknown_value of string ]
+
+let yojson_of_witness_status : witness_status -> Yojson.Safe.t = function
+  | `CREATING -> `String "CREATING"
+  | `DELETING -> `String "DELETING"
+  | `ACTIVE -> `String "ACTIVE"
+  | `Unknown_value s -> `String s
+
+let witness_status_of_yojson : Yojson.Safe.t -> witness_status = function
+  | `String "CREATING" -> `CREATING
+  | `String "DELETING" -> `DELETING
+  | `String "ACTIVE" -> `ACTIVE
+  | `String s -> `Unknown_value s
+  | json -> Ppx_yojson_conv_lib.Yojson_conv.of_yojson_error "witness_status: string expected" json
+
 type archival_summary = {
   archival_date_time : Aws_json_wire.timestamp option; [@key "ArchivalDateTime"] [@yojson.option]
   archival_reason : string option; [@key "ArchivalReason"] [@yojson.option]
@@ -22,7 +755,7 @@ type archival_summary = {
 
 and attribute_definition = {
   attribute_name : string; [@key "AttributeName"]
-  attribute_type : string; [@key "AttributeType"]
+  attribute_type : scalar_attribute_type; [@key "AttributeType"]
 }
 [@@yojson.allow_extra_fields]
 
@@ -42,7 +775,7 @@ and attribute_value = {
 
 and attribute_value_update = {
   value : attribute_value option; [@key "Value"] [@yojson.option]
-  action : string option; [@key "Action"] [@yojson.option]
+  action : attribute_action option; [@key "Action"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -103,8 +836,8 @@ and backup_details = {
   backup_arn : string; [@key "BackupArn"]
   backup_name : string; [@key "BackupName"]
   backup_size_bytes : int option; [@key "BackupSizeBytes"] [@yojson.option]
-  backup_status : string; [@key "BackupStatus"]
-  backup_type : string; [@key "BackupType"]
+  backup_status : backup_status; [@key "BackupStatus"]
+  backup_type : backup_type; [@key "BackupType"]
   backup_creation_date_time : Aws_json_wire.timestamp; [@key "BackupCreationDateTime"]
   backup_expiry_date_time : Aws_json_wire.timestamp option; [@key "BackupExpiryDateTime"] [@yojson.option]
 }
@@ -118,15 +851,15 @@ and backup_summary = {
   backup_name : string option; [@key "BackupName"] [@yojson.option]
   backup_creation_date_time : Aws_json_wire.timestamp option; [@key "BackupCreationDateTime"] [@yojson.option]
   backup_expiry_date_time : Aws_json_wire.timestamp option; [@key "BackupExpiryDateTime"] [@yojson.option]
-  backup_status : string option; [@key "BackupStatus"] [@yojson.option]
-  backup_type : string option; [@key "BackupType"] [@yojson.option]
+  backup_status : backup_status option; [@key "BackupStatus"] [@yojson.option]
+  backup_type : backup_type option; [@key "BackupType"] [@yojson.option]
   backup_size_bytes : int option; [@key "BackupSizeBytes"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
 and batch_execute_statement_input = {
   statements : batch_statement_request list; [@key "Statements"]
-  return_consumed_capacity : string option; [@key "ReturnConsumedCapacity"] [@yojson.option]
+  return_consumed_capacity : return_consumed_capacity option; [@key "ReturnConsumedCapacity"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -138,7 +871,7 @@ and batch_execute_statement_output = {
 
 and batch_get_item_input = {
   request_items : keys_and_attributes Aws_json_wire.map; [@key "RequestItems"]
-  return_consumed_capacity : string option; [@key "ReturnConsumedCapacity"] [@yojson.option]
+  return_consumed_capacity : return_consumed_capacity option; [@key "ReturnConsumedCapacity"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -150,7 +883,7 @@ and batch_get_item_output = {
 [@@yojson.allow_extra_fields]
 
 and batch_statement_error = {
-  code : string option; [@key "Code"] [@yojson.option]
+  code : batch_statement_error_code_enum option; [@key "Code"] [@yojson.option]
   message : string option; [@key "Message"] [@yojson.option]
   item : attribute_value Aws_json_wire.map option; [@key "Item"] [@yojson.option]
 }
@@ -160,7 +893,7 @@ and batch_statement_request = {
   statement : string; [@key "Statement"]
   parameters : attribute_value list option; [@key "Parameters"] [@yojson.option]
   consistent_read : bool option; [@key "ConsistentRead"] [@yojson.option]
-  return_values_on_condition_check_failure : string option; [@key "ReturnValuesOnConditionCheckFailure"] [@yojson.option]
+  return_values_on_condition_check_failure : return_values_on_condition_check_failure option; [@key "ReturnValuesOnConditionCheckFailure"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -173,8 +906,8 @@ and batch_statement_response = {
 
 and batch_write_item_input = {
   request_items : write_request list Aws_json_wire.map; [@key "RequestItems"]
-  return_consumed_capacity : string option; [@key "ReturnConsumedCapacity"] [@yojson.option]
-  return_item_collection_metrics : string option; [@key "ReturnItemCollectionMetrics"] [@yojson.option]
+  return_consumed_capacity : return_consumed_capacity option; [@key "ReturnConsumedCapacity"] [@yojson.option]
+  return_item_collection_metrics : return_item_collection_metrics option; [@key "ReturnItemCollectionMetrics"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -186,7 +919,7 @@ and batch_write_item_output = {
 [@@yojson.allow_extra_fields]
 
 and billing_mode_summary = {
-  billing_mode : string option; [@key "BillingMode"] [@yojson.option]
+  billing_mode : billing_mode option; [@key "BillingMode"] [@yojson.option]
   last_update_to_pay_per_request_date_time : Aws_json_wire.timestamp option; [@key "LastUpdateToPayPerRequestDateTime"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -207,7 +940,7 @@ and capacity = {
 
 and condition = {
   attribute_value_list : attribute_value list option; [@key "AttributeValueList"] [@yojson.option]
-  comparison_operator : string; [@key "ComparisonOperator"]
+  comparison_operator : comparison_operator; [@key "ComparisonOperator"]
 }
 [@@yojson.allow_extra_fields]
 
@@ -217,7 +950,7 @@ and condition_check = {
   condition_expression : string; [@key "ConditionExpression"]
   expression_attribute_names : string Aws_json_wire.map option; [@key "ExpressionAttributeNames"] [@yojson.option]
   expression_attribute_values : attribute_value Aws_json_wire.map option; [@key "ExpressionAttributeValues"] [@yojson.option]
-  return_values_on_condition_check_failure : string option; [@key "ReturnValuesOnConditionCheckFailure"] [@yojson.option]
+  return_values_on_condition_check_failure : return_values_on_condition_check_failure option; [@key "ReturnValuesOnConditionCheckFailure"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -234,7 +967,7 @@ and consumed_capacity = {
 [@@yojson.allow_extra_fields]
 
 and continuous_backups_description = {
-  continuous_backups_status : string; [@key "ContinuousBackupsStatus"]
+  continuous_backups_status : continuous_backups_status; [@key "ContinuousBackupsStatus"]
   point_in_time_recovery_description : point_in_time_recovery_description option; [@key "PointInTimeRecoveryDescription"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -242,8 +975,8 @@ and continuous_backups_description = {
 and contributor_insights_summary = {
   table_name : string option; [@key "TableName"] [@yojson.option]
   index_name : string option; [@key "IndexName"] [@yojson.option]
-  contributor_insights_status : string option; [@key "ContributorInsightsStatus"] [@yojson.option]
-  contributor_insights_mode : string option; [@key "ContributorInsightsMode"] [@yojson.option]
+  contributor_insights_status : contributor_insights_status option; [@key "ContributorInsightsStatus"] [@yojson.option]
+  contributor_insights_mode : contributor_insights_mode option; [@key "ContributorInsightsMode"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -295,7 +1028,7 @@ and create_replication_group_member_action = {
   provisioned_throughput_override : provisioned_throughput_override option; [@key "ProvisionedThroughputOverride"] [@yojson.option]
   on_demand_throughput_override : on_demand_throughput_override option; [@key "OnDemandThroughputOverride"] [@yojson.option]
   global_secondary_indexes : replica_global_secondary_index list option; [@key "GlobalSecondaryIndexes"] [@yojson.option]
-  table_class_override : string option; [@key "TableClassOverride"] [@yojson.option]
+  table_class_override : table_class option; [@key "TableClassOverride"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -305,18 +1038,18 @@ and create_table_input = {
   key_schema : key_schema_element list option; [@key "KeySchema"] [@yojson.option]
   local_secondary_indexes : local_secondary_index list option; [@key "LocalSecondaryIndexes"] [@yojson.option]
   global_secondary_indexes : global_secondary_index list option; [@key "GlobalSecondaryIndexes"] [@yojson.option]
-  billing_mode : string option; [@key "BillingMode"] [@yojson.option]
+  billing_mode : billing_mode option; [@key "BillingMode"] [@yojson.option]
   provisioned_throughput : provisioned_throughput option; [@key "ProvisionedThroughput"] [@yojson.option]
   stream_specification : stream_specification option; [@key "StreamSpecification"] [@yojson.option]
   sse_specification : sse_specification option; [@key "SSESpecification"] [@yojson.option]
   tags : tag list option; [@key "Tags"] [@yojson.option]
-  table_class : string option; [@key "TableClass"] [@yojson.option]
+  table_class : table_class option; [@key "TableClass"] [@yojson.option]
   deletion_protection_enabled : bool option; [@key "DeletionProtectionEnabled"] [@yojson.option]
   warm_throughput : warm_throughput option; [@key "WarmThroughput"] [@yojson.option]
   resource_policy : string option; [@key "ResourcePolicy"] [@yojson.option]
   on_demand_throughput : on_demand_throughput option; [@key "OnDemandThroughput"] [@yojson.option]
   global_table_source_arn : string option; [@key "GlobalTableSourceArn"] [@yojson.option]
-  global_table_settings_replication_mode : string option; [@key "GlobalTableSettingsReplicationMode"] [@yojson.option]
+  global_table_settings_replication_mode : global_table_settings_replication_mode option; [@key "GlobalTableSettingsReplicationMode"] [@yojson.option]
   vector_indexes : vector_index list option; [@key "VectorIndexes"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -332,7 +1065,7 @@ and create_vector_index_action = {
   search_schema : search_schema_element list option; [@key "SearchSchema"] [@yojson.option]
   projection : projection; [@key "Projection"]
   dimensions : int; [@key "Dimensions"]
-  distance_function : string; [@key "DistanceFunction"]
+  distance_function : vector_distance_function; [@key "DistanceFunction"]
 }
 [@@yojson.allow_extra_fields]
 
@@ -348,7 +1081,7 @@ and delete = {
   condition_expression : string option; [@key "ConditionExpression"] [@yojson.option]
   expression_attribute_names : string Aws_json_wire.map option; [@key "ExpressionAttributeNames"] [@yojson.option]
   expression_attribute_values : attribute_value Aws_json_wire.map option; [@key "ExpressionAttributeValues"] [@yojson.option]
-  return_values_on_condition_check_failure : string option; [@key "ReturnValuesOnConditionCheckFailure"] [@yojson.option]
+  return_values_on_condition_check_failure : return_values_on_condition_check_failure option; [@key "ReturnValuesOnConditionCheckFailure"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -376,14 +1109,14 @@ and delete_item_input = {
   table_name : string; [@key "TableName"]
   key : attribute_value Aws_json_wire.map; [@key "Key"]
   expected : expected_attribute_value Aws_json_wire.map option; [@key "Expected"] [@yojson.option]
-  conditional_operator : string option; [@key "ConditionalOperator"] [@yojson.option]
-  return_values : string option; [@key "ReturnValues"] [@yojson.option]
-  return_consumed_capacity : string option; [@key "ReturnConsumedCapacity"] [@yojson.option]
-  return_item_collection_metrics : string option; [@key "ReturnItemCollectionMetrics"] [@yojson.option]
+  conditional_operator : conditional_operator option; [@key "ConditionalOperator"] [@yojson.option]
+  return_values : return_value option; [@key "ReturnValues"] [@yojson.option]
+  return_consumed_capacity : return_consumed_capacity option; [@key "ReturnConsumedCapacity"] [@yojson.option]
+  return_item_collection_metrics : return_item_collection_metrics option; [@key "ReturnItemCollectionMetrics"] [@yojson.option]
   condition_expression : string option; [@key "ConditionExpression"] [@yojson.option]
   expression_attribute_names : string Aws_json_wire.map option; [@key "ExpressionAttributeNames"] [@yojson.option]
   expression_attribute_values : attribute_value Aws_json_wire.map option; [@key "ExpressionAttributeValues"] [@yojson.option]
-  return_values_on_condition_check_failure : string option; [@key "ReturnValuesOnConditionCheckFailure"] [@yojson.option]
+  return_values_on_condition_check_failure : return_values_on_condition_check_failure option; [@key "ReturnValuesOnConditionCheckFailure"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -465,10 +1198,10 @@ and describe_contributor_insights_output = {
   table_name : string option; [@key "TableName"] [@yojson.option]
   index_name : string option; [@key "IndexName"] [@yojson.option]
   contributor_insights_rule_list : string list option; [@key "ContributorInsightsRuleList"] [@yojson.option]
-  contributor_insights_status : string option; [@key "ContributorInsightsStatus"] [@yojson.option]
+  contributor_insights_status : contributor_insights_status option; [@key "ContributorInsightsStatus"] [@yojson.option]
   last_update_date_time : Aws_json_wire.timestamp option; [@key "LastUpdateDateTime"] [@yojson.option]
   failure_exception : failure_exception option; [@key "FailureException"] [@yojson.option]
-  contributor_insights_mode : string option; [@key "ContributorInsightsMode"] [@yojson.option]
+  contributor_insights_mode : contributor_insights_mode option; [@key "ContributorInsightsMode"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -572,7 +1305,7 @@ and describe_time_to_live_output = {
 [@@yojson.allow_extra_fields]
 
 and enable_kinesis_streaming_configuration = {
-  approximate_creation_date_time_precision : string option; [@key "ApproximateCreationDateTimePrecision"] [@yojson.option]
+  approximate_creation_date_time_precision : approximate_creation_date_time_precision option; [@key "ApproximateCreationDateTimePrecision"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -587,9 +1320,9 @@ and execute_statement_input = {
   parameters : attribute_value list option; [@key "Parameters"] [@yojson.option]
   consistent_read : bool option; [@key "ConsistentRead"] [@yojson.option]
   next_token : string option; [@key "NextToken"] [@yojson.option]
-  return_consumed_capacity : string option; [@key "ReturnConsumedCapacity"] [@yojson.option]
+  return_consumed_capacity : return_consumed_capacity option; [@key "ReturnConsumedCapacity"] [@yojson.option]
   limit : int option; [@key "Limit"] [@yojson.option]
-  return_values_on_condition_check_failure : string option; [@key "ReturnValuesOnConditionCheckFailure"] [@yojson.option]
+  return_values_on_condition_check_failure : return_values_on_condition_check_failure option; [@key "ReturnValuesOnConditionCheckFailure"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -604,7 +1337,7 @@ and execute_statement_output = {
 and execute_transaction_input = {
   transact_statements : parameterized_statement list; [@key "TransactStatements"]
   client_request_token : string option; [@key "ClientRequestToken"] [@yojson.option]
-  return_consumed_capacity : string option; [@key "ReturnConsumedCapacity"] [@yojson.option]
+  return_consumed_capacity : return_consumed_capacity option; [@key "ReturnConsumedCapacity"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -617,14 +1350,14 @@ and execute_transaction_output = {
 and expected_attribute_value = {
   value : attribute_value option; [@key "Value"] [@yojson.option]
   exists : bool option; [@key "Exists"] [@yojson.option]
-  comparison_operator : string option; [@key "ComparisonOperator"] [@yojson.option]
+  comparison_operator : comparison_operator option; [@key "ComparisonOperator"] [@yojson.option]
   attribute_value_list : attribute_value list option; [@key "AttributeValueList"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
 and export_description = {
   export_arn : string option; [@key "ExportArn"] [@yojson.option]
-  export_status : string option; [@key "ExportStatus"] [@yojson.option]
+  export_status : export_status option; [@key "ExportStatus"] [@yojson.option]
   start_time : Aws_json_wire.timestamp option; [@key "StartTime"] [@yojson.option]
   end_time : Aws_json_wire.timestamp option; [@key "EndTime"] [@yojson.option]
   export_manifest : string option; [@key "ExportManifest"] [@yojson.option]
@@ -635,14 +1368,14 @@ and export_description = {
   s3_bucket : string option; [@key "S3Bucket"] [@yojson.option]
   s3_bucket_owner : string option; [@key "S3BucketOwner"] [@yojson.option]
   s3_prefix : string option; [@key "S3Prefix"] [@yojson.option]
-  s3_sse_algorithm : string option; [@key "S3SseAlgorithm"] [@yojson.option]
+  s3_sse_algorithm : s3_sse_algorithm option; [@key "S3SseAlgorithm"] [@yojson.option]
   s3_sse_kms_key_id : string option; [@key "S3SseKmsKeyId"] [@yojson.option]
   failure_code : string option; [@key "FailureCode"] [@yojson.option]
   failure_message : string option; [@key "FailureMessage"] [@yojson.option]
-  export_format : string option; [@key "ExportFormat"] [@yojson.option]
+  export_format : export_format option; [@key "ExportFormat"] [@yojson.option]
   billed_size_bytes : int option; [@key "BilledSizeBytes"] [@yojson.option]
   item_count : int option; [@key "ItemCount"] [@yojson.option]
-  export_type : string option; [@key "ExportType"] [@yojson.option]
+  export_type : export_type option; [@key "ExportType"] [@yojson.option]
   incremental_export_specification : incremental_export_specification option; [@key "IncrementalExportSpecification"] [@yojson.option]
   filter_specification : filter_specification option; [@key "FilterSpecification"] [@yojson.option]
 }
@@ -650,8 +1383,8 @@ and export_description = {
 
 and export_summary = {
   export_arn : string option; [@key "ExportArn"] [@yojson.option]
-  export_status : string option; [@key "ExportStatus"] [@yojson.option]
-  export_type : string option; [@key "ExportType"] [@yojson.option]
+  export_status : export_status option; [@key "ExportStatus"] [@yojson.option]
+  export_type : export_type option; [@key "ExportType"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -662,10 +1395,10 @@ and export_table_to_point_in_time_input = {
   s3_bucket : string; [@key "S3Bucket"]
   s3_bucket_owner : string option; [@key "S3BucketOwner"] [@yojson.option]
   s3_prefix : string option; [@key "S3Prefix"] [@yojson.option]
-  s3_sse_algorithm : string option; [@key "S3SseAlgorithm"] [@yojson.option]
+  s3_sse_algorithm : s3_sse_algorithm option; [@key "S3SseAlgorithm"] [@yojson.option]
   s3_sse_kms_key_id : string option; [@key "S3SseKmsKeyId"] [@yojson.option]
-  export_format : string option; [@key "ExportFormat"] [@yojson.option]
-  export_type : string option; [@key "ExportType"] [@yojson.option]
+  export_format : export_format option; [@key "ExportFormat"] [@yojson.option]
+  export_type : export_type option; [@key "ExportType"] [@yojson.option]
   incremental_export_specification : incremental_export_specification option; [@key "IncrementalExportSpecification"] [@yojson.option]
   filter_specification : filter_specification option; [@key "FilterSpecification"] [@yojson.option]
 }
@@ -704,7 +1437,7 @@ and get_item_input = {
   key : attribute_value Aws_json_wire.map; [@key "Key"]
   attributes_to_get : string list option; [@key "AttributesToGet"] [@yojson.option]
   consistent_read : bool option; [@key "ConsistentRead"] [@yojson.option]
-  return_consumed_capacity : string option; [@key "ReturnConsumedCapacity"] [@yojson.option]
+  return_consumed_capacity : return_consumed_capacity option; [@key "ReturnConsumedCapacity"] [@yojson.option]
   projection_expression : string option; [@key "ProjectionExpression"] [@yojson.option]
   expression_attribute_names : string Aws_json_wire.map option; [@key "ExpressionAttributeNames"] [@yojson.option]
 }
@@ -747,7 +1480,7 @@ and global_secondary_index_description = {
   index_name : string option; [@key "IndexName"] [@yojson.option]
   key_schema : key_schema_element list option; [@key "KeySchema"] [@yojson.option]
   projection : projection option; [@key "Projection"] [@yojson.option]
-  index_status : string option; [@key "IndexStatus"] [@yojson.option]
+  index_status : index_status option; [@key "IndexStatus"] [@yojson.option]
   backfilling : bool option; [@key "Backfilling"] [@yojson.option]
   provisioned_throughput : provisioned_throughput_description option; [@key "ProvisionedThroughput"] [@yojson.option]
   index_size_bytes : int option; [@key "IndexSizeBytes"] [@yojson.option]
@@ -777,7 +1510,7 @@ and global_secondary_index_update = {
 and global_secondary_index_warm_throughput_description = {
   read_units_per_second : int option; [@key "ReadUnitsPerSecond"] [@yojson.option]
   write_units_per_second : int option; [@key "WriteUnitsPerSecond"] [@yojson.option]
-  status : string option; [@key "Status"] [@yojson.option]
+  status : index_status option; [@key "Status"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -791,7 +1524,7 @@ and global_table_description = {
   replication_group : replica_description list option; [@key "ReplicationGroup"] [@yojson.option]
   global_table_arn : string option; [@key "GlobalTableArn"] [@yojson.option]
   creation_date_time : Aws_json_wire.timestamp option; [@key "CreationDateTime"] [@yojson.option]
-  global_table_status : string option; [@key "GlobalTableStatus"] [@yojson.option]
+  global_table_status : global_table_status option; [@key "GlobalTableStatus"] [@yojson.option]
   global_table_name : string option; [@key "GlobalTableName"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -805,7 +1538,7 @@ and global_table_global_secondary_index_settings_update = {
 
 and global_table_witness_description = {
   region_name : string option; [@key "RegionName"] [@yojson.option]
-  witness_status : string option; [@key "WitnessStatus"] [@yojson.option]
+  witness_status : witness_status option; [@key "WitnessStatus"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -817,11 +1550,11 @@ and global_table_witness_group_update = {
 
 and import_summary = {
   import_arn : string option; [@key "ImportArn"] [@yojson.option]
-  import_status : string option; [@key "ImportStatus"] [@yojson.option]
+  import_status : import_status option; [@key "ImportStatus"] [@yojson.option]
   table_arn : string option; [@key "TableArn"] [@yojson.option]
   s3_bucket_source : s3_bucket_source option; [@key "S3BucketSource"] [@yojson.option]
   cloud_watch_log_group_arn : string option; [@key "CloudWatchLogGroupArn"] [@yojson.option]
-  input_format : string option; [@key "InputFormat"] [@yojson.option]
+  input_format : input_format option; [@key "InputFormat"] [@yojson.option]
   start_time : Aws_json_wire.timestamp option; [@key "StartTime"] [@yojson.option]
   end_time : Aws_json_wire.timestamp option; [@key "EndTime"] [@yojson.option]
 }
@@ -829,16 +1562,16 @@ and import_summary = {
 
 and import_table_description = {
   import_arn : string option; [@key "ImportArn"] [@yojson.option]
-  import_status : string option; [@key "ImportStatus"] [@yojson.option]
+  import_status : import_status option; [@key "ImportStatus"] [@yojson.option]
   table_arn : string option; [@key "TableArn"] [@yojson.option]
   table_id : string option; [@key "TableId"] [@yojson.option]
   client_token : string option; [@key "ClientToken"] [@yojson.option]
   s3_bucket_source : s3_bucket_source option; [@key "S3BucketSource"] [@yojson.option]
   error_count : int option; [@key "ErrorCount"] [@yojson.option]
   cloud_watch_log_group_arn : string option; [@key "CloudWatchLogGroupArn"] [@yojson.option]
-  input_format : string option; [@key "InputFormat"] [@yojson.option]
+  input_format : input_format option; [@key "InputFormat"] [@yojson.option]
   input_format_options : input_format_options option; [@key "InputFormatOptions"] [@yojson.option]
-  input_compression_type : string option; [@key "InputCompressionType"] [@yojson.option]
+  input_compression_type : input_compression_type option; [@key "InputCompressionType"] [@yojson.option]
   table_creation_parameters : table_creation_parameters option; [@key "TableCreationParameters"] [@yojson.option]
   start_time : Aws_json_wire.timestamp option; [@key "StartTime"] [@yojson.option]
   end_time : Aws_json_wire.timestamp option; [@key "EndTime"] [@yojson.option]
@@ -853,9 +1586,9 @@ and import_table_description = {
 and import_table_input = {
   client_token : string option; [@key "ClientToken"] [@yojson.option]
   s3_bucket_source : s3_bucket_source; [@key "S3BucketSource"]
-  input_format : string; [@key "InputFormat"]
+  input_format : input_format; [@key "InputFormat"]
   input_format_options : input_format_options option; [@key "InputFormatOptions"] [@yojson.option]
-  input_compression_type : string option; [@key "InputCompressionType"] [@yojson.option]
+  input_compression_type : input_compression_type option; [@key "InputCompressionType"] [@yojson.option]
   table_creation_parameters : table_creation_parameters; [@key "TableCreationParameters"]
 }
 [@@yojson.allow_extra_fields]
@@ -868,7 +1601,7 @@ and import_table_output = {
 and incremental_export_specification = {
   export_from_time : Aws_json_wire.timestamp option; [@key "ExportFromTime"] [@yojson.option]
   export_to_time : Aws_json_wire.timestamp option; [@key "ExportToTime"] [@yojson.option]
-  export_view_type : string option; [@key "ExportViewType"] [@yojson.option]
+  export_view_type : export_view_type option; [@key "ExportViewType"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -890,7 +1623,7 @@ and item_response = {
 
 and key_schema_element = {
   attribute_name : string; [@key "AttributeName"]
-  key_type : string; [@key "KeyType"]
+  key_type : key_type; [@key "KeyType"]
 }
 [@@yojson.allow_extra_fields]
 
@@ -905,9 +1638,9 @@ and keys_and_attributes = {
 
 and kinesis_data_stream_destination = {
   stream_arn : string option; [@key "StreamArn"] [@yojson.option]
-  destination_status : string option; [@key "DestinationStatus"] [@yojson.option]
+  destination_status : destination_status option; [@key "DestinationStatus"] [@yojson.option]
   destination_status_description : string option; [@key "DestinationStatusDescription"] [@yojson.option]
-  approximate_creation_date_time_precision : string option; [@key "ApproximateCreationDateTimePrecision"] [@yojson.option]
+  approximate_creation_date_time_precision : approximate_creation_date_time_precision option; [@key "ApproximateCreationDateTimePrecision"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -921,7 +1654,7 @@ and kinesis_streaming_destination_input = {
 and kinesis_streaming_destination_output = {
   table_name : string option; [@key "TableName"] [@yojson.option]
   stream_arn : string option; [@key "StreamArn"] [@yojson.option]
-  destination_status : string option; [@key "DestinationStatus"] [@yojson.option]
+  destination_status : destination_status option; [@key "DestinationStatus"] [@yojson.option]
   enable_kinesis_streaming_configuration : enable_kinesis_streaming_configuration option; [@key "EnableKinesisStreamingConfiguration"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -932,7 +1665,7 @@ and list_backups_input = {
   time_range_lower_bound : Aws_json_wire.timestamp option; [@key "TimeRangeLowerBound"] [@yojson.option]
   time_range_upper_bound : Aws_json_wire.timestamp option; [@key "TimeRangeUpperBound"] [@yojson.option]
   exclusive_start_backup_arn : string option; [@key "ExclusiveStartBackupArn"] [@yojson.option]
-  backup_type : string option; [@key "BackupType"] [@yojson.option]
+  backup_type : backup_type_filter option; [@key "BackupType"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -1056,12 +1789,12 @@ and on_demand_throughput_override = {
 and parameterized_statement = {
   statement : string; [@key "Statement"]
   parameters : attribute_value list option; [@key "Parameters"] [@yojson.option]
-  return_values_on_condition_check_failure : string option; [@key "ReturnValuesOnConditionCheckFailure"] [@yojson.option]
+  return_values_on_condition_check_failure : return_values_on_condition_check_failure option; [@key "ReturnValuesOnConditionCheckFailure"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
 and point_in_time_recovery_description = {
-  point_in_time_recovery_status : string option; [@key "PointInTimeRecoveryStatus"] [@yojson.option]
+  point_in_time_recovery_status : point_in_time_recovery_status option; [@key "PointInTimeRecoveryStatus"] [@yojson.option]
   recovery_period_in_days : int option; [@key "RecoveryPeriodInDays"] [@yojson.option]
   earliest_restorable_date_time : Aws_json_wire.timestamp option; [@key "EarliestRestorableDateTime"] [@yojson.option]
   latest_restorable_date_time : Aws_json_wire.timestamp option; [@key "LatestRestorableDateTime"] [@yojson.option]
@@ -1075,7 +1808,7 @@ and point_in_time_recovery_specification = {
 [@@yojson.allow_extra_fields]
 
 and projection = {
-  projection_type : string option; [@key "ProjectionType"] [@yojson.option]
+  projection_type : projection_type option; [@key "ProjectionType"] [@yojson.option]
   non_key_attributes : string list option; [@key "NonKeyAttributes"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -1106,7 +1839,7 @@ and put = {
   condition_expression : string option; [@key "ConditionExpression"] [@yojson.option]
   expression_attribute_names : string Aws_json_wire.map option; [@key "ExpressionAttributeNames"] [@yojson.option]
   expression_attribute_values : attribute_value Aws_json_wire.map option; [@key "ExpressionAttributeValues"] [@yojson.option]
-  return_values_on_condition_check_failure : string option; [@key "ReturnValuesOnConditionCheckFailure"] [@yojson.option]
+  return_values_on_condition_check_failure : return_values_on_condition_check_failure option; [@key "ReturnValuesOnConditionCheckFailure"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -1114,14 +1847,14 @@ and put_item_input = {
   table_name : string; [@key "TableName"]
   item : attribute_value Aws_json_wire.map; [@key "Item"]
   expected : expected_attribute_value Aws_json_wire.map option; [@key "Expected"] [@yojson.option]
-  return_values : string option; [@key "ReturnValues"] [@yojson.option]
-  return_consumed_capacity : string option; [@key "ReturnConsumedCapacity"] [@yojson.option]
-  return_item_collection_metrics : string option; [@key "ReturnItemCollectionMetrics"] [@yojson.option]
-  conditional_operator : string option; [@key "ConditionalOperator"] [@yojson.option]
+  return_values : return_value option; [@key "ReturnValues"] [@yojson.option]
+  return_consumed_capacity : return_consumed_capacity option; [@key "ReturnConsumedCapacity"] [@yojson.option]
+  return_item_collection_metrics : return_item_collection_metrics option; [@key "ReturnItemCollectionMetrics"] [@yojson.option]
+  conditional_operator : conditional_operator option; [@key "ConditionalOperator"] [@yojson.option]
   condition_expression : string option; [@key "ConditionExpression"] [@yojson.option]
   expression_attribute_names : string Aws_json_wire.map option; [@key "ExpressionAttributeNames"] [@yojson.option]
   expression_attribute_values : attribute_value Aws_json_wire.map option; [@key "ExpressionAttributeValues"] [@yojson.option]
-  return_values_on_condition_check_failure : string option; [@key "ReturnValuesOnConditionCheckFailure"] [@yojson.option]
+  return_values_on_condition_check_failure : return_values_on_condition_check_failure option; [@key "ReturnValuesOnConditionCheckFailure"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -1153,16 +1886,16 @@ and put_resource_policy_output = {
 and query_input = {
   table_name : string; [@key "TableName"]
   index_name : string option; [@key "IndexName"] [@yojson.option]
-  select : string option; [@key "Select"] [@yojson.option]
+  select : select option; [@key "Select"] [@yojson.option]
   attributes_to_get : string list option; [@key "AttributesToGet"] [@yojson.option]
   limit : int option; [@key "Limit"] [@yojson.option]
   consistent_read : bool option; [@key "ConsistentRead"] [@yojson.option]
   key_conditions : condition Aws_json_wire.map option; [@key "KeyConditions"] [@yojson.option]
   query_filter : condition Aws_json_wire.map option; [@key "QueryFilter"] [@yojson.option]
-  conditional_operator : string option; [@key "ConditionalOperator"] [@yojson.option]
+  conditional_operator : conditional_operator option; [@key "ConditionalOperator"] [@yojson.option]
   scan_index_forward : bool option; [@key "ScanIndexForward"] [@yojson.option]
   exclusive_start_key : attribute_value Aws_json_wire.map option; [@key "ExclusiveStartKey"] [@yojson.option]
-  return_consumed_capacity : string option; [@key "ReturnConsumedCapacity"] [@yojson.option]
+  return_consumed_capacity : return_consumed_capacity option; [@key "ReturnConsumedCapacity"] [@yojson.option]
   projection_expression : string option; [@key "ProjectionExpression"] [@yojson.option]
   filter_expression : string option; [@key "FilterExpression"] [@yojson.option]
   key_condition_expression : string option; [@key "KeyConditionExpression"] [@yojson.option]
@@ -1190,7 +1923,7 @@ and replica_auto_scaling_description = {
   global_secondary_indexes : replica_global_secondary_index_auto_scaling_description list option; [@key "GlobalSecondaryIndexes"] [@yojson.option]
   replica_provisioned_read_capacity_auto_scaling_settings : auto_scaling_settings_description option; [@key "ReplicaProvisionedReadCapacityAutoScalingSettings"] [@yojson.option]
   replica_provisioned_write_capacity_auto_scaling_settings : auto_scaling_settings_description option; [@key "ReplicaProvisionedWriteCapacityAutoScalingSettings"] [@yojson.option]
-  replica_status : string option; [@key "ReplicaStatus"] [@yojson.option]
+  replica_status : replica_status option; [@key "ReplicaStatus"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -1203,7 +1936,7 @@ and replica_auto_scaling_update = {
 
 and replica_description = {
   region_name : string option; [@key "RegionName"] [@yojson.option]
-  replica_status : string option; [@key "ReplicaStatus"] [@yojson.option]
+  replica_status : replica_status option; [@key "ReplicaStatus"] [@yojson.option]
   replica_arn : string option; [@key "ReplicaArn"] [@yojson.option]
   replica_status_description : string option; [@key "ReplicaStatusDescription"] [@yojson.option]
   replica_status_percent_progress : string option; [@key "ReplicaStatusPercentProgress"] [@yojson.option]
@@ -1214,7 +1947,7 @@ and replica_description = {
   global_secondary_indexes : replica_global_secondary_index_description list option; [@key "GlobalSecondaryIndexes"] [@yojson.option]
   replica_inaccessible_date_time : Aws_json_wire.timestamp option; [@key "ReplicaInaccessibleDateTime"] [@yojson.option]
   replica_table_class_summary : table_class_summary option; [@key "ReplicaTableClassSummary"] [@yojson.option]
-  global_table_settings_replication_mode : string option; [@key "GlobalTableSettingsReplicationMode"] [@yojson.option]
+  global_table_settings_replication_mode : global_table_settings_replication_mode option; [@key "GlobalTableSettingsReplicationMode"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -1227,7 +1960,7 @@ and replica_global_secondary_index = {
 
 and replica_global_secondary_index_auto_scaling_description = {
   index_name : string option; [@key "IndexName"] [@yojson.option]
-  index_status : string option; [@key "IndexStatus"] [@yojson.option]
+  index_status : index_status option; [@key "IndexStatus"] [@yojson.option]
   provisioned_read_capacity_auto_scaling_settings : auto_scaling_settings_description option; [@key "ProvisionedReadCapacityAutoScalingSettings"] [@yojson.option]
   provisioned_write_capacity_auto_scaling_settings : auto_scaling_settings_description option; [@key "ProvisionedWriteCapacityAutoScalingSettings"] [@yojson.option]
 }
@@ -1249,7 +1982,7 @@ and replica_global_secondary_index_description = {
 
 and replica_global_secondary_index_settings_description = {
   index_name : string; [@key "IndexName"]
-  index_status : string option; [@key "IndexStatus"] [@yojson.option]
+  index_status : index_status option; [@key "IndexStatus"] [@yojson.option]
   provisioned_read_capacity_units : int option; [@key "ProvisionedReadCapacityUnits"] [@yojson.option]
   provisioned_read_capacity_auto_scaling_settings : auto_scaling_settings_description option; [@key "ProvisionedReadCapacityAutoScalingSettings"] [@yojson.option]
   provisioned_write_capacity_units : int option; [@key "ProvisionedWriteCapacityUnits"] [@yojson.option]
@@ -1266,7 +1999,7 @@ and replica_global_secondary_index_settings_update = {
 
 and replica_settings_description = {
   region_name : string; [@key "RegionName"]
-  replica_status : string option; [@key "ReplicaStatus"] [@yojson.option]
+  replica_status : replica_status option; [@key "ReplicaStatus"] [@yojson.option]
   replica_billing_mode_summary : billing_mode_summary option; [@key "ReplicaBillingModeSummary"] [@yojson.option]
   replica_provisioned_read_capacity_units : int option; [@key "ReplicaProvisionedReadCapacityUnits"] [@yojson.option]
   replica_provisioned_read_capacity_auto_scaling_settings : auto_scaling_settings_description option; [@key "ReplicaProvisionedReadCapacityAutoScalingSettings"] [@yojson.option]
@@ -1282,7 +2015,7 @@ and replica_settings_update = {
   replica_provisioned_read_capacity_units : int option; [@key "ReplicaProvisionedReadCapacityUnits"] [@yojson.option]
   replica_provisioned_read_capacity_auto_scaling_settings_update : auto_scaling_settings_update option; [@key "ReplicaProvisionedReadCapacityAutoScalingSettingsUpdate"] [@yojson.option]
   replica_global_secondary_index_settings_update : replica_global_secondary_index_settings_update list option; [@key "ReplicaGlobalSecondaryIndexSettingsUpdate"] [@yojson.option]
-  replica_table_class : string option; [@key "ReplicaTableClass"] [@yojson.option]
+  replica_table_class : table_class option; [@key "ReplicaTableClass"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -1310,7 +2043,7 @@ and restore_summary = {
 and restore_table_from_backup_input = {
   target_table_name : string; [@key "TargetTableName"]
   backup_arn : string; [@key "BackupArn"]
-  billing_mode_override : string option; [@key "BillingModeOverride"] [@yojson.option]
+  billing_mode_override : billing_mode option; [@key "BillingModeOverride"] [@yojson.option]
   global_secondary_index_override : global_secondary_index list option; [@key "GlobalSecondaryIndexOverride"] [@yojson.option]
   local_secondary_index_override : local_secondary_index list option; [@key "LocalSecondaryIndexOverride"] [@yojson.option]
   provisioned_throughput_override : provisioned_throughput option; [@key "ProvisionedThroughputOverride"] [@yojson.option]
@@ -1331,7 +2064,7 @@ and restore_table_to_point_in_time_input = {
   target_table_name : string; [@key "TargetTableName"]
   use_latest_restorable_time : bool option; [@key "UseLatestRestorableTime"] [@yojson.option]
   restore_date_time : Aws_json_wire.timestamp option; [@key "RestoreDateTime"] [@yojson.option]
-  billing_mode_override : string option; [@key "BillingModeOverride"] [@yojson.option]
+  billing_mode_override : billing_mode option; [@key "BillingModeOverride"] [@yojson.option]
   global_secondary_index_override : global_secondary_index list option; [@key "GlobalSecondaryIndexOverride"] [@yojson.option]
   local_secondary_index_override : local_secondary_index list option; [@key "LocalSecondaryIndexOverride"] [@yojson.option]
   provisioned_throughput_override : provisioned_throughput option; [@key "ProvisionedThroughputOverride"] [@yojson.option]
@@ -1354,8 +2087,8 @@ and s3_bucket_source = {
 [@@yojson.allow_extra_fields]
 
 and sse_description = {
-  status : string option; [@key "Status"] [@yojson.option]
-  sse_type : string option; [@key "SSEType"] [@yojson.option]
+  status : sse_status option; [@key "Status"] [@yojson.option]
+  sse_type : sse_type option; [@key "SSEType"] [@yojson.option]
   kms_master_key_arn : string option; [@key "KMSMasterKeyArn"] [@yojson.option]
   inaccessible_encryption_date_time : Aws_json_wire.timestamp option; [@key "InaccessibleEncryptionDateTime"] [@yojson.option]
 }
@@ -1363,7 +2096,7 @@ and sse_description = {
 
 and sse_specification = {
   enabled : bool option; [@key "Enabled"] [@yojson.option]
-  sse_type : string option; [@key "SSEType"] [@yojson.option]
+  sse_type : sse_type option; [@key "SSEType"] [@yojson.option]
   kms_master_key_id : string option; [@key "KMSMasterKeyId"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -1373,11 +2106,11 @@ and scan_input = {
   index_name : string option; [@key "IndexName"] [@yojson.option]
   attributes_to_get : string list option; [@key "AttributesToGet"] [@yojson.option]
   limit : int option; [@key "Limit"] [@yojson.option]
-  select : string option; [@key "Select"] [@yojson.option]
+  select : select option; [@key "Select"] [@yojson.option]
   scan_filter : condition Aws_json_wire.map option; [@key "ScanFilter"] [@yojson.option]
-  conditional_operator : string option; [@key "ConditionalOperator"] [@yojson.option]
+  conditional_operator : conditional_operator option; [@key "ConditionalOperator"] [@yojson.option]
   exclusive_start_key : attribute_value Aws_json_wire.map option; [@key "ExclusiveStartKey"] [@yojson.option]
-  return_consumed_capacity : string option; [@key "ReturnConsumedCapacity"] [@yojson.option]
+  return_consumed_capacity : return_consumed_capacity option; [@key "ReturnConsumedCapacity"] [@yojson.option]
   total_segments : int option; [@key "TotalSegments"] [@yojson.option]
   segment : int option; [@key "Segment"] [@yojson.option]
   projection_expression : string option; [@key "ProjectionExpression"] [@yojson.option]
@@ -1405,14 +2138,14 @@ and search_result_item = {
 
 and search_schema_element = {
   attribute_name : string; [@key "AttributeName"]
-  search_schema_element_type : string; [@key "SearchSchemaElementType"]
+  search_schema_element_type : search_schema_element_type; [@key "SearchSchemaElementType"]
 }
 [@@yojson.allow_extra_fields]
 
 and search_vectors_input = {
   table_name : string; [@key "TableName"]
   index_name : string; [@key "IndexName"]
-  return_consumed_capacity : string option; [@key "ReturnConsumedCapacity"] [@yojson.option]
+  return_consumed_capacity : return_consumed_capacity option; [@key "ReturnConsumedCapacity"] [@yojson.option]
   expression_attribute_names : string Aws_json_wire.map option; [@key "ExpressionAttributeNames"] [@yojson.option]
   expression_attribute_values : attribute_value Aws_json_wire.map option; [@key "ExpressionAttributeValues"] [@yojson.option]
   projection_expression : string option; [@key "ProjectionExpression"] [@yojson.option]
@@ -1438,7 +2171,7 @@ and source_table_details = {
   provisioned_throughput : provisioned_throughput; [@key "ProvisionedThroughput"]
   on_demand_throughput : on_demand_throughput option; [@key "OnDemandThroughput"] [@yojson.option]
   item_count : int option; [@key "ItemCount"] [@yojson.option]
-  billing_mode : string option; [@key "BillingMode"] [@yojson.option]
+  billing_mode : billing_mode option; [@key "BillingMode"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -1454,19 +2187,19 @@ and source_table_feature_details = {
 
 and stream_specification = {
   stream_enabled : bool; [@key "StreamEnabled"]
-  stream_view_type : string option; [@key "StreamViewType"] [@yojson.option]
+  stream_view_type : stream_view_type option; [@key "StreamViewType"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
 and table_auto_scaling_description = {
   table_name : string option; [@key "TableName"] [@yojson.option]
-  table_status : string option; [@key "TableStatus"] [@yojson.option]
+  table_status : table_status option; [@key "TableStatus"] [@yojson.option]
   replicas : replica_auto_scaling_description list option; [@key "Replicas"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
 and table_class_summary = {
-  table_class : string option; [@key "TableClass"] [@yojson.option]
+  table_class : table_class option; [@key "TableClass"] [@yojson.option]
   last_update_date_time : Aws_json_wire.timestamp option; [@key "LastUpdateDateTime"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -1475,7 +2208,7 @@ and table_creation_parameters = {
   table_name : string; [@key "TableName"]
   attribute_definitions : attribute_definition list; [@key "AttributeDefinitions"]
   key_schema : key_schema_element list; [@key "KeySchema"]
-  billing_mode : string option; [@key "BillingMode"] [@yojson.option]
+  billing_mode : billing_mode option; [@key "BillingMode"] [@yojson.option]
   provisioned_throughput : provisioned_throughput option; [@key "ProvisionedThroughput"] [@yojson.option]
   on_demand_throughput : on_demand_throughput option; [@key "OnDemandThroughput"] [@yojson.option]
   sse_specification : sse_specification option; [@key "SSESpecification"] [@yojson.option]
@@ -1488,7 +2221,7 @@ and table_description = {
   attribute_definitions : attribute_definition list option; [@key "AttributeDefinitions"] [@yojson.option]
   table_name : string option; [@key "TableName"] [@yojson.option]
   key_schema : key_schema_element list option; [@key "KeySchema"] [@yojson.option]
-  table_status : string option; [@key "TableStatus"] [@yojson.option]
+  table_status : table_status option; [@key "TableStatus"] [@yojson.option]
   creation_date_time : Aws_json_wire.timestamp option; [@key "CreationDateTime"] [@yojson.option]
   provisioned_throughput : provisioned_throughput_description option; [@key "ProvisionedThroughput"] [@yojson.option]
   table_size_bytes : int option; [@key "TableSizeBytes"] [@yojson.option]
@@ -1504,7 +2237,7 @@ and table_description = {
   global_table_version : string option; [@key "GlobalTableVersion"] [@yojson.option]
   replicas : replica_description list option; [@key "Replicas"] [@yojson.option]
   global_table_witnesses : global_table_witness_description list option; [@key "GlobalTableWitnesses"] [@yojson.option]
-  global_table_settings_replication_mode : string option; [@key "GlobalTableSettingsReplicationMode"] [@yojson.option]
+  global_table_settings_replication_mode : global_table_settings_replication_mode option; [@key "GlobalTableSettingsReplicationMode"] [@yojson.option]
   restore_summary : restore_summary option; [@key "RestoreSummary"] [@yojson.option]
   sse_description : sse_description option; [@key "SSEDescription"] [@yojson.option]
   archival_summary : archival_summary option; [@key "ArchivalSummary"] [@yojson.option]
@@ -1512,7 +2245,7 @@ and table_description = {
   deletion_protection_enabled : bool option; [@key "DeletionProtectionEnabled"] [@yojson.option]
   on_demand_throughput : on_demand_throughput option; [@key "OnDemandThroughput"] [@yojson.option]
   warm_throughput : table_warm_throughput_description option; [@key "WarmThroughput"] [@yojson.option]
-  multi_region_consistency : string option; [@key "MultiRegionConsistency"] [@yojson.option]
+  multi_region_consistency : multi_region_consistency option; [@key "MultiRegionConsistency"] [@yojson.option]
   vector_indexes : vector_index_description list option; [@key "VectorIndexes"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -1520,7 +2253,7 @@ and table_description = {
 and table_warm_throughput_description = {
   read_units_per_second : int option; [@key "ReadUnitsPerSecond"] [@yojson.option]
   write_units_per_second : int option; [@key "WriteUnitsPerSecond"] [@yojson.option]
-  status : string option; [@key "Status"] [@yojson.option]
+  status : table_status option; [@key "Status"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -1543,7 +2276,7 @@ and throttling_reason = {
 [@@yojson.allow_extra_fields]
 
 and time_to_live_description = {
-  time_to_live_status : string option; [@key "TimeToLiveStatus"] [@yojson.option]
+  time_to_live_status : time_to_live_status option; [@key "TimeToLiveStatus"] [@yojson.option]
   attribute_name : string option; [@key "AttributeName"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -1561,7 +2294,7 @@ and transact_get_item = {
 
 and transact_get_items_input = {
   transact_items : transact_get_item list; [@key "TransactItems"]
-  return_consumed_capacity : string option; [@key "ReturnConsumedCapacity"] [@yojson.option]
+  return_consumed_capacity : return_consumed_capacity option; [@key "ReturnConsumedCapacity"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -1581,8 +2314,8 @@ and transact_write_item = {
 
 and transact_write_items_input = {
   transact_items : transact_write_item list; [@key "TransactItems"]
-  return_consumed_capacity : string option; [@key "ReturnConsumedCapacity"] [@yojson.option]
-  return_item_collection_metrics : string option; [@key "ReturnItemCollectionMetrics"] [@yojson.option]
+  return_consumed_capacity : return_consumed_capacity option; [@key "ReturnConsumedCapacity"] [@yojson.option]
+  return_item_collection_metrics : return_item_collection_metrics option; [@key "ReturnItemCollectionMetrics"] [@yojson.option]
   client_request_token : string option; [@key "ClientRequestToken"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -1606,7 +2339,7 @@ and update = {
   condition_expression : string option; [@key "ConditionExpression"] [@yojson.option]
   expression_attribute_names : string Aws_json_wire.map option; [@key "ExpressionAttributeNames"] [@yojson.option]
   expression_attribute_values : attribute_value Aws_json_wire.map option; [@key "ExpressionAttributeValues"] [@yojson.option]
-  return_values_on_condition_check_failure : string option; [@key "ReturnValuesOnConditionCheckFailure"] [@yojson.option]
+  return_values_on_condition_check_failure : return_values_on_condition_check_failure option; [@key "ReturnValuesOnConditionCheckFailure"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -1624,16 +2357,16 @@ and update_continuous_backups_output = {
 and update_contributor_insights_input = {
   table_name : string; [@key "TableName"]
   index_name : string option; [@key "IndexName"] [@yojson.option]
-  contributor_insights_action : string; [@key "ContributorInsightsAction"]
-  contributor_insights_mode : string option; [@key "ContributorInsightsMode"] [@yojson.option]
+  contributor_insights_action : contributor_insights_action; [@key "ContributorInsightsAction"]
+  contributor_insights_mode : contributor_insights_mode option; [@key "ContributorInsightsMode"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
 and update_contributor_insights_output = {
   table_name : string option; [@key "TableName"] [@yojson.option]
   index_name : string option; [@key "IndexName"] [@yojson.option]
-  contributor_insights_status : string option; [@key "ContributorInsightsStatus"] [@yojson.option]
-  contributor_insights_mode : string option; [@key "ContributorInsightsMode"] [@yojson.option]
+  contributor_insights_status : contributor_insights_status option; [@key "ContributorInsightsStatus"] [@yojson.option]
+  contributor_insights_mode : contributor_insights_mode option; [@key "ContributorInsightsMode"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -1658,7 +2391,7 @@ and update_global_table_output = {
 
 and update_global_table_settings_input = {
   global_table_name : string; [@key "GlobalTableName"]
-  global_table_billing_mode : string option; [@key "GlobalTableBillingMode"] [@yojson.option]
+  global_table_billing_mode : billing_mode option; [@key "GlobalTableBillingMode"] [@yojson.option]
   global_table_provisioned_write_capacity_units : int option; [@key "GlobalTableProvisionedWriteCapacityUnits"] [@yojson.option]
   global_table_provisioned_write_capacity_auto_scaling_settings_update : auto_scaling_settings_update option; [@key "GlobalTableProvisionedWriteCapacityAutoScalingSettingsUpdate"] [@yojson.option]
   global_table_global_secondary_index_settings_update : global_table_global_secondary_index_settings_update list option; [@key "GlobalTableGlobalSecondaryIndexSettingsUpdate"] [@yojson.option]
@@ -1677,15 +2410,15 @@ and update_item_input = {
   key : attribute_value Aws_json_wire.map; [@key "Key"]
   attribute_updates : attribute_value_update Aws_json_wire.map option; [@key "AttributeUpdates"] [@yojson.option]
   expected : expected_attribute_value Aws_json_wire.map option; [@key "Expected"] [@yojson.option]
-  conditional_operator : string option; [@key "ConditionalOperator"] [@yojson.option]
-  return_values : string option; [@key "ReturnValues"] [@yojson.option]
-  return_consumed_capacity : string option; [@key "ReturnConsumedCapacity"] [@yojson.option]
-  return_item_collection_metrics : string option; [@key "ReturnItemCollectionMetrics"] [@yojson.option]
+  conditional_operator : conditional_operator option; [@key "ConditionalOperator"] [@yojson.option]
+  return_values : return_value option; [@key "ReturnValues"] [@yojson.option]
+  return_consumed_capacity : return_consumed_capacity option; [@key "ReturnConsumedCapacity"] [@yojson.option]
+  return_item_collection_metrics : return_item_collection_metrics option; [@key "ReturnItemCollectionMetrics"] [@yojson.option]
   update_expression : string option; [@key "UpdateExpression"] [@yojson.option]
   condition_expression : string option; [@key "ConditionExpression"] [@yojson.option]
   expression_attribute_names : string Aws_json_wire.map option; [@key "ExpressionAttributeNames"] [@yojson.option]
   expression_attribute_values : attribute_value Aws_json_wire.map option; [@key "ExpressionAttributeValues"] [@yojson.option]
-  return_values_on_condition_check_failure : string option; [@key "ReturnValuesOnConditionCheckFailure"] [@yojson.option]
+  return_values_on_condition_check_failure : return_values_on_condition_check_failure option; [@key "ReturnValuesOnConditionCheckFailure"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -1697,7 +2430,7 @@ and update_item_output = {
 [@@yojson.allow_extra_fields]
 
 and update_kinesis_streaming_configuration = {
-  approximate_creation_date_time_precision : string option; [@key "ApproximateCreationDateTimePrecision"] [@yojson.option]
+  approximate_creation_date_time_precision : approximate_creation_date_time_precision option; [@key "ApproximateCreationDateTimePrecision"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
@@ -1711,7 +2444,7 @@ and update_kinesis_streaming_destination_input = {
 and update_kinesis_streaming_destination_output = {
   table_name : string option; [@key "TableName"] [@yojson.option]
   stream_arn : string option; [@key "StreamArn"] [@yojson.option]
-  destination_status : string option; [@key "DestinationStatus"] [@yojson.option]
+  destination_status : destination_status option; [@key "DestinationStatus"] [@yojson.option]
   update_kinesis_streaming_configuration : update_kinesis_streaming_configuration option; [@key "UpdateKinesisStreamingConfiguration"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -1722,26 +2455,26 @@ and update_replication_group_member_action = {
   provisioned_throughput_override : provisioned_throughput_override option; [@key "ProvisionedThroughputOverride"] [@yojson.option]
   on_demand_throughput_override : on_demand_throughput_override option; [@key "OnDemandThroughputOverride"] [@yojson.option]
   global_secondary_indexes : replica_global_secondary_index list option; [@key "GlobalSecondaryIndexes"] [@yojson.option]
-  table_class_override : string option; [@key "TableClassOverride"] [@yojson.option]
+  table_class_override : table_class option; [@key "TableClassOverride"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 
 and update_table_input = {
   attribute_definitions : attribute_definition list option; [@key "AttributeDefinitions"] [@yojson.option]
   table_name : string; [@key "TableName"]
-  billing_mode : string option; [@key "BillingMode"] [@yojson.option]
+  billing_mode : billing_mode option; [@key "BillingMode"] [@yojson.option]
   provisioned_throughput : provisioned_throughput option; [@key "ProvisionedThroughput"] [@yojson.option]
   global_secondary_index_updates : global_secondary_index_update list option; [@key "GlobalSecondaryIndexUpdates"] [@yojson.option]
   stream_specification : stream_specification option; [@key "StreamSpecification"] [@yojson.option]
   sse_specification : sse_specification option; [@key "SSESpecification"] [@yojson.option]
   replica_updates : replication_group_update list option; [@key "ReplicaUpdates"] [@yojson.option]
-  table_class : string option; [@key "TableClass"] [@yojson.option]
+  table_class : table_class option; [@key "TableClass"] [@yojson.option]
   deletion_protection_enabled : bool option; [@key "DeletionProtectionEnabled"] [@yojson.option]
-  multi_region_consistency : string option; [@key "MultiRegionConsistency"] [@yojson.option]
+  multi_region_consistency : multi_region_consistency option; [@key "MultiRegionConsistency"] [@yojson.option]
   global_table_witness_updates : global_table_witness_group_update list option; [@key "GlobalTableWitnessUpdates"] [@yojson.option]
   on_demand_throughput : on_demand_throughput option; [@key "OnDemandThroughput"] [@yojson.option]
   warm_throughput : warm_throughput option; [@key "WarmThroughput"] [@yojson.option]
-  global_table_settings_replication_mode : string option; [@key "GlobalTableSettingsReplicationMode"] [@yojson.option]
+  global_table_settings_replication_mode : global_table_settings_replication_mode option; [@key "GlobalTableSettingsReplicationMode"] [@yojson.option]
   vector_index_updates : vector_index_update list option; [@key "VectorIndexUpdates"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
@@ -1792,7 +2525,7 @@ and vector_index = {
   search_schema : search_schema_element list option; [@key "SearchSchema"] [@yojson.option]
   projection : projection; [@key "Projection"]
   dimensions : int; [@key "Dimensions"]
-  distance_function : string; [@key "DistanceFunction"]
+  distance_function : vector_distance_function; [@key "DistanceFunction"]
 }
 [@@yojson.allow_extra_fields]
 
@@ -1802,8 +2535,8 @@ and vector_index_description = {
   projection : projection option; [@key "Projection"] [@yojson.option]
   vector_attribute : vector_attribute_definition option; [@key "VectorAttribute"] [@yojson.option]
   dimensions : int option; [@key "Dimensions"] [@yojson.option]
-  distance_function : string option; [@key "DistanceFunction"] [@yojson.option]
-  index_status : string option; [@key "IndexStatus"] [@yojson.option]
+  distance_function : vector_distance_function option; [@key "DistanceFunction"] [@yojson.option]
+  index_status : index_status option; [@key "IndexStatus"] [@yojson.option]
   backfilling : bool option; [@key "Backfilling"] [@yojson.option]
   index_size_bytes : int option; [@key "IndexSizeBytes"] [@yojson.option]
   item_count : int option; [@key "ItemCount"] [@yojson.option]
@@ -1817,7 +2550,7 @@ and vector_index_info = {
   search_schema : search_schema_element list option; [@key "SearchSchema"] [@yojson.option]
   projection : projection option; [@key "Projection"] [@yojson.option]
   dimensions : int option; [@key "Dimensions"] [@yojson.option]
-  distance_function : string option; [@key "DistanceFunction"] [@yojson.option]
+  distance_function : vector_distance_function option; [@key "DistanceFunction"] [@yojson.option]
 }
 [@@yojson.allow_extra_fields]
 

@@ -36,7 +36,7 @@ let update { api; table } ~key ~update_expression ~expression_attribute_values =
   Aws_api_dynamodb.update_item_input ~table_name:table ~key:(Envelope.of_item key)
     ~update_expression
     ~expression_attribute_values:(Envelope.of_item expression_attribute_values)
-    ~return_values:"ALL_NEW" ()
+    ~return_values:`ALL_NEW ()
   |> Aws_api_dynamodb.Update_item.perform api
   |> Result.map (fun (o : Aws_api_dynamodb.update_item_output) ->
     Option.map Envelope.to_item o.attributes)

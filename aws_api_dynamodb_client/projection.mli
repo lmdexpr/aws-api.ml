@@ -5,8 +5,6 @@ type error = { path : string; message : string }
 
 exception Conversion_error of error
 
-val error_to_string : error -> string
-
 type numbers = [ `Exact | `Float | `String ]
 (** Integers become [Int] / [Intlit] under [Exact] and [Float] (default). Fractions become floats
     under [Float], are rejected under [Exact]. [String]: every number becomes its decimal string,

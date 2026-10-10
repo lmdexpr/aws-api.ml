@@ -1,8 +1,7 @@
-(** Items for [TransactWriteItems] and the call itself; see {!Action.Transact_write_items}. *)
+(** Items for [TransactWriteItems] and the call itself. [Update] and [ConditionCheck] items can be
+    built with [Aws_api_dynamodb.transact_write_item] directly. *)
 
-type item = Action.Transact_write_items.item =
-  | Put of Action.Put_item.request
-  | Delete of Action.Delete_item.request
+type item = Aws_api_dynamodb.transact_write_item
 
 val put :
   ?condition_expression:string ->
@@ -25,4 +24,5 @@ val delete :
   unit ->
   item
 
-val write : item list -> (unit, Error.t) result
+val write : Aws_api_dynamodb.t -> item list -> (unit, Error.t) result
+(** The first argument is [Aws_api_dynamodb.t]. *)

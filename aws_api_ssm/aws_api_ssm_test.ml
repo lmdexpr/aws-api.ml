@@ -50,6 +50,7 @@ let get_parameter () =
   | Ok { parameter = Some p } ->
     Alcotest.(check (option string)) "value" (Some "s3cret") p.value;
     Alcotest.(check (option int)) "version" (Some 3) p.version;
+    Alcotest.(check bool) "enum" true (p.type_ = Some `SECURE_STRING);
     Alcotest.(check (option (float 0.))) "date" (Some 1.7e9) p.last_modified_date
   | Ok { parameter = None } -> Alcotest.fail "no parameter"
   | Error e -> Alcotest.fail (Aws_api_ssm.Error.to_string e)
@@ -106,6 +107,15 @@ let decode_failure () =
       "secret not in message" false
       (Option.fold ~none:false ~some:(contains ~needle:"s3cret") e.message)
 
+let unknown_enum () =
+  let result, _ =
+    with_http ~respond:(reply {|{"Parameter":{"Type":"Quantum"}}|}) @@ fun () -> get "x"
+  in
+  match result with
+  | Ok { parameter = Some { type_ = Some (`Unknown_value "Quantum"); _ } } -> ()
+  | Ok _ -> Alcotest.fail "expected `Unknown_value"
+  | Error e -> Alcotest.fail (Aws_api_ssm.Error.to_string e)
+
 let body_preview () =
   let long = String.make 1000 'x' in
   let e = Aws_api_ssm.Error.http_status ~status:502 ~body:long in
@@ -128,6 +138,7 @@ let () =
           Alcotest.test_case "empty output" `Quick empty_output;
           Alcotest.test_case "3xx and 5xx are Error" `Quick other_statuses;
           Alcotest.test_case "decode failure drops the body" `Quick decode_failure;
+          Alcotest.test_case "unknown enum value" `Quick unknown_enum;
           Alcotest.test_case "body preview" `Quick body_preview;
           Alcotest.test_case "bad region" `Quick bad_region;
         ] );

@@ -1,4 +1,4 @@
-(copy_files# ../smithy/runtime/*.ml)
+(copy_files# ../smithy/runtime/aws_json_*.ml)
 
 (library
  (name aws_api_ssm)

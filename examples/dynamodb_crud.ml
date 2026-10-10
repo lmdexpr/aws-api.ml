@@ -1,6 +1,6 @@
 (* Exercises every Client operation and Transaction against DynamoDB Local. *)
 
-open Aws_api_dynamodb
+open Aws_api_dynamodb_client
 
 let ok = function Ok x -> x | Error e -> failwith (Error.to_string e)
 let value = function Ok v -> v | Error e -> failwith e
@@ -11,10 +11,9 @@ let () =
   Eio_main.run @@ fun env ->
   let client = Cohttp_eio.Client.make ~https:None env#net in
   let now () = Eio.Time.now env#clock in
-  let config = Config.local ~endpoint () in
   Aws_api_cohttp_eio.run ~client @@ fun () ->
-  Aws_api_dynamodb.Http.run ~now ~config @@ fun () ->
-  let db = Client.make ~table in
+  let api = local ~endpoint ~now () in
+  let db = Client.make api ~table in
   let key = Item.singleton "pk" (Value.String "e2e") in
   let item =
     Item.of_list
@@ -60,7 +59,7 @@ let () =
     (List.exists (fun i -> Item.find_opt "pk" i = Some (Value.String "e2e")) scanned);
   let other = Item.singleton "pk" (Value.String "e2e-2") in
   ok
-    (Transaction.write
+    (Transaction.write api
        [
          Transaction.put_if_not_exists ~table_name:table ~item:other ~primary_key:"pk";
          Transaction.delete ~table_name:table ~key ();
@@ -68,13 +67,13 @@ let () =
   check "transaction applied both writes"
     (ok (Client.get db ~key) = None && ok (Client.get db ~key:other) <> None);
   (match
-     Transaction.write
+     Transaction.write api
        [ Transaction.put_if_not_exists ~table_name:table ~item:other ~primary_key:"pk" ]
    with
   | Error e ->
     check "transaction condition failure is recognized" (Error.is_conditional_check_failed e)
   | Ok () -> check "transaction condition failure is recognized" false);
   ok (Client.delete db ~key:other);
-  match Client.get (Client.make ~table:"no-such-table") ~key with
+  match Client.get (Client.make api ~table:"no-such-table") ~key with
   | Error e -> check "ResourceNotFoundException is parsed" (e.code = "ResourceNotFoundException")
   | Ok _ -> check "ResourceNotFoundException is parsed" false

@@ -65,7 +65,7 @@ If every provider in the chain declines, `Sigv4.No_credentials` is raised at the
 | `Sigv4.Provider.default ?getenv ?read_file ~now ~http ()` | The chain above in SDK order: env, profile, ECS, IMDS. |
 
 The library performs no I/O itself: `?getenv` defaults to `Sys.getenv_opt`, `?read_file` to the file system, and `~http : Provider.Http.request -> Provider.Http.response` is yours to supply (a transport exception becomes a decline).
-`Aws_api_dynamodb.Http.run` builds the default chain with `~http` backed by `Aws_api.Http.call`; with your own HTTP client, supply it directly:
+`Aws_api_dynamodb.make` / `Aws_api_ssm.make` build the default chain with `~http` backed by `Aws_api.Http.call`; with your own HTTP client, supply it directly:
 
 ```ocaml
 let http ({ meth; url; headers } : Sigv4.Provider.Http.request) : Sigv4.Provider.Http.response =

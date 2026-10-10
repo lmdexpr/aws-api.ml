@@ -1,24 +1,44 @@
-module Item = Aws_api_dynamodb.Item
-module Client = Aws_api_dynamodb.Client
-module Value = Aws_api_dynamodb.Value
-module Number = Aws_api_dynamodb.Number
-module Projection = Aws_api_dynamodb.Projection
+module Item = Aws_api_dynamodb_client.Item
+module Client = Aws_api_dynamodb_client.Client
+module Value = Aws_api_dynamodb_client.Value
+module Number = Aws_api_dynamodb_client.Number
+module Projection = Aws_api_dynamodb_client.Projection
 
 let json = Alcotest.testable Yojson.Safe.pp Yojson.Safe.equal
-
-let item =
-  Alcotest.testable
-    (fun fmt i ->
-      Yojson.Safe.pp fmt
-        Aws_api_dynamodb.Action.Put_item.(make ~table_name:"t" ~item:i () |> yojson_of_request))
-    Item.equal
-
+let encode item = Aws_api_dynamodb_client.Envelope.(of_item item |> yojson_of_attrs)
+let decode json = Aws_api_dynamodb_client.Envelope.(attrs_of_yojson json |> to_item)
+let item = Alcotest.testable (fun fmt i -> Yojson.Safe.pp fmt (encode i)) Item.equal
 let parse = Yojson.Safe.from_string
+let static = Sigv4.Provider.Static.make ~access_key:"AKIDEXAMPLE" ~secret_key:"secret" ()
+let now () = 0.
+let api = Aws_api_dynamodb.make ~provider:static ~region:"us-east-1" ~now ()
 
+(* Answers Aws_api.Http.Call from a script; records every request. *)
+let with_http ~(respond : Aws_api.Http.request -> Aws_api.Http.response) k =
+  let seen = ref [] in
+  let result =
+    try k ()
+    with effect Aws_api.Http.Call request, k ->
+      seen := request :: !seen;
+      Effect.Deep.continue k (respond request)
+  in
+  result, List.rev !seen
+
+(* Same, at the action level: [respond] sees the action name and JSON body, answers with a 2xx
+   JSON or a 4xx body. *)
 let with_stub ~(respond : action:string -> body:string -> (Yojson.Safe.t, string) result) k =
-  try k ()
-  with effect Aws_api_dynamodb.Effects.Call { action; body }, k ->
-    Effect.Deep.continue k (respond ~action ~body)
+  let respond (request : Aws_api.Http.request) : Aws_api.Http.response =
+    let action =
+      match Aws_api.Http.header "X-Amz-Target" request.headers with
+      | Some target -> (
+        match String.split_last ~sep:"." target with Some (_, a) -> a | None -> target)
+      | None -> ""
+    in
+    match respond ~action ~body:(Option.value ~default:"" request.body) with
+    | Ok json -> { status = 200; headers = []; body = Yojson.Safe.to_string json }
+    | Error body -> { status = 400; headers = []; body }
+  in
+  fst (with_http ~respond k)
 
 let record ~response =
   let seen = ref [] in
@@ -28,7 +48,7 @@ let record ~response =
   in
   seen, respond
 
-let db = Client.make ~table:"example-table"
+let db = Client.make api ~table:"example-table"
 let alice = Item.(empty |> add "pk" (Value.String "alice") |> add "age" (Value.int 30))
 let alice_key = Item.singleton "pk" (Value.String "alice")
 let json_item xs = Projection.item_of_yojson_exn (`Assoc xs)
@@ -53,14 +73,17 @@ let test_wire_encodes_every_json_kind () =
     (parse
        {|{"TableName":"example-table","Item":{"b":{"BOOL":true},"f":{"N":"1.5"},"i":{"N":"1"},
           "l":{"L":[{"N":"1"},{"S":"y"}]},"m":{"M":{"k":{"BOOL":false}}},"n":{"NULL":true},"s":{"S":"x"}}}|})
-    Aws_api_dynamodb.Action.Put_item.(
-      make ~table_name:"example-table" ~item () |> yojson_of_request)
+    Aws_api_dynamodb.(
+      put_item_input ~table_name:"example-table"
+        ~item:(Aws_api_dynamodb_client.Envelope.of_item item)
+        ()
+      |> yojson_of_put_item_input)
 
 let test_wire_decodes_numbers_and_sets () =
-  let Aws_api_dynamodb.Action.Get_item.{ item = decoded } =
-    Aws_api_dynamodb.Action.Get_item.response_of_yojson
-      (parse
-         {|{"Item":{"i":{"N":"42"},"f":{"N":"0.5"},"ss":{"SS":["a","b"]},"ns":{"NS":["1","2.5"]}}}|})
+  let decoded =
+    Some
+      (decode
+         (parse {|{"i":{"N":"42"},"f":{"N":"0.5"},"ss":{"SS":["a","b"]},"ns":{"NS":["1","2.5"]}}|}))
   in
   Alcotest.(check (option item))
     "decoded"
@@ -81,29 +104,29 @@ let test_wire_numbers_round_trip () =
   let big = "12345678901234567890123456789012345678" in
   let third = 1.0 /. 3.0 in
   let numbers = json_item [ "big", `Intlit big; "third", `Float third; "tenth", `Float 0.1 ] in
-  let wire =
-    Aws_api_dynamodb.Action.Put_item.(make ~table_name:"t" ~item:numbers () |> yojson_of_request)
-    |> Yojson.Safe.Util.member "Item"
-  in
+  let wire = encode numbers in
   Alcotest.check json "encoded"
     (parse
        {|{"big":{"N":"12345678901234567890123456789012345678"},"tenth":{"N":"0.1"},"third":{"N":"0.33333333333333331"}}|})
     wire;
-  let Aws_api_dynamodb.Action.Get_item.{ item = decoded } =
-    Aws_api_dynamodb.Action.Get_item.response_of_yojson (`Assoc [ "Item", wire ])
-  in
-  Alcotest.(check (option item)) "decoded" (Some numbers) decoded
+  Alcotest.(check (option item)) "decoded" (Some numbers) (Some (decode wire))
 
 (* Absent optional fields must be omitted, not null. *)
 
 let query ?limit ?scan_index_forward ?exclusive_start_key () =
-  Aws_api_dynamodb.Action.Query.(
-    make ?limit ?scan_index_forward ?exclusive_start_key ~table_name:"example-table"
-      ~key_condition_expression:"#pk = :pk"
+  Aws_api_dynamodb.(
+    query_input ?limit ?scan_index_forward
+      ?exclusive_start_key:(Option.map Aws_api_dynamodb_client.Envelope.of_item exclusive_start_key)
+      ~table_name:"example-table" ~key_condition_expression:"#pk = :pk"
       ~expression_attribute_names:[ "#pk", "pk" ]
-      ~expression_attribute_values:(Item.singleton ":pk" (Value.String "alice"))
+      ~expression_attribute_values:
+        (Aws_api_dynamodb_client.Envelope.of_item (Item.singleton ":pk" (Value.String "alice")))
       ()
-    |> yojson_of_request)
+    |> yojson_of_query_input)
+
+let query_output json =
+  let (o : Aws_api_dynamodb.query_output) = Aws_api_dynamodb.query_output_of_yojson json in
+  Aws_api_dynamodb_client.Envelope.(items o.items, Option.map to_item o.last_evaluated_key)
 
 let test_query_omits_absent_fields () =
   Alcotest.(check string)
@@ -124,8 +147,8 @@ let test_query_emits_exclusive_start_key () =
     (query ~exclusive_start_key:alice_key ())
 
 let test_query_decodes_last_evaluated_key () =
-  let Aws_api_dynamodb.Action.Query.{ items; last_evaluated_key } =
-    Aws_api_dynamodb.Action.Query.response_of_yojson
+  let items, last_evaluated_key =
+    query_output
       (parse
          {|{"Items":[{"pk":{"S":"alice"},"age":{"N":"30"}}],"LastEvaluatedKey":{"pk":{"S":"alice"}},"Count":1}|})
   in
@@ -133,9 +156,7 @@ let test_query_decodes_last_evaluated_key () =
   Alcotest.(check (option item)) "LastEvaluatedKey" (Some alice_key) last_evaluated_key
 
 let test_query_decodes_absent_last_evaluated_key () =
-  let Aws_api_dynamodb.Action.Query.{ items; last_evaluated_key } =
-    Aws_api_dynamodb.Action.Query.response_of_yojson (parse {|{"Items":[{"pk":{"S":"alice"}}]}|})
-  in
+  let items, last_evaluated_key = query_output (parse {|{"Items":[{"pk":{"S":"alice"}}]}|}) in
   Alcotest.(check (list item)) "items" [ alice_key ] items;
   Alcotest.(check (option item)) "no LastEvaluatedKey" None last_evaluated_key
 
@@ -272,8 +293,8 @@ let test_transact_write () =
   let seen, respond = record ~response:(Ok (`Assoc [])) in
   let result =
     with_stub ~respond @@ fun () ->
-    Aws_api_dynamodb.Transaction.(
-      write
+    Aws_api_dynamodb_client.Transaction.(
+      write api
         [
           put_if_not_exists ~table_name:"example-table" ~item:alice ~primary_key:"pk";
           delete ~table_name:"example-table" ~key:(Item.singleton "pk" (Value.String "bob")) ();
@@ -296,7 +317,7 @@ let test_transact_write () =
 
 let error =
   Alcotest.testable
-    (fun fmt e -> Format.pp_print_string fmt (Aws_api_dynamodb.Error.to_string e))
+    (fun fmt e -> Format.pp_print_string fmt (Aws_api_dynamodb_client.Error.to_string e))
     ( = )
 
 let test_conditional_check_failed () =
@@ -309,54 +330,38 @@ let test_conditional_check_failed () =
   in
   match result with
   | Error e ->
-    Alcotest.(check bool) "recognized" true (Aws_api_dynamodb.Error.is_conditional_check_failed e);
+    Alcotest.(check bool)
+      "recognized" true
+      (Aws_api_dynamodb_client.Error.is_conditional_check_failed e);
     Alcotest.(check string) "code" "ConditionalCheckFailedException" e.code;
     Alcotest.(check (option string)) "message" (Some "The conditional request failed") e.message
   | Ok () -> Alcotest.fail "expected an error"
 
 let test_transaction_cancelled_by_condition () =
   let e =
-    Aws_api_dynamodb.Error.of_body
+    Aws_api_dynamodb_client.Error.of_body
       {|{"__type":"com.amazonaws.dynamodb.v20120810#TransactionCanceledException","CancellationReasons":[{"Code":"None"},{"Code":"ConditionalCheckFailed","Message":"The conditional request failed"}]}|}
   in
-  Alcotest.(check bool) "recognized" true (Aws_api_dynamodb.Error.is_conditional_check_failed e);
+  Alcotest.(check bool)
+    "recognized" true
+    (Aws_api_dynamodb_client.Error.is_conditional_check_failed e);
   Alcotest.(check (list string))
     "reasons"
     [ "None"; "ConditionalCheckFailed" ]
-    e.cancellation_reasons
+    (Aws_api_dynamodb_client.Error.cancellation_reasons e)
 
 let test_unparseable_error_keeps_body () =
-  let e = Aws_api_dynamodb.Error.of_body "<html>gateway</html>" in
-  Alcotest.check error "raw body"
-    { code = ""; message = None; cancellation_reasons = []; body = "<html>gateway</html>" }
-    e;
+  let e = Aws_api_dynamodb_client.Error.of_body "<html>gateway</html>" in
+  Alcotest.check error "raw body" { code = ""; message = None; body = "<html>gateway</html>" } e;
   Alcotest.(check bool)
     "not conditional" false
-    (Aws_api_dynamodb.Error.is_conditional_check_failed e)
+    (Aws_api_dynamodb_client.Error.is_conditional_check_failed e)
 
 (* --- Http bridge --- *)
 
-(* Answers Aws_api.Http.Call from a script; records every request. *)
-let with_http ~(respond : Aws_api.Http.request -> Aws_api.Http.response) k =
-  let seen = ref [] in
-  let result =
-    try k ()
-    with effect Aws_api.Http.Call request, k ->
-      seen := request :: !seen;
-      Effect.Deep.continue k (respond request)
-  in
-  result, List.rev !seen
-
-let static = Sigv4.Provider.Static.make ~access_key:"AKIDEXAMPLE" ~secret_key:"secret" ()
-let config = Aws_api_dynamodb.Config.aws ~region:"us-east-1"
-
 let test_http_signs_and_posts () =
   let respond _ : Aws_api.Http.response = { status = 200; headers = []; body = {|{"Item":{}}|} } in
-  let result, seen =
-    with_http ~respond @@ fun () ->
-    Aws_api_dynamodb.Http.run ~provider:static ~now:(fun () -> 0.) ~config @@ fun () ->
-    Client.get db ~key:alice_key
-  in
+  let result, seen = with_http ~respond @@ fun () -> Client.get db ~key:alice_key in
   Alcotest.(check bool) "ok" true (Result.is_ok result);
   match seen with
   | [ request ] ->
@@ -387,19 +392,13 @@ let test_http_status_mapping () =
     let respond _ : Aws_api.Http.response = { status; headers = []; body } in
     fst
       ( with_http ~respond @@ fun () ->
-        Aws_api_dynamodb.Http.run ~provider:static ~now:(fun () -> 0.) ~config @@ fun () ->
-        match Client.get db ~key:alice_key with
-        | Ok _ -> "ok"
-        | Error e -> "error:" ^ e.code
-        | exception Failure msg -> "raised:" ^ msg )
+        match Client.get db ~key:alice_key with Ok _ -> "ok" | Error e -> "error:" ^ e.code )
   in
   Alcotest.(check string) "2xx" "ok" (run 200 {|{}|});
   Alcotest.(check string)
     "4xx" "error:AccessDeniedException"
     (run 400 {|{"__type":"com.amazon.coral.service#AccessDeniedException","Message":"no"}|});
-  Alcotest.(check string)
-    "5xx raises at the perform site" "raised:DynamoDB request failed with status 503: down"
-    (run 503 "down")
+  Alcotest.(check string) "5xx" "error:HttpStatus" (run 503 "down")
 
 let test_http_default_provider_fetches_through_effect () =
   let respond (r : Aws_api.Http.request) : Aws_api.Http.response =
@@ -418,11 +417,13 @@ let test_http_default_provider_fetches_through_effect () =
     | _ -> None
   in
   let provider =
-    Aws_api_dynamodb.Http.default_provider ~getenv ~read_file:(fun _ -> None) ~now:(fun () -> 0.) ()
+    Sigv4.Provider.default ~getenv
+      ~read_file:(fun _ -> None)
+      ~now ~http:Aws_api_dynamodb.Transport.http ()
   in
+  let db = Client.make (Aws_api_dynamodb.make ~provider ~region:"us-east-1" ~now ()) ~table:"t" in
   let _, seen =
     with_http ~respond @@ fun () ->
-    Aws_api_dynamodb.Http.run ~provider ~now:(fun () -> 0.) ~config @@ fun () ->
     ignore (Client.get db ~key:alice_key);
     ignore (Client.get db ~key:alice_key)
   in
@@ -447,18 +448,18 @@ let test_max_pages () =
   let result = with_stub ~respond @@ fun () -> Client.scan ~max_pages:3 db in
   (match result with
   | Error e ->
-    Alcotest.(check bool) "too many pages" true (Aws_api_dynamodb.Error.is_too_many_pages e)
+    Alcotest.(check bool) "too many pages" true (Aws_api_dynamodb_client.Error.is_too_many_pages e)
   | Ok _ -> Alcotest.fail "expected Error");
   Alcotest.(check int) "stopped after max_pages requests" 3 !calls
 
 let test_error_message_capitalized () =
   let e =
-    Aws_api_dynamodb.Error.of_body
+    Aws_api_dynamodb_client.Error.of_body
       {|{"__type":"com.amazon.coral.service#ExpiredTokenException","Message":"The security token included in the request is expired"}|}
   in
   Alcotest.(check string)
     "to_string" "ExpiredTokenException: The security token included in the request is expired"
-    (Aws_api_dynamodb.Error.to_string e)
+    (Aws_api_dynamodb_client.Error.to_string e)
 
 let test_number_long_exponent () =
   Alcotest.(check bool)

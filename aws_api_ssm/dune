@@ -1,0 +1,15 @@
+(copy_files# ../smithy/runtime/*.ml)
+
+(library
+ (name aws_api_ssm)
+ (public_name aws-api-ssm)
+ (libraries yojson base64 uri aws-api sigv4)
+ (preprocess
+  (pps ppx_yojson_conv))
+ (modules
+  (:standard \ aws_api_ssm_test)))
+
+(test
+ (name aws_api_ssm_test)
+ (modules aws_api_ssm_test)
+ (libraries aws-api-ssm aws-api sigv4 alcotest yojson uri))

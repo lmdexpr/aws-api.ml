@@ -1,0 +1,6 @@
+; Smithy JSON AST -> OCaml, for AWS JSON 1.0 / 1.1 services. Not part of any package.
+;   dune exec smithy/smithy_gen.exe -- smithy/models/ssm.json > aws_api_ssm/aws_api_ssm.ml
+
+(executable
+ (name smithy_gen)
+ (libraries yojson))

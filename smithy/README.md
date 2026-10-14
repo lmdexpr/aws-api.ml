@@ -7,6 +7,7 @@ model or the generator changes:
 ```sh
 dune exec smithy/smithy_gen.exe -- smithy/models/ssm.json > aws_api_ssm/aws_api_ssm.ml
 dune exec smithy/smithy_gen.exe -- smithy/models/dynamodb.json > aws_api_dynamodb/aws_api_dynamodb.ml
+dune exec smithy/smithy_gen.exe -- smithy/models/kms.json > aws_api_kms/aws_api_kms.ml
 ```
 
 Models come from [aws/api-models-aws][models] (`models/<service>/service/<version>/*.json`) and

@@ -1,0 +1,15 @@
+(copy_files# ../smithy/runtime/aws_json_*.ml)
+
+(library
+ (name aws_api_kms)
+ (public_name aws-api-kms)
+ (libraries yojson base64 uri aws-api sigv4)
+ (preprocess
+  (pps ppx_yojson_conv))
+ (modules
+  (:standard \ aws_api_kms_test)))
+
+(test
+ (name aws_api_kms_test)
+ (modules aws_api_kms_test)
+ (libraries aws-api-kms aws-api sigv4 alcotest yojson uri))

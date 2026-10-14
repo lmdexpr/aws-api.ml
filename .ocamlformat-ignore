@@ -1,2 +1,3 @@
 aws_api_ssm/aws_api_ssm.ml
 aws_api_dynamodb/aws_api_dynamodb.ml
+aws_api_kms/aws_api_kms.ml

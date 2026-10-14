@@ -12,6 +12,7 @@ API, and the public API may still change. Every package is I/O-agnostic: HTTP go
 | [`sigv4`](sigv4/) | [AWS Signature Version 4][sigv4-spec] header signing and credential providers |
 | [`aws-api-dynamodb`](aws_api_dynamodb/) | DynamoDB, generated from the Smithy model |
 | [`aws-api-dynamodb-client`](aws_api_dynamodb_client/) | Typed attribute values, exact numbers, a table client and single-table helpers over it |
+| [`aws-api-kms`](aws_api_kms/) | Key Management Service, generated from the Smithy model |
 | [`aws-api-lambda`](aws_api_lambda/) | Lambda Runtime API loop for custom runtimes |
 | [`aws-api-ssm`](aws_api_ssm/) | Systems Manager, generated from the Smithy model |
 
@@ -40,6 +41,7 @@ opam pin add aws-api-cohttp-eio https://github.com/lmdexpr/aws-api.ml.git
 opam pin add sigv4 https://github.com/lmdexpr/aws-api.ml.git
 opam pin add aws-api-dynamodb https://github.com/lmdexpr/aws-api.ml.git
 opam pin add aws-api-dynamodb-client https://github.com/lmdexpr/aws-api.ml.git
+opam pin add aws-api-kms https://github.com/lmdexpr/aws-api.ml.git
 opam pin add aws-api-lambda https://github.com/lmdexpr/aws-api.ml.git
 opam pin add aws-api-ssm https://github.com/lmdexpr/aws-api.ml.git
 ```
@@ -47,8 +49,9 @@ opam pin add aws-api-ssm https://github.com/lmdexpr/aws-api.ml.git
 ## Usage
 
 The transport handler (`Aws_api_cohttp_eio.run`) wraps your code. Inside it,
-`Aws_api_dynamodb.make` / `Aws_api_ssm.make` return a value that each operation signs and sends
-with; `Aws_api_lambda.Http.run` is the Runtime API loop. See each package's README.
+`Aws_api_dynamodb.make` / `Aws_api_kms.make` / `Aws_api_ssm.make` return a value that each
+operation signs and sends with; `Aws_api_lambda.Http.run` is the Runtime API loop. See each
+package's README.
 
 With another HTTP client, handle `Aws_api.Http.Call` yourself instead of `Aws_api_cohttp_eio.run`:
 

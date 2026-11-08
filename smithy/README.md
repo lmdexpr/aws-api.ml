@@ -10,6 +10,17 @@ dune exec smithy/smithy_gen.exe -- smithy/models/dynamodb.json > aws_api_dynamod
 dune exec smithy/smithy_gen.exe -- smithy/models/kms.json > aws_api_kms/aws_api_kms.ml
 ```
 
+The generator runs in three pure steps; `smithy_gen.ml` does the I/O around them:
+
+- `model.ml` reads the JSON AST into typed shapes and rejects what violates Smithy itself (a
+  malformed shape id, an empty enum or union, no service or several).
+- `plan.ml` decides what is generated and rejects what this generator does not support (another
+  protocol, an error shape used as a member type, a name that is not an OCaml identifier). Names
+  are parsed by `naming.ml` into types that only those parsers can build.
+- `emit.ml` formats the plan as OCaml source without checking anything.
+
+Each failure names the shape it comes from.
+
 Models come from [aws/api-models-aws][models] (`models/<service>/service/<version>/*.json`) and
 are vendored under `models/`.
 

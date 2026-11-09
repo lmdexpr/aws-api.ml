@@ -7,12 +7,13 @@ let local id =
 
 type scalar = String | Int | Float | Bool | Timestamp | Blob | Document | Unit
 type member = { name : string; target : id; required : bool }
-type operation = { input : id; output : id }
+type operation = { input : id; output : id; errors : id list }
 type protocol = Json_1_0 | Json_1_1
 
 type service = {
   id : id;
   operations : (id * operation) list;
+  errors : id list;
   protocol : protocol option;
   signing_name : string;
   endpoint_prefix : string;
@@ -27,6 +28,7 @@ type shape =
   | Map of { key : id; value : id }
   | Record of record
   | Error of member list
+  | Stream
   | Other of string
 
 module Ids = Map.Make (String)
@@ -49,10 +51,23 @@ module Parse = struct
 
   let has_trait name json = trait name json <> `Null
 
-  (** [context] is the shape the id appears in, if any. *)
+  (** Smithy's identifier: underscores, a letter, then letters, digits and underscores. *)
+  let identifier s =
+    let n = String.length s in
+    let rec start i =
+      i < n
+      && match s.[i] with '_' -> start (i + 1) | 'A' .. 'Z' | 'a' .. 'z' -> true | _ -> false
+    in
+    start 0
+    && String.for_all (function 'A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_' -> true | _ -> false) s
+
+  (** [namespace#Name]: identifiers, the namespace's joined by dots. [context] is the shape the id
+      appears in, if any. *)
   let id ?context s =
     match String.split_on_char '#' s with
-    | [ namespace; name ] when namespace <> "" && name <> "" -> s
+    | [ namespace; name ]
+      when List.for_all identifier (String.split_on_char '.' namespace) && identifier name ->
+      s
     | _ -> (
       match context with
       | Some context -> failwith @@ Printf.sprintf "%s: %S is not a shape id" context s
@@ -84,6 +99,7 @@ module Parse = struct
   type service = {
     id : id;
     operation_ids : id list;
+    errors : id list;
     protocol : protocol option;
     signing_name : string;
     endpoint_prefix : string;
@@ -100,6 +116,7 @@ module Parse = struct
     | "float" | "double" | "bigInteger" | "bigDecimal" -> Shape (Scalar Float)
     | "boolean" -> Shape (Scalar Bool)
     | "timestamp" -> Shape (Scalar Timestamp)
+    | ("blob" | "union") when has_trait "smithy.api#streaming" json -> Shape Stream
     | "blob" -> Shape (Scalar Blob)
     | "document" -> Shape (Scalar Document)
     | "enum" ->
@@ -122,12 +139,18 @@ module Parse = struct
     | "structure" -> Shape (Record (Structure (members ~context ~union:false json)))
     | "union" -> Shape (Record (Union (nel ~context "union" (members ~context ~union:true json))))
     | "operation" ->
-      Operation { input = io ~context "input" json; output = io ~context "output" json }
+      Operation
+        {
+          input = io ~context "input" json;
+          output = io ~context "output" json;
+          errors = targets ~context "errors" json;
+        }
     | "service" ->
       Service
         {
           id;
           operation_ids = targets ~context "operations" json;
+          errors = targets ~context "errors" json;
           protocol =
             (if has_trait "aws.protocols#awsJson1_0" json then
                Some Json_1_0
@@ -181,6 +204,7 @@ module Parse = struct
           {
             id = s.id;
             operations;
+            errors = s.errors;
             protocol = s.protocol;
             signing_name = s.signing_name;
             endpoint_prefix = s.endpoint_prefix;
@@ -201,9 +225,12 @@ let prelude id =
   @@
   match local id with
   | "String" -> Some String
-  | "Integer" | "Long" | "Short" | "Byte" | "PrimitiveInteger" | "PrimitiveLong" -> Some Int
+  | "Integer" | "Long" | "Short" | "Byte" | "PrimitiveInteger" | "PrimitiveLong" | "PrimitiveShort"
+  | "PrimitiveByte" ->
+    Some Int
   | "Boolean" | "PrimitiveBoolean" -> Some Bool
-  | "Float" | "Double" | "BigInteger" | "BigDecimal" -> Some Float
+  | "Float" | "Double" | "BigInteger" | "BigDecimal" | "PrimitiveFloat" | "PrimitiveDouble" ->
+    Some Float
   | "Timestamp" -> Some Timestamp
   | "Blob" -> Some Blob
   | "Document" -> Some Document

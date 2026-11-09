@@ -38,6 +38,9 @@ What is generated, and what is deliberately not:
   optional members as optional arguments.
 - One module per operation with `request`, `response` and `perform`, built by
   `runtime/aws_json_transport.ml`. No pagination, retries, or documentation.
+- Operations with an event stream or streaming blob in their input or output are skipped and
+  listed at the top of the generated file: the transport reads whole bodies. Only the shapes the
+  remaining operations reach (through their input, output and errors) are emitted.
 
 `runtime/` (transport: endpoint, sigv4 signing, status mapping; error body; wire types) is not a
 package. Each generated package copies it in with `(copy_files# ../smithy/runtime/aws_json_*.ml)`,

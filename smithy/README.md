@@ -8,6 +8,7 @@ model or the generator changes:
 dune exec smithy/smithy_gen.exe -- smithy/models/ssm.json > aws_api_ssm/aws_api_ssm.ml
 dune exec smithy/smithy_gen.exe -- smithy/models/dynamodb.json > aws_api_dynamodb/aws_api_dynamodb.ml
 dune exec smithy/smithy_gen.exe -- smithy/models/kms.json > aws_api_kms/aws_api_kms.ml
+dune exec smithy/smithy_gen.exe -- smithy/models/logs.json > aws_api_logs/aws_api_logs.ml
 ```
 
 The generator runs in three pure steps; `smithy_gen.ml` does the I/O around them:
@@ -38,6 +39,9 @@ What is generated, and what is deliberately not:
   optional members as optional arguments.
 - One module per operation with `request`, `response` and `perform`, built by
   `runtime/aws_json_transport.ml`. No pagination, retries, or documentation.
+- Operations with an event stream or streaming blob in their input or output are skipped and
+  listed at the top of the generated file: the transport reads whole bodies. Only the shapes the
+  remaining operations reach (through their input, output and errors) are emitted.
 
 `runtime/` (transport: endpoint, sigv4 signing, status mapping; error body; wire types) is not a
 package. Each generated package copies it in with `(copy_files# ../smithy/runtime/aws_json_*.ml)`,

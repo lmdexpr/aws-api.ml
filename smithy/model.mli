@@ -2,7 +2,8 @@
     what violates Smithy itself; what this generator does not support is left to {!Plan}. *)
 
 type id = private string
-(** A shape id, [namespace#Name] with neither part empty. *)
+(** A shape id, [namespace#Name]: Smithy identifiers ([_*[A-Za-z][A-Za-z0-9_]*]), the namespace's
+    joined by dots. *)
 
 val local : id -> string
 (** The [Name] of [namespace#Name]. *)
@@ -15,12 +16,13 @@ type member = {
   required : bool;  (** always false for a union member: exactly one is set *)
 }
 
-type operation = { input : id; output : id }
+type operation = { input : id; output : id; errors : id list }
 type protocol = Json_1_0 | Json_1_1
 
 type service = {
   id : id;
   operations : (id * operation) list;
+  errors : id list;  (** errors every operation can return *)
   protocol : protocol option;  (** [None] for a protocol other than AWS JSON *)
   signing_name : string;
   endpoint_prefix : string;
@@ -37,6 +39,7 @@ type shape =
   | Map of { key : id; value : id }
   | Record of record
   | Error of member list  (** a structure with the smithy.api#error trait *)
+  | Stream  (** an event stream union or a blob with the smithy.api#streaming trait *)
   | Other of string  (** a shape kind the generator does not map, e.g. resource *)
 
 type shapes

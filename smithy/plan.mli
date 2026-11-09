@@ -28,11 +28,15 @@ type service = private {
   endpoint_prefix : Naming.Host_label.t;
 }
 
+(** Why an operation is not generated. *)
+type skip = Streaming  (** an event stream or streaming blob in its input or output *)
+
 type t = private {
   service : service;
-  enums : enum list;
-  records : record list;
+  enums : enum list;  (** reachable from the generated operations and the errors they return *)
+  records : record list;  (** likewise *)
   operations : operation list;
+  skipped : (string * skip) list;  (** operations left out, by their Smithy name *)
 }
 
 val make : Model.t -> t

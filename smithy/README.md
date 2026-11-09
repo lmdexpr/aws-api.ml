@@ -8,6 +8,7 @@ model or the generator changes:
 dune exec smithy/smithy_gen.exe -- smithy/models/ssm.json > aws_api_ssm/aws_api_ssm.ml
 dune exec smithy/smithy_gen.exe -- smithy/models/dynamodb.json > aws_api_dynamodb/aws_api_dynamodb.ml
 dune exec smithy/smithy_gen.exe -- smithy/models/kms.json > aws_api_kms/aws_api_kms.ml
+dune exec smithy/smithy_gen.exe -- smithy/models/logs.json > aws_api_logs/aws_api_logs.ml
 ```
 
 The generator runs in three pure steps; `smithy_gen.ml` does the I/O around them:

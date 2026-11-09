@@ -1,6 +1,6 @@
 (lang package 0.1)
 
-(dependency_hash 6e9cd6d6c78e400f83a6d99770e325c3)
+(dependency_hash b2dec72e944ac57b95be23a7f7b287eb)
 
 (ocaml ocaml-base-compiler)
 
